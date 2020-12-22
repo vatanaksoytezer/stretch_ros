@@ -1,0 +1,51 @@
+<launch>
+
+  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="model" default="$(find stretch_gazebo)/urdf/stretch_gazebo.urdf.xacro"/>
+
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+        args=" -urdf -model robot -param robot_description -J joint_lift 0.5" respawn="false" output="screen" />
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="30.0" />
+  </node>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find stretch_gazebo)/config/sim.rviz" />
+
+  <rosparam command="load"
+            file="$(find stretch_gazebo)/config/joints.yaml"
+            ns="stretch_joint_state_controller" />
+
+  <rosparam command="load"
+            file="$(find stretch_gazebo)/config/drive_config.yaml"
+            ns="stretch_diff_drive_controller" />
+
+  <rosparam command="load"
+            file="$(find stretch_gazebo)/config/arm.yaml"
+            ns="stretch_arm_controller" />
+
+  <rosparam command="load"
+            file="$(find stretch_gazebo)/config/head.yaml"
+            ns="stretch_head_controller" />
+
+  <node name="stretch_controller_spawner" pkg="controller_manager" type="spawner"
+        args="stretch_joint_state_controller stretch_diff_drive_controller stretch_arm_controller stretch_head_controller"/>
+
+</launch>
