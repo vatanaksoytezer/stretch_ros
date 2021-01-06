@@ -25,7 +25,7 @@ from std_srvs.srv import SetBool, SetBoolResponse
 
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import BatteryState, JointState, Imu, MagneticField
-from std_msgs.msg import Header
+from std_msgs.msg import Header, Bool
 
 import hello_helpers.hello_misc as hm
 from hello_helpers.gripper_conversion import GripperConversion
@@ -236,12 +236,12 @@ class StretchBodyNode:
         battery_state.charge = invalid_reading
         battery_state.capacity = invalid_reading
         battery_state.design_capacity = 18.0
-        battery_state.percentage       # Charge percentage on 0 to 1 range  (If unmeasured NaN)
-        battery_state.power_supply_status     # The charging status as reported. Values defined above
-        battery_state.power_supply_health     # The battery health metric. Values defined above
-        battery_state.power_supply_technology # The battery chemistry. Values defined above
         battery_state.present = True
         self.power_pub.publish(battery_state)
+
+        calibration_status = Bool()
+        calibration_status.data = self.robot.is_calibrated()
+        self.calibration_pub.publish(calibration_status)
 
         # publish joint state for the arm
         joint_state = JointState()
@@ -564,6 +564,7 @@ class StretchBodyNode:
         self.odom_pub = rospy.Publisher('odom', Odometry, queue_size=1)
 
         self.power_pub = rospy.Publisher('battery', BatteryState, queue_size=1)
+        self.calibration_pub = rospy.Publisher('is_calibrated', Bool, queue_size=1, latch=True)
 
         self.imu_mobile_base_pub = rospy.Publisher('imu_mobile_base', Imu, queue_size=1)
         self.magnetometer_mobile_base_pub = rospy.Publisher('magnetometer_mobile_base', MagneticField, queue_size=1)
@@ -635,6 +636,7 @@ class StretchBodyNode:
                 self.command_mobile_base_velocity_and_publish_state()
                 command_base_velocity_and_publish_joint_state_rate.sleep()
         except (rospy.ROSInterruptException, ThreadServiceExit):
+            self.stop_the_robot_callback(None)
             self.robot.stop()
             rospy.signal_shutdown("stretch_driver shutdown")
 
