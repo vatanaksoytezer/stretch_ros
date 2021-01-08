@@ -11,3 +11,4 @@ TrajectoryPlannerROS:
     publish_cost_grid_pc: true
 
     holonomic_robot: false
+    sim_time: 3.0
