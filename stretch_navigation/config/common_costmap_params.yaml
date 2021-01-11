@@ -13,5 +13,3 @@ obstacle_layer:
 
 inflation_layer:
     inflation_radius: 0.55
-
-robot_radius: 0.175

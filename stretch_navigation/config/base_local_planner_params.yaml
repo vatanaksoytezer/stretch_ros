@@ -15,3 +15,5 @@ DWBLocalPlanner:
     publish_evaluation: true
 
     sim_time: 1.0
+
+robot_radius: 0.175
