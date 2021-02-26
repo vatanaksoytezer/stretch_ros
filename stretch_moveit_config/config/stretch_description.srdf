@@ -54,6 +54,8 @@
     <end_effector name="gripper" parent_link="link_grasp_center" group="stretch_arm"/>
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
     <virtual_joint name="position" type="planar" parent_frame="map" child_link="base_link"/>
+    <!-- Mark a planar virtual_joint or joint as a differential drive joint -->
+    <differential_drive name="position" angular_weight="1.0" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="base_link" link2="camera_link" reason="Never"/>
     <disable_collisions link1="base_link" link2="laser" reason="Adjacent"/>
