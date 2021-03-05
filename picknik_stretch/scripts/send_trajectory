@@ -1,0 +1,51 @@
+#!/usr/bin/python
+
+from math import pi
+
+import actionlib
+
+from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryGoal
+from control_msgs.msg import JointTolerance
+
+import rospy
+
+from trajectory_msgs.msg import JointTrajectoryPoint
+
+
+if __name__ == '__main__':
+    try:
+        rospy.init_node('send_stretch_trajectory')
+        client = actionlib.SimpleActionClient('/stretch_controller/follow_joint_trajectory',
+                                              FollowJointTrajectoryAction)
+        rospy.loginfo('Waiting for client')
+        client.wait_for_server()
+        rospy.loginfo('Sending goal')
+
+        goal = FollowJointTrajectoryGoal()
+        goal.trajectory.joint_names = ['translate_mobile_base', 'joint_lift', 'wrist_extension',
+                                       'joint_wrist_yaw', 'joint_head_tilt', 'joint_head_pan']
+        p0 = JointTrajectoryPoint()
+        p0.positions = [0, 0.2, 0, 3.14, 0, 0]
+        # p0.velocities = [0, 0, 0, 0, 0, 0]
+        goal.trajectory.points.append(p0)
+        p1 = JointTrajectoryPoint()
+        p1.positions = [0.5, 0.9, 0.5, 1.57, -1.57, -1.57]
+        # p1.velocities = [0, 0, 0, 0, 0, 0]
+        p1.time_from_start = rospy.Duration(10)
+        goal.trajectory.points.append(p1)
+        p2 = JointTrajectoryPoint()
+        p2.positions = [0, 0.2, 0, 3.14, 0, 0]
+        # p2.velocities = [0, 0, 0, 0, 0, 0]
+        p2.time_from_start = rospy.Duration(20)
+        goal.trajectory.points.append(p2)
+        goal.goal_tolerance.append(JointTolerance())
+        goal.path_tolerance.append(JointTolerance())
+        print(goal)
+
+        client.send_goal(goal)
+        rospy.loginfo('Waiting for result')
+        client.wait_for_result()
+        print(client.get_result())
+
+    except rospy.ROSInterruptException:
+        print('program interrupted before completion')
