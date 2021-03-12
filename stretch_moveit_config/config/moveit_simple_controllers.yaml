@@ -1,5 +1,6 @@
 controller_names:
   - stretch_arm_controller
+  - stretch_base_controller
   - gripper_controller
 
 stretch_arm_controller:
@@ -21,3 +22,10 @@ gripper_controller:
     joints:
       - joint_gripper_finger_left
       - joint_gripper_finger_right
+
+stretch_base_controller:
+  action_ns: follow_joint_trajectory
+  default: True
+  type: FollowMultiDOFJointTrajectory
+  joints:
+    - position
