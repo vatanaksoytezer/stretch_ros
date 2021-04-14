@@ -111,6 +111,7 @@ class StretchBodyNode(Node):
         #current_time = rospy.Time.from_sec(robot_time)
 
         current_time = self.get_clock().now()
+        current_stamp = current_time.to_msg()
 
         # obtain odometry
         # assign relevant base status to variables
@@ -131,6 +132,10 @@ class StretchBodyNode(Node):
             x = self.mobile_base_manipulation_origin['x']
             x_vel = 0.0
             x_effort = 0.0
+
+        # Convert to floats for ROS2 message definition compatibility
+        x = float(x)
+        y = float(y)
 
         # assign relevant arm status to variables
         arm_status = robot_status['arm']
@@ -199,7 +204,7 @@ class StretchBodyNode(Node):
         if self.broadcast_odom_tf:
             # publish odometry via TF
             t = TransformStamped()
-            t.header.stamp = current_time
+            t.header.stamp = current_stamp
             t.header.frame_id = self.odom_frame_id
             t.child_frame_id = self.base_frame_id
             t.transform.translation.x = x
@@ -213,7 +218,7 @@ class StretchBodyNode(Node):
 
         # publish odometry via the odom topic
         odom = Odometry()
-        odom.header.stamp = current_time
+        odom.header.stamp = current_stamp
         odom.header.frame_id = self.odom_frame_id
         odom.child_frame_id = self.base_frame_id
         odom.pose.pose.position.x = x
@@ -228,7 +233,7 @@ class StretchBodyNode(Node):
 
         # publish joint state for the arm
         joint_state = JointState()
-        joint_state.header.stamp = current_time
+        joint_state.header.stamp = current_stamp
         # joint_arm_l3 is the most proximal and joint_arm_l0 is the
         # most distal joint of the telescoping arm model. The joints
         # are connected in series such that moving the most proximal
@@ -316,7 +321,7 @@ class StretchBodyNode(Node):
         mz = imu_status['mz']
 
         i = Imu()
-        i.header.stamp = current_time
+        i.header.stamp = current_stamp
         i.header.frame_id = 'imu_mobile_base'
         i.angular_velocity.x = gx
         i.angular_velocity.y = gy
@@ -328,7 +333,7 @@ class StretchBodyNode(Node):
         self.imu_mobile_base_pub.publish(i)
 
         m = MagneticField()
-        m.header.stamp = current_time
+        m.header.stamp = current_stamp
         m.header.frame_id = 'imu_mobile_base'
         self.magnetometer_mobile_base_pub.publish(m)
 
@@ -338,7 +343,7 @@ class StretchBodyNode(Node):
         az = accel_status['az']
 
         i = Imu()
-        i.header.stamp = current_time
+        i.header.stamp = current_stamp
         i.header.frame_id = 'accel_wrist'
         i.linear_acceleration.x = ax
         i.linear_acceleration.y = ay
@@ -489,6 +494,7 @@ class StretchBodyNode(Node):
         self.declare_parameter('mode', 'position')
         self.declare_parameter('broadcast_odom_tf', False)
         self.declare_parameter('controller_calibration_file', 'not_set')
+        self.declare_parameter('timeout', 1.0)
         self.declare_parameter('rate', 15.0)
         self.declare_parameter('use_fake_mechaduinos', False)
         self.declare_parameter('fail_out_of_range_goal', True)
@@ -500,7 +506,7 @@ class StretchBodyNode(Node):
         self.broadcast_odom_tf = self.get_parameter('broadcast_odom_tf').value
         self.get_logger().info('broadcast_odom_tf = ' + str(self.broadcast_odom_tf))
         if self.broadcast_odom_tf:
-            self.tf_broadcaster = tf2_ros.TransformBroadcaster()
+            self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
 
         large_ang = 45.0 * np.pi/180.0
 
@@ -549,13 +555,13 @@ class StretchBodyNode(Node):
 
         self.max_arm_height = 1.1
 
-        self.odom_pub = self.node.create_publisher(Odometry, 'odom')
+        self.odom_pub = self.create_publisher(Odometry, 'odom', 1)
 
-        self.imu_mobile_base_pub = self.node.create_publisher(Imu, 'imu_mobile_base')
-        self.magnetometer_mobile_base_pub = self.node.create_publisher(MagneticField, 'magnetometer_mobile_base')
-        self.imu_wrist_pub = self.node.create_publisher(Imu, 'imu_wrist')
+        self.imu_mobile_base_pub = self.create_publisher(Imu, 'imu_mobile_base', 1)
+        self.magnetometer_mobile_base_pub = self.create_publisher(MagneticField, 'magnetometer_mobile_base', 1)
+        self.imu_wrist_pub = self.create_publisher(Imu, 'imu_wrist', 1)
 
-        self.node.create_subscription(Twist, "cmd_vel", self.set_mobile_base_velocity_callback)
+        self.create_subscription(Twist, "cmd_vel", self.set_mobile_base_velocity_callback, 1)
 
         # ~ symbol gets parameter from private namespace
         self.joint_state_rate = self.get_parameter('rate').value
@@ -577,15 +583,14 @@ class StretchBodyNode(Node):
         # TODO: check with the actuators to see if calibration is required
         #self.calibrate()
 
-        self.joint_state_pub = self.node.create_publisher(JointState, 'joint_states')
+        self.joint_state_pub = self.create_publisher(JointState, 'joint_states', 1)
 
         self.command_base_velocity_and_publish_joint_state_rate = self.create_rate(self.joint_state_rate)
-        self.last_twist_time = self.node.get_clock().now()
+        self.last_twist_time = self.get_clock().now()
 
         # start action server for joint trajectories
         self.fail_out_of_range_goal = self.get_parameter('fail_out_of_range_goal').value
         self.joint_trajectory_action = JointTrajectoryAction(self)
-        self.joint_trajectory_action.server.start()
 
         if mode == "position":
             self.turn_on_position_mode()
