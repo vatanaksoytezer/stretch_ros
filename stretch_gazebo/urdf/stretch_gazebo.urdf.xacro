@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="stretch_description">
+  <xacro:include filename="$(find stretch_description)/urdf/stretch_main.xacro" />
+  <xacro:include filename="$(find stretch_description)/urdf/stretch_aruco.xacro" />
+  <xacro:include filename="$(find stretch_description)/urdf/stretch_d435i.xacro" />
+  <xacro:include filename="$(find stretch_description)/urdf/stretch_laser_range_finder.xacro" />
+  <xacro:include filename="$(find stretch_description)/urdf/stretch_respeaker.xacro" />
+  <!-- xacro:include filename="$(find stretch_description)/urdf/stretch_gripper.xacro" /-->
+   <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/</robotNamespace>
+    </plugin>
+  </gazebo>
+
+  <transmission name="trans_left_wheel">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_left_wheel">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_left_wheel">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="trans_right_wheel">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_right_wheel">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_right_wheel">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <gazebo reference="link_right_wheel">
+      <mu1 value="200.0"/>
+      <mu2 value="100.0"/>
+      <kp value="10000000.0" />
+      <kd value="1.0" />
+      <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <gazebo reference="link_left_wheel">
+      <mu1 value="200.0"/>
+      <mu2 value="100.0"/>
+      <kp value="10000000.0" />
+      <kd value="1.0" />
+      <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <transmission name="trans_lift">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_lift">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_lift">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="trans_arm_l3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_arm_l3" >
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_arm_l3">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="trans_arm_l2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_arm_l2" >
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_arm_l2">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="trans_arm_l1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_arm_l1" >
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_arm_l1">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="trans_arm_l0">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_arm_l0" >
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_arm_l0">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="trans_wrist_yaw">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_wrist_yaw" >
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_wrist_yaw">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="trans_head_pan">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_head_pan">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_head_pan">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="trans_head_tilt">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_head_tilt">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_head_tilt">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+
+  <!--transmission name="trans_gripper_finger_left">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_gripper_finger_left">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_gripper_finger_left">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+  <transmission name="trans_gripper_finger_right">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$motor_gripper_finger_right">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="joint_gripper_finger_right">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+</transmission-->
+</robot>
