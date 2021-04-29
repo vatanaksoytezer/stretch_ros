@@ -20,6 +20,7 @@ class JointTrajectoryAction:
                                    self.execute_cb)
         self.feedback = FollowJointTrajectory.Feedback()
         self.result = FollowJointTrajectory.Result()
+        self.goal_handle = None
 
         r = self.node.robot
         head_pan_range_ticks = r.head.motors['head_pan'].params['range_t']
@@ -51,7 +52,9 @@ class JointTrajectoryAction:
         self.lift_cg = LiftCommandGroup(tuple(r.lift.params['range_m']))
         self.mobile_base_cg = MobileBaseCommandGroup(virtual_range_m=(-0.5, 0.5))
 
-    def execute_cb(self, goal):
+    def execute_cb(self, goal_handle):
+        self.goal_handle = goal_handle
+        goal = goal_handle.request
         with self.node.robot_stop_lock:
             # Escape stopped mode to execute trajectory
             self.node.stop_the_robot = False
@@ -74,7 +77,7 @@ class JointTrajectoryAction:
             # group's requirements. The command group should have
             # reported the error.
             self.node.robot_mode_rwlock.release_read()
-            return
+            return self.result
 
         num_valid_points = sum([c.get_num_valid_commands() for c in command_groups])
         if num_valid_points <= 0:
@@ -82,97 +85,100 @@ class JointTrajectoryAction:
                        "Received joint names = {0}").format(commanded_joint_names)
             self.invalid_joints_callback(err_str)
             self.node.robot_mode_rwlock.release_read()
-            return
+            return self.result
         elif num_valid_points != len(commanded_joint_names):
             err_str = ("Received only {0} valid joints out of {1} total joints. Received joint names = "
                        "{2}").format(num_valid_points, len(commanded_joint_names), commanded_joint_names)
             self.invalid_joints_callback(err_str)
             self.node.robot_mode_rwlock.release_read()
-            return
+            return self.result
 
-        ###################################################
-        # Try to reach each of the goals in sequence until
-        # an error is detected or success is achieved.
-        for pointi, point in enumerate(goal.trajectory.points):
-            self.node.get_logger().debug(("{0} joint_traj action: "
-                                          "target point #{1} = <{2}>").format(self.node.node_name, pointi, point))
+        if self.node.robot_mode == "manipulation":
+            _ = [c.set_trajectory_goals(goal.trajectory.points, self.node.robot) for c in command_groups[:-1]]
+            self.node.robot.start_trajectory()
+        else:
+            ###################################################
+            # Try to reach each of the goals in sequence until
+            # an error is detected or success is achieved.
+            for pointi, point in enumerate(goal.trajectory.points):
+                self.node.get_logger().debug(("{0} joint_traj action: "
+                                            "target point #{1} = <{2}>").format(self.node.node_name, pointi, point))
 
-            valid_goals = [c.set_goal(point, self.invalid_goal_callback, self.node.fail_out_of_range_goal,
-                                      manipulation_origin=self.node.mobile_base_manipulation_origin)
-                           for c in command_groups]
-            if not all(valid_goals):
-                # At least one of the goals violated the requirements
-                # of a command group. Any violations should have been
-                # reported as errors by the command groups.
-                self.node.robot_mode_rwlock.release_read()
-                return
-
-            robot_status = self.node.robot.get_status() # uses lock held by robot
-            [c.init_execution(self.node.robot, robot_status, backlash_state=self.node.backlash_state)
-             for c in command_groups]
-            self.node.robot.push_command()
-
-            goals_reached = [c.goal_reached() for c in command_groups]
-            update_rate = self.node.create_rate(15.0)
-            goal_start_time = self.node.get_clock().now()
-
-            while not all(goals_reached):
-                if (self.node.get_clock().now() - goal_start_time) > self.node.default_goal_timeout_duration:
-                    err_str = ("Time to execute the current goal point = <{0}> exceeded the "
-                               "default_goal_timeout = {1}").format(point, self.node.default_goal_timeout_s)
-                    self.goal_tolerance_violated_callback(err_str)
+                valid_goals = [c.set_goal(point, self.invalid_goal_callback, self.node.fail_out_of_range_goal,
+                                        manipulation_origin=self.node.mobile_base_manipulation_origin)
+                            for c in command_groups]
+                if not all(valid_goals):
+                    # At least one of the goals violated the requirements
+                    # of a command group. Any violations should have been
+                    # reported as errors by the command groups.
                     self.node.robot_mode_rwlock.release_read()
-                    return
+                    return self.result
 
-                # Check if a premption request has been received.
-                with self.node.robot_stop_lock:
-                    if self.node.stop_the_robot or self.server.is_preempt_requested():
-                        self.server.set_preempted()
-                        self.node.get_logger().debug(("{0} joint_traj action: PREEMPTION REQUESTED, but not stopping "
-                                                      "current motions to allow smooth interpolation between "
-                                                      "old and new commands.").format(self.node.node_name))
-                        self.node.stop_the_robot = False
-                        self.node.robot_mode_rwlock.release_read()
-                        return
+                robot_status = self.node.robot.get_status() # uses lock held by robot
+                [c.init_execution(self.node.robot, robot_status, backlash_state=self.node.backlash_state)
+                for c in command_groups]
+                self.node.robot.push_command()
 
-                robot_status = self.node.robot.get_status()
-                named_errors = [c.update_execution(robot_status, success_callback=self.success_callback,
-                                                   backlash_state=self.node.backlash_state)
-                                for c in command_groups]
-                if any(ret == True for ret in named_errors):
-                    self.node.robot_mode_rwlock.release_read()
-                    return
-
-                self.feedback_callback(commanded_joint_names, point, named_errors)
                 goals_reached = [c.goal_reached() for c in command_groups]
-                update_rate.sleep()
+                goal_start_time = self.node.get_clock().now()
 
-            self.node.get_logger().debug("{0} joint_traj action: Achieved target point.".format(self.node.node_name))
+                while not all(goals_reached):
+                    if (self.node.get_clock().now() - goal_start_time) > self.node.default_goal_timeout_duration:
+                        err_str = ("Time to execute the current goal point = <{0}> exceeded the "
+                                "default_goal_timeout = {1}").format(point, self.node.default_goal_timeout_s)
+                        self.goal_tolerance_violated_callback(err_str)
+                        self.node.robot_mode_rwlock.release_read()
+                        return self.result
+
+                    # Check if a premption request has been received.
+                    with self.node.robot_stop_lock:
+                        if self.node.stop_the_robot or self.goal_handle.is_cancel_requested:
+                            self.server.set_preempted()
+                            self.node.get_logger().debug(("{0} joint_traj action: PREEMPTION REQUESTED, but not stopping "
+                                                        "current motions to allow smooth interpolation between "
+                                                        "old and new commands.").format(self.node.node_name))
+                            self.node.stop_the_robot = False
+                            self.node.robot_mode_rwlock.release_read()
+                            return self.result
+
+                    robot_status = self.node.robot.get_status()
+                    named_errors = [c.update_execution(robot_status, success_callback=self.success_callback,
+                                                    backlash_state=self.node.backlash_state)
+                                    for c in command_groups]
+                    if any(ret == True for ret in named_errors):
+                        self.node.robot_mode_rwlock.release_read()
+                        return self.result
+
+                    self.feedback_callback(commanded_joint_names, point, named_errors)
+                    goals_reached = [c.goal_reached() for c in command_groups]
+                    rclpy.spin_once(self.node)
+
+                self.node.get_logger().debug("{0} joint_traj action: Achieved target point.".format(self.node.node_name))
 
         self.success_callback("Achieved all target points.")
         self.node.robot_mode_rwlock.release_read()
-        return
+        return self.result
 
     def invalid_joints_callback(self, err_str):
-        if self.server.is_active() or self.server.is_preempt_requested():
+        if self.goal_handle.is_active or self.goal_handle.is_cancel_requested:
             self.node.get_logger().error("{0} joint_traj action: {1}".format(self.node.node_name, err_str))
             self.result.error_code = self.result.INVALID_JOINTS
             self.result.error_string = err_str
-            self.server.set_aborted(self.result)
+            self.goal_handle.abort()
 
     def invalid_goal_callback(self, err_str):
-        if self.server.is_active() or self.server.is_preempt_requested():
+        if self.goal_handle.is_active or self.goal_handle.is_cancel_requested:
             self.node.get_logger().error("{0} joint_traj action: {1}".format(self.node.node_name, err_str))
             self.result.error_code = self.result.INVALID_GOAL
             self.result.error_string = err_str
-            self.server.set_aborted(self.result)
+            self.goal_handle.abort()
 
     def goal_tolerance_violated_callback(self, err_str):
-        if self.server.is_active() or self.server.is_preempt_requested():
+        if self.goal_handle.is_active or self.goal_handle.is_cancel_requested:
             self.node.get_logger().error("{0} joint_traj action: {1}".format(self.node.node_name, err_str))
             self.result.error_code = self.result.GOAL_TOLERANCE_VIOLATED
             self.result.error_string = err_str
-            self.server.set_aborted(self.result)
+            self.goal_handle.abort()
 
     def feedback_callback(self, commanded_joint_names, desired_point, named_errors):
         clean_named_errors = []
@@ -195,10 +201,10 @@ class JointTrajectoryAction:
         self.feedback.desired = desired_point
         self.feedback.actual = actual_point
         self.feedback.error = error_point
-        self.server.publish_feedback(self.feedback)
+        self.goal_handle.publish_feedback(self.feedback)
 
     def success_callback(self, success_str):
         self.node.get_logger().info("{0} joint_traj action: {1}".format(self.node.node_name, success_str))
         self.result.error_code = self.result.SUCCESSFUL
         self.result.error_string = success_str
-        self.server.set_succeeded(self.result)
+        self.goal_handle.succeed()
