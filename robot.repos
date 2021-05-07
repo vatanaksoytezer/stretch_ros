@@ -1,0 +1,15 @@
+repositories:
+  stretch_ros:
+    type: git
+    url: https://github.com/PickNikRobotics/stretch_ros
+    version: dlu_devel2
+
+  control_msgs:
+    type: git
+    url: https://github.com/DLu/control_msgs
+    version: multi_dof_action_extension
+
+  realsense-ros:
+    type: git
+    url: https://github.com/IntelRealSense/realsense-ros
+    version: foxy

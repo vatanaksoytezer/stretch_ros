@@ -2,60 +2,33 @@ repositories:
   stretch_ros:
     type: git
     url: https://github.com/PickNikRobotics/stretch_ros
-    version: ros2
-  moveit2:
-    type: git
-    url: https://github.com/JafarAbdi/moveit2
-    version: pr-add_multi_dof_traj_field
-  moveit_msgs:
-    type: git
-    url: https://github.com/ros-planning/moveit_msgs
-    version: ros2
-  moveit_resources:
-    type: git
-    url: https://github.com/ros-planning/moveit_resources
-    version: ros2
-  moveit_task_constructor:
-    type: git
-    url: https://github.com/JafarAbdi/moveit_task_constructor
-    version: ros2
-  geometric_shapes:
-    type: git
-    url: https://github.com/ros-planning/geometric_shapes
-    version: ros2
-  srdfdom:
-    type: git
-    url: https://github.com/ros-planning/srdfdom
-    version: ros2
-  control_msgs:
-    type: git
-    url: https://github.com/JafarAbdi/control_msgs
-    version: pr-add_multi_dof_traj_field
-  ros2_control:
-    type: git
-    url: https://github.com/ros-controls/ros2_control
-    version: master
-  ros2_controllers:
-    type: git
-    url: https://github.com/ros-controls/ros2_controllers
-    version: master
-  warehouse_ros:
-    type: git
-    url: https://github.com/ros-planning/warehouse_ros
-    version: ros2
-  warehouse_ros_mongo:
-    type: git
-    url: https://github.com/ros-planning/warehouse_ros_mongo
-    version: ros2
+    version: dlu_devel2
   stretch_moveit_plugins:
     type: git
     url: https://github.com/PickNikRobotics/stretch_moveit_plugins
     version: main
-  rosparam_shortcuts:
+
+  moveit2:
+    type: git
+    url: https://github.com/JafarAbdi/moveit2
+    version: pr-add_multi_dof_traj_field
+
+  moveit_task_constructor:  # Needed for compiling MoveIt
+    type: git
+    url: https://github.com/JafarAbdi/moveit_task_constructor
+    version: ros2
+
+  control_msgs:
+    type: git
+    url: https://github.com/DLu/control_msgs
+    version: multi_dof_action_extension
+
+  rqt_robot_dashboard:  # For use with stretch_dashboard
+    type: git
+    url: https://github.com/DLu/rqt_robot_dashboard
+    version: ROS2
+
+  rosparam_shortcuts:  # Used by stretch_moveit_plugins
     type: git
     url: https://github.com/PickNikRobotics/rosparam_shortcuts
     version: ros2
-  realtime_tools:
-    type: git
-    url: https://github.com/ros-controls/realtime_tools
-    version: foxy-devel
