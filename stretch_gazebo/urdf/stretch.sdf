@@ -1,0 +1,263 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <model name='stretch' canonical_link='base_link'>
+  <pose>-0.109461304328163 -0.000741018909047708 0.0914915269429946 0 0 0</pose>
+
+  <link
+    name="base_link">
+    <inertial>
+      <mass>1.0723782659782</mass>
+      <inertia>
+        <ixx>0.00310580907710135</ixx>
+        <ixy>1.5182848191076E-06</ixy>
+        <ixz>0.00041690466732394</ixz>
+        <iyy>0.00433798719991832</iyy>
+        <iyz>1.3348771625844E-05</iyz>
+        <izz>0.00372047274673620</izz> 
+      </inertia>
+    </inertial>
+    <visual name="visual">
+      <pose>0 0 0 0 0 0</pose>
+      <geometry>
+        <mesh>
+          <uri>"model://stretch_description/meshes/base_link.STL"</uri>
+        </mesh>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision name="collision">
+      <geometry>
+        <mesh>
+          <uri>"package://stretch_description/meshes/base_link.STL"</uri>
+        </mesh>
+      </geometry>
+    </collision>
+  </link>
+  
+  <!-- <link
+    name="link_right_wheel">
+    <inertial>
+      <origin
+        xyz="1.25554620866719E-07 3.54748938447003E-07 0.0239581106165018"
+        rpy="0 0 0" />
+      <mass
+        value="0.01" />
+      <inertia
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
+    </inertial>
+    <visual name="visual">
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stretch_description/meshes/link_right_wheel.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision name="collision">
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stretch_description/meshes/link_right_wheel.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name='joint_right_wheel' type='revolute'>
+      <parent>base_link</parent>
+      <child>link_right_wheel</child>
+      <axis>
+          <xyz expressed_in='__model__'>0 1 0</xyz>
+          <limit>
+              <lower>-1.79769e+308</lower>
+              <upper>1.79769e+308</upper>
+          </limit>
+      </axis>
+  </joint>
+
+  <link
+    name="link_left_wheel">
+    <inertial>
+      <origin
+        xyz="1.2555462092223E-07 -3.54748938502514E-07 -0.0239581106165035"
+        rpy="0 0 0" />
+      <mass
+        value="0.01" />
+      <inertia
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
+    </inertial>
+    <visual name="visual">
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stretch_description/meshes/link_left_wheel.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision name="collision">
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stretch_description/meshes/link_left_wheel.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name='joint_left_wheel' type='revolute'>
+      <parent>base_link</parent>
+      <child>link_left_wheel</child>
+      <axis>
+          <xyz expressed_in='__model__'>0 1 0</xyz>
+          <limit>
+              <lower>-1.79769e+308</lower>
+              <upper>1.79769e+308</upper>
+          </limit>
+      </axis>
+  </joint> -->
+
+  <!-- <link name="caster_link">
+    <collision name="collision">
+      <geometry>
+        <sphere radius="0.032"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0</mu>
+            <mu2>0</mu2>
+            <slip1>1.0</slip1>
+            <slip2>1.0</slip2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <visual name="visual">
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stretch_description/meshes/omni_wheel_m.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.01" />
+      <origin xyz="0 0 0" />
+      <inertia
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
+    </inertial>
+  </link>
+
+    <joint name='caster_wheel' type='ball'>
+        <parent>base_link</parent>
+        <child>caster_link</child>
+    </joint> -->
+
+  <!-- <link
+    name="link_mast">
+    <inertial>
+      <origin
+        xyz="0.00755818572975822 0.773971284176834 0.00647313086620024"
+        rpy="0 0 0" />
+      <mass
+        value="0.749143203376401" />
+      <inertia
+        ixx="0.0709854511954588"
+        ixy="-0.00433428742758457"
+        ixz="-0.000186110788697573"
+        iyy="0.000437922053342648"
+        iyz="-0.00288788257713431"
+        izz="0.071104808501661" />
+    </inertial>
+    <visual name="visual">
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stretch_description/meshes/link_mast.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision name="collision">
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stretch_description/meshes/link_mast.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint
+    name="joint_mast"
+    type="fixed">
+    <origin
+      xyz="-0.07 0.134999999999998 0.0284000000000001"
+      rpy="1.5707963267949 0 0.00925318926571245" />
+    <parent
+      link="base_link" />
+    <child
+      link="link_mast" />
+    <axis
+      xyz="0 0 0" />
+  </joint> -->
+
+    <!-- <plugin
+      filename="libignition-gazebo-diff-drive-system.so"
+      name="ignition::gazebo::systems::DiffDrive">
+      <left_joint>joint_left_wheel</left_joint>
+      <right_joint>joint_right_wheel</right_joint>
+      <wheel_separation>0.315</wheel_separation>
+      <wheel_radius>0.05</wheel_radius>
+      <odom_publish_frequency>1</odom_publish_frequency>
+      <topic>cmd_vel</topic>
+  </plugin> -->
+
+  </model>
+</sdf>
