@@ -1,0 +1,21 @@
+<package>
+  <name>stretch_gazebo</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="vatan@picknik.ai"></maintainer>
+  <license>TODO: License declaration</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>joint_state_publisher</run_depend>
+  <run_depend>stretch_description</run_depend>
+  <run_depend>ign_gazebo</run_depend>
+  <run_depend>xacro</run_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+    <!-- TODO: Export IGN_GAZEBO_RESOURCE_PATH to stretch_ros -->
+  </export>
+
+</package>
