@@ -165,8 +165,32 @@
     </axis>
   </joint>
 
-  <link name="caster_link">
+  <link name="link_caster">
     <pose>-0.245 0.0 0.032 1.5707963267949 1.5707963267949 0</pose>
+    <inertial>
+      <mass>0.01</mass>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.001</iyy>
+          <iyz>0</iyz>
+          <izz>0.001</izz>
+        </inertia>
+    </inertial>
+    <visual name="visual">
+      <geometry>
+        <mesh>
+          <uri>meshes/omni_wheel_m.STL</uri>
+        </mesh>
+      </geometry>
+      <material>
+        <diffuse>0 0 0 1</diffuse>
+        <ambient>0 0 0 1</ambient>
+        <specular>0 0 0 1</specular>
+        <emissive>0 0 0 1</emissive>
+      </material>
+    </visual>
     <collision name="collision">
       <geometry>
         <sphere>
@@ -191,10 +215,30 @@
           </contact>
       </surface>
     </collision>
+  </link>
+
+  <joint name='joint_caster' type='ball'>
+      <parent>base_link</parent>
+      <child>link_caster</child>
+  </joint>
+
+  <link name="link_mast">
+    <pose>-0.07 0.134999999999998 0.0284000000000001 1.5707963267949 0.00925318926571245 0</pose>
+    <inertial>
+      <mass>0.749143203376401</mass>
+        <inertia>
+          <ixx>0.0709854511954588</ixx>
+          <ixy>-0.00433428742758457</ixy>
+          <ixz>-0.000186110788697573</ixz>
+          <iyy>0.000437922053342648</iyy>
+          <iyz>-0.00288788257713431</iyz>
+          <izz>0.071104808501661</izz>
+        </inertia>
+    </inertial>
     <visual name="visual">
       <geometry>
         <mesh>
-          <uri>meshes/omni_wheel_m.STL</uri>
+          <uri>meshes/link_mast.STL</uri>
         </mesh>
       </geometry>
       <material>
@@ -204,47 +248,93 @@
         <emissive>0 0 0 1</emissive>
       </material>
     </visual>
-    <inertial>
-      <mass>0.01</mass>
-        <inertia>
-          <ixx>0.001</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>0.001</iyy>
-          <iyz>0</iyz>
-          <izz>0.001</izz>
-        </inertia>
-    </inertial>
+    <collision name="collision">
+      <geometry>
+        <mesh>
+          <uri>meshes/link_mast.STL</uri>
+        </mesh>
+      </geometry>
+    </collision>
   </link>
 
-  <joint name='caster_wheel' type='ball'>
+  <joint name='joint_mast' type='fixed'>
       <parent>base_link</parent>
-      <child>caster_link</child>
+      <child>link_mast</child>
   </joint>
 
-  <!-- <link
-    name="link_mast">
+
+  <!-- <link name="link_lift">
+    <pose relative_to="link_mast">-0.0369217062323472 0.165471199999996 -0.000341653286793524 -1.57079632679552 1.5615431375292 -6.2942004366467E-13</pose>
     <inertial>
-      <origin
-        xyz="0.00755818572975822 0.773971284176834 0.00647313086620024"
-        rpy="0 0 0" />
-      <mass
-        value="0.749143203376401" />
-      <inertia
-        ixx="0.0709854511954588"
-        ixy="-0.00433428742758457"
-        ixz="-0.000186110788697573"
-        iyy="0.000437922053342648"
-        iyz="-0.00288788257713431"
-        izz="0.071104808501661" />
+      <mass>0.749143203376401</mass>
+        <inertia>
+          <ixx>0.000567192946271367</ixx>
+          <ixy>-0.00024607534789508</ixy>
+          <ixz>-0.000128108442260574</ixz>
+          <iyy>0.00127108364478659</iyy>
+          <iyz>7.61916855070339E-06</iyz>
+          <izz>0.00137296635099006</izz>
+        </inertia>
     </inertial>
     <visual name="visual">
+      <geometry>
+        <mesh>
+          <uri>meshes/link_lift.STL</uri>
+        </mesh>
+      </geometry>
+      <material>
+        <diffuse>0 0 0 1</diffuse>
+        <ambient>0 0 0 1</ambient>
+        <specular>0 0 0 1</specular>
+        <emissive>0 0 0 1</emissive>
+      </material>
+    </visual>
+    <collision name="collision">
+      <geometry>
+        <mesh>
+          <uri>meshes/link_lift.STL</uri>
+        </mesh>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name='joint_lift' type='prismatic'>
+    <parent>base_link</parent>
+    <child>link_mast</child>
+    <axis>
+      <xyz>0 0 1</xyz>
+      <limit>
+        <lower>0.0</lower>
+        <upper>1.1</upper>
+        <velocity>1.0</velocity>
+        <effort>100</effort>
+      </limit>
+    </axis>
+  </joint> -->
+
+  <!-- <link
+    name="link_lift">
+    <inertial>
+      <origin
+        xyz="-0.0547636346252869 0.0380939689802074 0.00933159404448308"
+        rpy="0 0 0" />
+      <mass
+        value="0.444820831236007" />
+      <inertia
+        ixx="0.000567192946271367"
+        ixy="-0.00024607534789508"
+        ixz="-0.000128108442260574"
+        iyy="0.00127108364478659"
+        iyz="7.61916855070339E-06"
+        izz="0.00137296635099006" />
+    </inertial>
+    <visual>
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://stretch_description/meshes/link_mast.STL" />
+          filename="package://stretch_description/meshes/link_lift.STL" />
       </geometry>
       <material
         name="">
@@ -252,41 +342,143 @@
           rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
-    <collision name="collision">
+    <collision>
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://stretch_description/meshes/link_mast.STL" />
+          filename="package://stretch_description/meshes/link_lift.STL" />
       </geometry>
     </collision>
   </link>
   
   <joint
-    name="joint_mast"
-    type="fixed">
+    name="joint_lift"
+    type="prismatic">
     <origin
-      xyz="-0.07 0.134999999999998 0.0284000000000001"
-      rpy="1.5707963267949 0 0.00925318926571245" />
+      xyz="-0.0369217062323472 0.165471199999996 -0.000341653286793524"
+      rpy="-1.57079632679552 1.5615431375292 -6.2942004366467E-13" />
     <parent
-      link="base_link" />
-    <child
       link="link_mast" />
+    <child
+      link="link_lift" />
     <axis
-      xyz="0 0 0" />
+	xyz="0 0 1" />
+  <limit effort="100" lower="0.0" upper="1.1" velocity="1.0"/>
   </joint> -->
 
-    <plugin
-      filename="libignition-gazebo-diff-drive-system.so"
-      name="ignition::gazebo::systems::DiffDrive">
-      <left_joint>joint_left_wheel</left_joint>
-      <right_joint>joint_right_wheel</right_joint>
-      <wheel_separation>0.315</wheel_separation>
-      <wheel_radius>0.05</wheel_radius>
-      <odom_publish_frequency>10</odom_publish_frequency>
-      <topic>cmd_vel</topic>
+  <!-- Diff Drive Plugin -->
+  <plugin
+    filename="libignition-gazebo-diff-drive-system.so"
+    name="ignition::gazebo::systems::DiffDrive">
+    <left_joint>joint_left_wheel</left_joint>
+    <right_joint>joint_right_wheel</right_joint>
+    <wheel_separation>0.315</wheel_separation>
+    <wheel_radius>0.05</wheel_radius>
+    <odom_publish_frequency>10</odom_publish_frequency>
+    <topic>cmd_vel</topic>
+    <frame_id>odom</frame_id>
+    <child_frame_id>base_link</child_frame_id>
   </plugin>
+
+  <!-- Joint state publisher -->
+  <plugin filename="libignition-gazebo-joint-state-publisher-system.so" name="ignition::gazebo::systems::JointStatePublisher">
+  </plugin>
+
+    <!-- <plugin filename="libignition-gazebo-joint-trajectory-controller-system.so" name="ignition::gazebo::systems::JointTrajectoryController">
+      <topic>joint_trajectory</topic>
+
+      <joint_name>panda_joint1</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>panda_joint2</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>9500</position_p_gain>
+      <position_d_gain>47.5</position_d_gain>
+      <position_i_gain>5225</position_i_gain>
+      <position_i_min>-47.5</position_i_min>
+      <position_i_max>47.5</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>panda_joint3</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>6500</position_p_gain>
+      <position_d_gain>32.5</position_d_gain>
+      <position_i_gain>3575</position_i_gain>
+      <position_i_min>-32.5</position_i_min>
+      <position_i_max>32.5</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>panda_joint4</joint_name>
+      <initial_position>-1.57</initial_position>
+      <position_p_gain>6000</position_p_gain>
+      <position_d_gain>30</position_d_gain>
+      <position_i_gain>3300</position_i_gain>
+      <position_i_min>-30</position_i_min>
+      <position_i_max>30</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>panda_joint5</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>2750</position_p_gain>
+      <position_d_gain>2.75</position_d_gain>
+      <position_i_gain>1515</position_i_gain>
+      <position_i_min>-6.88</position_i_min>
+      <position_i_max>6.88</position_i_max>
+      <position_cmd_min>-12</position_cmd_min>
+      <position_cmd_max>12</position_cmd_max>
+
+      <joint_name>panda_joint6</joint_name>
+      <initial_position>1.57</initial_position>
+      <position_p_gain>2500</position_p_gain>
+      <position_d_gain>2.5</position_d_gain>
+      <position_i_gain>1375</position_i_gain>
+      <position_i_min>-6.25</position_i_min>
+      <position_i_max>6.25</position_i_max>
+      <position_cmd_min>-12</position_cmd_min>
+      <position_cmd_max>12</position_cmd_max>
+
+      <joint_name>panda_joint7</joint_name>
+      <initial_position>0.79</initial_position>
+      <position_p_gain>2000</position_p_gain>
+      <position_d_gain>2</position_d_gain>
+      <position_i_gain>1100</position_i_gain>
+      <position_i_min>-5</position_i_min>
+      <position_i_max>5</position_i_max>
+      <position_cmd_min>-12</position_cmd_min>
+      <position_cmd_max>12</position_cmd_max>
+
+      <joint_name>panda_finger_joint1</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>250</position_p_gain>
+      <position_d_gain>0.2</position_d_gain>
+      <position_i_gain>50</position_i_gain>
+      <position_i_min>-10</position_i_min>
+      <position_i_max>10</position_i_max>
+      <position_cmd_min>-20</position_cmd_min>
+      <position_cmd_max>20</position_cmd_max>
+
+      <joint_name>panda_finger_joint2</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>250</position_p_gain>
+      <position_d_gain>0.2</position_d_gain>
+      <position_i_gain>50</position_i_gain>
+      <position_i_min>-10</position_i_min>
+      <position_i_max>10</position_i_max>
+      <position_cmd_min>-20</position_cmd_min>
+      <position_cmd_max>20</position_cmd_max>
+    </plugin> -->
 
   </model>
 </sdf>

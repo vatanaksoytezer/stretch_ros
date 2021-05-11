@@ -139,7 +139,7 @@
     <axis xyz="0 0 1" />
   </joint>
 
-  <link name="caster_link">
+  <link name="link_caster">
     <collision>
       <geometry>
         <sphere radius="0.032"/>
@@ -183,9 +183,9 @@
     </inertial>
   </link>
 
-  <joint name="caster_joint" type="fixed">
+  <joint name="joint_caster" type="fixed">
     <parent link="base_link"/>
-    <child link="caster_link"/>
+    <child link="link_caster"/>
     <origin xyz="-0.245 0.0 0.032" rpy="${-M_PI/2} 0 0"/>
     <axis xyz="0 0 1" />
   </joint>
@@ -245,7 +245,7 @@
       xyz="0 0 0" />
   </joint>
   
-  <!-- <link
+  <link
     name="link_lift">
     <inertial>
       <origin
@@ -801,6 +801,6 @@
     <axis
       xyz="0 0 1" />
     <limit effort="100" lower="-1.53" upper="0.79" velocity="1.0"/>
-  </joint> -->
+  </joint>
 
 </robot>

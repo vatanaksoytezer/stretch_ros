@@ -38,7 +38,7 @@
     </collision>
   </link>
   
-  <!-- <link
+  <link
     name="link_right_wheel">
     <inertial>
       <origin
@@ -73,9 +73,12 @@
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh
+          <sphere>
+            <radius>0.05</radius>
+          </sphere>
+        <!-- <mesh
           filename="package://stretch_description/meshes/link_right_wheel.STL" />
-      </geometry>
+      </geometry> -->
     </collision>
   </link>
 
@@ -142,9 +145,9 @@
               <upper>1.79769e+308</upper>
           </limit>
       </axis>
-  </joint> -->
+  </joint>
 
-  <!-- <link name="caster_link">
+  <link name="caster_link">
     <collision name="collision">
       <geometry>
         <sphere radius="0.032"/>
@@ -191,7 +194,7 @@
     <joint name='caster_wheel' type='ball'>
         <parent>base_link</parent>
         <child>caster_link</child>
-    </joint> -->
+    </joint>
 
   <!-- <link
     name="link_mast">
@@ -248,7 +251,7 @@
       xyz="0 0 0" />
   </joint> -->
 
-    <!-- <plugin
+    <plugin
       filename="libignition-gazebo-diff-drive-system.so"
       name="ignition::gazebo::systems::DiffDrive">
       <left_joint>joint_left_wheel</left_joint>
@@ -257,7 +260,7 @@
       <wheel_radius>0.05</wheel_radius>
       <odom_publish_frequency>1</odom_publish_frequency>
       <topic>cmd_vel</topic>
-  </plugin> -->
+  </plugin>
 
   </model>
 </sdf>

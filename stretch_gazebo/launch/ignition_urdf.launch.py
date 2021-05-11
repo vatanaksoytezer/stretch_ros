@@ -6,7 +6,6 @@ from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
-from launch.actions import DeclareLaunchArgument
 
 def load_file(package_name, file_path):
     package_path = get_package_share_directory(package_name)
@@ -31,14 +30,12 @@ def load_yaml(package_name, file_path):
 
 def generate_launch_description():
 
-    # Launch Arguments
-    use_sim_time = DeclareLaunchArgument(
-        "use_sim_time", default_value="False", description="If true, use simulated clock"
-    )
-
-    robot_description_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "stretch_main.xacro")
+    # Import model
+    # gazebo_pkg_path =  os.path.join(get_package_share_directory("stretch_gazebo"), "urdf", "stretch_gazebo.urdf.xacro")
+    # gazebo_pkg_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "description_test.urdf.xacro")
+    gazebo_pkg_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "stretch_main.xacro")
     robot_description_config = xacro.process_file(
-        robot_description_path
+        gazebo_pkg_path
     )
     robot_description = {"robot_description": robot_description_config.toxml()}
 
@@ -49,6 +46,20 @@ def generate_launch_description():
         name="robot_state_publisher",
         output="both",
         parameters=[robot_description],
+    )
+
+    # Joint state publisher
+    joint_state_publisher_node = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher',
+    )
+
+    # Joint state publisher GUI (for Debugging)
+    joint_state_publisher_gui_node = Node(
+        package='joint_state_publisher_gui',
+        executable='joint_state_publisher_gui',
+        name='joint_state_publisher_gui',
     )
 
     # Ignition gazebo
@@ -65,48 +76,42 @@ def generate_launch_description():
         package='rviz2',
         executable='rviz2',
         arguments=['-d', os.path.join(pkg_stretch_gazebo, 'config', 'stretch_gazebo.rviz')],
-        parameters=[]
+        parameters=[robot_description]
     )
 
     # Spawn
-    # gazebo_pkg_path =  os.path.join(get_package_share_directory("stretch_gazebo"), "models", "stretch_ignition", "model.sdf")
-    gazebo_pkg_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "stretch_main.sdf")
     spawn = Node(package='ros_ign_gazebo', executable='create',
                 arguments=[
-                    '-name', 'stretch',
-                    '-file', gazebo_pkg_path
+                    '-name', 'robot',
+                    # '-file', gazebo_pkg_path
+                    # '-topic', '/robot_description'
+                    '-param', robot_description_config.toxml()
                     ],
-                output='screen',
-                )
+                output='screen')
 
     # Ign Bridge
     bridge = Node(
         package='ros_ign_bridge',
         executable='parameter_bridge',
         arguments=['/cmd_vel@geometry_msgs/msg/Twist@ignition.msgs.Twist',
-                '/model/stretch/odometry@nav_msgs/msg/Odometry@ignition.msgs.Odometry',
-                '/model/stretch/tf@tf2_msgs/msg/TFMessage@ignition.msgs.Pose_V',
-                '/clock@rosgraph_msgs/msg/Clock@ignition.msgs.Clock',
-                '/world/empty/model/stretch/joint_state@sensor_msgs/msg/JointState@ignition.msgs.Model',
-                # JointTrajectory bridge (ROS2 -> IGN)
-                '/joint_trajectory@trajectory_msgs/msg/JointTrajectory@ignition.msgs.JointTrajectory',
-                # JointTrajectoryProgress bridge (IGN -> ROS2)
-                '/joint_trajectory_progress@std_msgs/msg/Float32@ignition.msgs.Float',
+                '/model/robot/odometry@nav_msgs/msg/Odometry@ignition.msgs.Odometry',
+                # '/model/robot/tf@tf2_msgs/msg/TFMessage@ignition.msgs.Pose_V',
+                '/joint_states@sensor_msgs/msg/JointState@ignition.msgs.Model',
+                '/clock@rosgraph_msgs/msg/Clock@ignition.msgs.Clock'
                 ],
         remappings=[
-            ("/model/stretch/tf", "tf"),
-            ("/world/empty/model/stretch/joint_state", "joint_states"),
-            ("/model/stretch/odometry", "odom")
+            # ("/model/robot/tf", "tf"),
+            ("/model/robot/odometry", "odom")
         ],
         output='screen'
     )
 
-
     return LaunchDescription([
-        use_sim_time,
+        robot_state_publisher,
+        # joint_state_publisher_node,
+        # joint_state_publisher_gui_node,
+        # rviz,
         gazebo,
         spawn,
-        bridge,
-        rviz,
-        robot_state_publisher,
+        # bridge,
     ])
