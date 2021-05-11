@@ -36,7 +36,7 @@ def generate_launch_description():
         "use_sim_time", default_value="False", description="If true, use simulated clock"
     )
 
-    robot_description_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "stretch_main.xacro")
+    robot_description_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "stretch_description.xacro")
     robot_description_config = xacro.process_file(
         robot_description_path
     )
@@ -53,10 +53,14 @@ def generate_launch_description():
 
     # Ignition gazebo
     pkg_ros_ign_gazebo = get_package_share_directory('ros_ign_gazebo')
+    pkg_worlds = get_package_share_directory('stretch_gazebo')
+    world_dir = os.path.join(pkg_worlds, 'worlds', 'empty_world.sdf')
+    world_str = "-r " + world_dir
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_ign_gazebo, 'launch', 'ign_gazebo.launch.py')),
-        launch_arguments={'ign_args': '-r empty.sdf'}.items(),
+        # launch_arguments={'ign_args': '-r empty.sdf'}.items(),
+        launch_arguments={'ign_args': world_str}.items(),
     )
 
     # RViz
@@ -70,7 +74,7 @@ def generate_launch_description():
 
     # Spawn
     # gazebo_pkg_path =  os.path.join(get_package_share_directory("stretch_gazebo"), "models", "stretch_ignition", "model.sdf")
-    gazebo_pkg_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "stretch_main.sdf")
+    gazebo_pkg_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "stretch.sdf")
     spawn = Node(package='ros_ign_gazebo', executable='create',
                 arguments=[
                     '-name', 'stretch',
@@ -87,16 +91,18 @@ def generate_launch_description():
                 '/model/stretch/odometry@nav_msgs/msg/Odometry@ignition.msgs.Odometry',
                 '/model/stretch/tf@tf2_msgs/msg/TFMessage@ignition.msgs.Pose_V',
                 '/clock@rosgraph_msgs/msg/Clock@ignition.msgs.Clock',
-                '/world/empty/model/stretch/joint_state@sensor_msgs/msg/JointState@ignition.msgs.Model',
+                '/world/empty_world/model/stretch/joint_state@sensor_msgs/msg/JointState@ignition.msgs.Model',
                 # JointTrajectory bridge (ROS2 -> IGN)
                 '/joint_trajectory@trajectory_msgs/msg/JointTrajectory@ignition.msgs.JointTrajectory',
                 # JointTrajectoryProgress bridge (IGN -> ROS2)
                 '/joint_trajectory_progress@std_msgs/msg/Float32@ignition.msgs.Float',
+                "/lidar@sensor_msgs/LaserScan@ignition.msgs.LaserScan",
+                "/lidar/points@sensor_msgs/PointCloud2@ignition.msgs.PointCloudPacked",
                 ],
         remappings=[
             ("/model/stretch/tf", "tf"),
-            ("/world/empty/model/stretch/joint_state", "joint_states"),
-            ("/model/stretch/odometry", "odom")
+            ("/world/empty_world/model/stretch/joint_state", "joint_states"),
+            ("/model/stretch/odometry", "odom"),
         ],
         output='screen'
     )

@@ -3,6 +3,6 @@ project(stretch_gazebo)
 
 find_package(ament_cmake REQUIRED)
 
-install(DIRECTORY models launch config urdf DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY worlds models launch config urdf DESTINATION share/${PROJECT_NAME})
 
 ament_package()

@@ -289,8 +289,9 @@
   <joint
     name="joint_lift"
     type="prismatic">
+    <!-- Y: 0.165471199999996 -->
     <origin
-      xyz="-0.0369217062323472 0.165471199999996 -0.000341653286793524"
+      xyz="-0.0369217062323472 0.2687712 -0.000341653286793524"
       rpy="-1.57079632679552 1.5615431375292 -6.2942004366467E-13" />
     <parent
       link="link_mast" />
@@ -298,7 +299,8 @@
       link="link_lift" />
     <axis
 	xyz="0 0 1" />
-  <limit effort="100" lower="0.0" upper="1.1" velocity="1.0"/>
+  <!-- <limit effort="100" lower="0.0" upper="1.1" velocity="1.0"/> -->
+  <limit effort="100" lower="-0.1033" upper="0.9967" velocity="1.0"/>
   </joint>
   
   <link
