@@ -3,11 +3,12 @@ import yaml
 import xacro
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
+
 
 def load_file(package_name, file_path):
     package_path = get_package_share_directory(package_name)
@@ -123,17 +124,43 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Controllers
+    ros2_controllers_path = load_yaml('stretch_moveit_config', 'config/ros_controllers.yaml')
+    
+    ros2_control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[robot_description, ros2_controllers_path],
+        output={
+            "stdout": "screen",
+            "stderr": "screen",
+        },
+    )
 
-    return LaunchDescription([
-        # Launch Arguments
-        DeclareLaunchArgument(
-            'use_sim_time',
-            default_value=use_sim_time,
-            description="If true, use simulated clock"),
-        # Nodes and Launches
-        gazebo,
-        spawn,
-        bridge,
-        rviz,
-        robot_state_publisher,
-    ])
+    load_controllers = []
+    for controller in ["stretch_controller", "joint_state_controller"]:
+        load_controllers += [
+            ExecuteProcess(
+                cmd=["ros2 run controller_manager spawner.py {}".format(controller)],
+                shell=True,
+                output="screen",
+            )
+        ]
+
+    return LaunchDescription(
+        [
+            # Launch Arguments
+            DeclareLaunchArgument(
+                'use_sim_time',
+                default_value=use_sim_time,
+                description="If true, use simulated clock"),
+            # Nodes and Launches
+            gazebo,
+            spawn,
+            bridge,
+            # rviz,
+            robot_state_publisher,
+            ros2_control_node,
+        ]
+    
+    )

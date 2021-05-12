@@ -35,6 +35,12 @@
       name="ignition::gazebo::systems::Imu">
     </plugin>
 
+    <!-- Magnetometer -->
+    <plugin
+      filename="ignition-gazebo-magnetometer-system"
+      name="ignition::gazebo::systems::Magnetometer">
+    </plugin>
+
     <light type="directional" name="sun">
       <cast_shadows>true</cast_shadows>
       <pose>0 0 10 0 0 0</pose>

@@ -22,6 +22,24 @@
           </mesh>
         </geometry>
       </collision>
+      <collision name='base_link_fixed_joint_lump__link_aruco_left_base_collision_1'>
+        <pose>-0.005 0.130497 0.159748 0 0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/link_aruco_left_base.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__link_aruco_right_base_collision_2'>
+        <pose>-0.005 -0.130497 0.159748 0 0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/link_aruco_right_base.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
       <collision name='base_link_fixed_joint_lump__link_mast_collision_2'>
         <pose>-0.07 0.135 0.0284 1.5708 0 0.009253</pose>
         <geometry>
@@ -40,15 +58,15 @@
           </mesh>
         </geometry>
       </collision>
-      <!-- <collision name='base_link_fixed_joint_lump__laser_collision_2'>
-        <pose>0.000503 0 0.1664 0 0 -3.14159</pose>
+      <collision name='base_link_fixed_joint_lump__respeaker_base_collision_7'>
+        <pose>-0.069961 0.131965 1.39832 0 -0 -3.13234</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://stretch_description/meshes/laser.STL</uri>
+            <uri>model://stretch_description/meshes/link_respeaker.STL</uri>
           </mesh>
         </geometry>
-      </collision> -->
+      </collision>
       <visual name='base_link_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
@@ -58,10 +76,28 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.9098 0.9098 0.9098 1</diffuse>
-          <ambient> 0.9098 0.9098 0.9098 1</ambient>
-          <specular>0.9098 0.9098 0.9098 1</specular>
+          <diffuse> 0.717647059 0.721568627 0.725490196 1</diffuse>
+          <ambient> 0.717647059 0.721568627 0.725490196 1</ambient>
+          <specular>0.717647059 0.721568627 0.725490196 1</specular>
         </material>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__link_aruco_left_base_visual_1'>
+        <pose>-0.005 0.130497 0.159748 0 0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/link_aruco_left_base.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__link_aruco_right_base_visual_2'>
+        <pose>-0.005 -0.130497 0.159748 0 0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/link_aruco_right_base.STL</uri>
+          </mesh>
+        </geometry>
       </visual>
       <visual name='base_link_fixed_joint_lump__link_mast_visual_2'>
         <pose>-0.07 0.135 0.0284 1.5708 0 0.009253</pose>
@@ -72,9 +108,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.42352 0.4784 0.5372 1</diffuse>
-          <ambient> 0.42352 0.4784 0.5372 1</ambient>
-          <specular>0.42352 0.4784 0.5372 1</specular>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
       </visual>
       <visual name='base_link_fixed_joint_lump__link_head_visual_3'>
@@ -86,17 +122,60 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.42352 0.4784 0.5372 1</diffuse>
-          <ambient> 0.42352 0.4784 0.5372 1</ambient>
-          <specular>0.42352 0.4784 0.5372 1</specular>
+          <diffuse> 0.298039216 0.305882353 0.337254902 1</diffuse>
+          <ambient> 0.298039216 0.305882353 0.337254902 1</ambient>
+          <specular>0.298039216 0.305882353 0.337254902 1</specular>
         </material>
       </visual>
-      <!-- IMU -->
+      <visual name='base_link_fixed_joint_lump__respeaker_base_visual_7'>
+        <pose>-0.069961 0.131965 1.39832 0 -0 -3.13234</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/link_respeaker.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
+        </material>
+      </visual>
+      <!-- TODO(vatanaksoytezer): Fix frame names -->
+      <!-- IMU (Accel + Gyro) -->
       <sensor name="imu" type="imu">
         <always_on>1</always_on>
         <update_rate>100</update_rate>
-        <visualize>true</visualize>
+        <visualize>false</visualize>
         <topic>imu</topic>
+        <frame_id>base_link</frame_id>
+      </sensor>
+      <!-- Magnetometer -->
+      <sensor name="magnetometer" type="magnetometer">
+        <always_on>1</always_on>
+        <update_rate>100</update_rate>
+        <visualize>false</visualize>
+        <topic>magnetometer</topic>
+        <magnetometer>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.1</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.1</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.1</stddev>
+            </noise>
+          </z>
+        </magnetometer>
       </sensor>
     </link>
 
@@ -130,7 +209,6 @@
         </geometry>
       </collision>
       <visual name='laser_visual_2'>
-        <!-- <pose>0.000503 0 0.1664 0 0 -3.14159</pose> -->
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
@@ -138,9 +216,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0 0 0 1</diffuse>
-          <ambient> 0 0 0 1</ambient>
-          <specular>0 0 0 1</specular>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
       </visual>
       <sensor name='gpu_lidar' type='gpu_lidar'>
@@ -151,15 +229,21 @@
             <horizontal>
               <samples>640</samples>
               <resolution>1</resolution>
-              <min_angle>-1.396263</min_angle>
-              <max_angle>1.396263</max_angle>
+              <min_angle>-3.141592</min_angle>
+              <max_angle>3.141592</max_angle>
             </horizontal>
             <vertical>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>0</min_angle>
+              <max_angle>0</max_angle>
+            </vertical>
+            <!-- <vertical>
               <samples>16</samples>
               <resolution>1</resolution>
               <min_angle>-0.261799</min_angle>
               <max_angle>0.261799</max_angle>
-            </vertical>
+            </vertical> -->
           </scan>
           <range>
             <min>0.08</min>
@@ -168,7 +252,7 @@
           </range>
         </lidar>
         <alwaysOn>1</alwaysOn>
-        <!-- <visualize>true</visualize> -->
+        <visualize>false</visualize>
       </sensor>
     </link>
 
@@ -222,9 +306,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.18039 0.1921 0.1921 1</diffuse>
-          <ambient> 0.18039 0.1921 0.1921 1</ambient>
-          <specular>0.18039 0.1921 0.1921 1</specular>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
       </visual>
     </link>
@@ -279,9 +363,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.18039 0.1921 0.1921 1</diffuse>
-          <ambient> 0.18039 0.1921 0.1921 1</ambient>
-          <specular>0.18039 0.1921 0.1921 1</specular>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
       </visual>
     </link>
@@ -306,10 +390,9 @@
         </mesh>
       </geometry>
       <material>
-        <diffuse>0 0 0 1</diffuse>
-        <ambient>0 0 0 1</ambient>
-        <specular>0 0 0 1</specular>
-        <emissive>0 0 0 1</emissive>
+        <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+        <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+        <specular>0.145098039 0.156862745 0.164705882 1</specular>
       </material>
     </visual>
     <collision name="collision">
@@ -453,9 +536,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.42352 0.4784 0.5372 1</diffuse>
-          <ambient> 0.42352 0.4784 0.5372 1</ambient>
-          <specular>0.42352 0.4784 0.5372 1</specular>
+          <diffuse> 0.717647059 0.721568627 0.725490196 1</diffuse>
+          <ambient> 0.717647059 0.721568627 0.725490196 1</ambient>
+          <specular>0.717647059 0.721568627 0.725490196 1</specular>
         </material>
       </visual>
     </link>
@@ -506,6 +589,15 @@
           </mesh>
         </geometry>
       </collision>
+      <collision name='link_lift_fixed_joint_lump__link_aruco_shoulder_collision_2'>
+        <pose>-0.013377 0.055854 0.086137 -0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/link_aruco_shoulder.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
       <collision name='link_lift_fixed_joint_lump__link_arm_l4_collision_1'>
         <pose>-0.25471 0 0 1.5708 -0 -1.5708</pose>
         <geometry>
@@ -524,10 +616,19 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.42352 0.4784 0.5372 1</diffuse>
-          <ambient> 0.42352 0.4784 0.5372 1</ambient>
-          <specular>0.42352 0.4784 0.5372 1</specular>
+          <diffuse> 0.298039216 0.305882353 0.337254902 1</diffuse>
+          <ambient> 0.298039216 0.305882353 0.337254902 1</ambient>
+          <specular>0.298039216 0.305882353 0.337254902 1</specular>
         </material>
+      </visual>
+      <visual name='link_lift_fixed_joint_lump__link_aruco_shoulder_visual_2'>
+        <pose>-0.013377 0.055854 0.086137 -0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/link_aruco_shoulder.STL</uri>
+          </mesh>
+        </geometry>
       </visual>
       <visual name='link_lift_fixed_joint_lump__link_arm_l4_visual_1'>
         <pose>-0.25471 0 0 1.5708 -0 -1.5708</pose>
@@ -538,9 +639,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.42352 0.4784 0.5372 1</diffuse>
-          <ambient> 0.42352 0.4784 0.5372 1</ambient>
-          <specular>0.42352 0.4784 0.5372 1</specular>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
       </visual>
     </link>
@@ -604,9 +705,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.42352 0.4784 0.5372 1</diffuse>
-          <ambient> 0.42352 0.4784 0.5372 1</ambient>
-          <specular>0.42352 0.4784 0.5372 1</specular>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
       </visual>
     </link>
@@ -670,9 +771,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.42352 0.4784 0.5372 1</diffuse>
-          <ambient> 0.42352 0.4784 0.5372 1</ambient>
-          <specular>0.42352 0.4784 0.5372 1</specular>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
       </visual>
     </link>
@@ -736,9 +837,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.42352 0.4784 0.5372 1</diffuse>
-          <ambient> 0.42352 0.4784 0.5372 1</ambient>
-          <specular>0.42352 0.4784 0.5372 1</specular>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
       </visual>
     </link>
@@ -793,6 +894,24 @@
           </friction>
         </surface>
       </collision>
+      <collision name='link_arm_l0_fixed_joint_lump__link_aruco_inner_wrist_collision_1'>
+        <pose>0.04725 -0.0119 -0.02725 3.14159 0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/link_aruco_inner_wrist.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <collision name='link_arm_l0_fixed_joint_lump__link_aruco_top_wrist_collision_2'>
+        <pose>0.04725 0.029285 0 1.5708 -0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/link_aruco_top_wrist.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
       <visual name='link_arm_l0_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
@@ -802,10 +921,28 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.42352 0.4784 0.5372 1</diffuse>
-          <ambient> 0.42352 0.4784 0.5372 1</ambient>
-          <specular>0.42352 0.4784 0.5372 1</specular>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
+      </visual>
+      <visual name='link_arm_l0_fixed_joint_lump__link_aruco_inner_wrist_visual_1'>
+        <pose>0.04725 -0.0119 -0.02725 3.14159 0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/link_aruco_inner_wrist.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='link_arm_l0_fixed_joint_lump__link_aruco_top_wrist_visual_2'>
+        <pose>0.04725 0.029285 0 1.5708 -0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/link_aruco_top_wrist.STL</uri>
+          </mesh>
+        </geometry>
       </visual>
     </link>
     <joint name='joint_wrist_yaw' type='revolute'>
@@ -870,9 +1007,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 1 1 1 1</diffuse>
-          <ambient> 1 1 1 1</ambient>
-          <specular>1 1 1 1</specular>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
       </visual>
       <!-- Gripper -->
@@ -885,9 +1022,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.42352 0.4784 0.5372 1</diffuse>
-          <ambient> 0.42352 0.4784 0.5372 1</ambient>
-          <specular>0.42352 0.4784 0.5372 1</specular>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
       </visual>
     </link>
@@ -1128,6 +1265,46 @@
       <position_cmd_max>87</position_cmd_max>
 
       <joint_name>joint_wrist_yaw</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_gripper_finger_left</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_gripper_finger_right</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_head_pan</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_head_tilt</joint_name>
       <initial_position>0</initial_position>
       <position_p_gain>3000</position_p_gain>
       <position_d_gain>15</position_d_gain>

@@ -95,32 +95,34 @@ def generate_launch_description():
     ompl_planning_pipeline_config['move_group'].update(ompl_planning_yaml)
 
     # Trajectory Execution Functionality
-    controllers_yaml = load_yaml('stretch_moveit_config', 'config/moveit_simple_controllers.yaml')
+    # controllers_yaml = load_yaml('stretch_moveit_config', 'config/moveit_simple_controllers.yaml')
+    controllers_yaml = load_yaml('stretch_moveit_config', 'config/ros_controllers.yaml')
     moveit_controllers = { 'moveit_simple_controller_manager' : controllers_yaml,
-                           'moveit_controller_manager': 'moveit_simple_controller_manager/MoveItSimpleControllerManager'}
+                            'moveit_controller_manager': 'moveit_simple_controller_manager/MoveItSimpleControllerManager'}
 
-    trajectory_execution = {'moveit_manage_controllers': True,
+    trajectory_execution = {'allow_trajectory_execution': True,
+                            'moveit_manage_controllers': False,
                             'trajectory_execution.allowed_execution_duration_scaling': 1.2,
                             'trajectory_execution.allowed_goal_duration_margin': 0.5,
                             'trajectory_execution.allowed_start_tolerance': 0.01}
 
     planning_scene_monitor_parameters = {"publish_planning_scene": True,
-                                         "publish_geometry_updates": True,
-                                         "publish_state_updates": True,
-                                         "publish_transforms_updates": True}
+                                        "publish_geometry_updates": True,
+                                        "publish_state_updates": True,
+                                        "publish_transforms_updates": True}
 
     # Start the actual move_group node/action server
     run_move_group_node = Node(package='moveit_ros_move_group',
-                               executable='move_group',
-                               output='screen',
-                               parameters=[robot_description,
-                                           robot_description_semantic,
-                                           kinematics_yaml,
-                                           joint_limits_yaml,
-                                           ompl_planning_pipeline_config,
-                                           trajectory_execution,
-                                           moveit_controllers,
-                                           planning_scene_monitor_parameters])
+                            executable='move_group',
+                            output='screen',
+                            parameters=[robot_description,
+                                        robot_description_semantic,
+                                        kinematics_yaml,
+                                        joint_limits_yaml,
+                                        ompl_planning_pipeline_config,
+                                        trajectory_execution,
+                                        moveit_controllers,
+                                        planning_scene_monitor_parameters])
     ld.add_action(run_move_group_node)
 
     # RViz
@@ -152,13 +154,13 @@ def generate_launch_description():
     # )
     # ld.add_action(fake_joint_driver_node)
 
-    for controller in ["stretch_controller", "joint_state_controller"]:
-        ld.add_action(
-            ExecuteProcess(
-                cmd=["ros2 run controller_manager spawner.py {}".format(controller)],
-                shell=True,
-                output="screen",
-            )
-        )
+    # for controller in ["stretch_controller", "joint_state_controller"]:
+    #     ld.add_action(
+    #         ExecuteProcess(
+    #             cmd=["ros2 run controller_manager spawner.py {}".format(controller)],
+    #             shell=True,
+    #             output="screen",
+    #         )
+    #     )
 
     return ld
