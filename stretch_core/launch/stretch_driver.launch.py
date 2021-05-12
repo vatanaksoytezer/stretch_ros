@@ -24,20 +24,17 @@ def generate_launch_description():
                                  executable='joint_state_publisher',
                                  name='joint_state_publisher',
                                  arguments=[robot_description_path],
-                                 output='log',
                                  parameters=[{'source_list': ['/stretch/joint_states']},
                                              {'rate': 15}])
 
     robot_state_publisher = Node(package='robot_state_publisher',
                                  executable='robot_state_publisher',
                                  name='robot_state_publisher',
-                                 output='both',
                                  parameters=[{'robot_description': xacro.process_file(robot_description_path).toxml()},
                                              {'publish_frequency': 15.0}])
 
     aggregator = Node(package='diagnostic_aggregator',
                       executable='aggregator_node',
-                      output='log',
                       parameters=[os.path.join(get_package_share_directory('stretch_core'), 'config/diagnostics.yaml')])
 
     declare_broadcast_odom_tf_arg = DeclareLaunchArgument(
@@ -61,6 +58,7 @@ def generate_launch_description():
     stretch_driver = Node(package='stretch_core',
                           executable='stretch_driver',
                           name='stretch_driver',
+                          emulate_tty=True,
                           remappings=[('cmd_vel', '/stretch/cmd_vel'),
                                       ('joint_states', '/stretch/joint_states')],
                           parameters=[{'rate': 25.0},
@@ -75,4 +73,5 @@ def generate_launch_description():
                               declare_mode_arg,
                               joint_state_publisher,
                               robot_state_publisher,
+                              aggregator,
                               stretch_driver])

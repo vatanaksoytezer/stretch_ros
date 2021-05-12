@@ -77,14 +77,15 @@ def generate_launch_description():
                                                                'config',
                                                                'stretch.xacro'),
                                                   mappings={"use_fake_controller": str(args.use_fake_controller)})
-    robot_description = {'robot_description' : robot_description_config.toxml()}
+    robot_description = {'robot_description': robot_description_config.toxml()}
 
     robot_description_semantic_config = load_file('stretch_moveit_config', 'config/stretch_description.srdf')
     robot_description_semantic = {'robot_description_semantic' : robot_description_semantic_config}
 
     kinematics_yaml = load_yaml('stretch_moveit_config', 'config/kinematics.yaml')
+    sensors_yaml = load_yaml('stretch_moveit_config', 'config/sensors_3d.yaml')
 
-    joint_limits_yaml = load_joint_limits_from_config()
+    joint_limits_yaml = {'robot_description_planning': load_joint_limits_from_config()}
 
     # Planning Functionality
     ompl_planning_pipeline_config = { 'move_group' : {
@@ -109,6 +110,8 @@ def generate_launch_description():
                                          "publish_state_updates": True,
                                          "publish_transforms_updates": True}
 
+    sensors_yaml = load_yaml('stretch_moveit_config', 'config/sensors_3d.yaml')
+
     # Start the actual move_group node/action server
     run_move_group_node = Node(package='moveit_ros_move_group',
                                executable='move_group',
@@ -116,9 +119,11 @@ def generate_launch_description():
                                parameters=[robot_description,
                                            robot_description_semantic,
                                            kinematics_yaml,
+                                           sensors_yaml,
                                            joint_limits_yaml,
                                            ompl_planning_pipeline_config,
                                            trajectory_execution,
+                                           sensors_yaml,
                                            moveit_controllers,
                                            planning_scene_monitor_parameters])
     ld.add_action(run_move_group_node)

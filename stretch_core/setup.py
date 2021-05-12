@@ -12,7 +12,8 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', glob('launch/*.launch.py')),
         ('share/' + package_name + '/launch', ['launch/stretch_ekf.yaml']),
-        ('share/' + package_name + '/config', glob('config/*'))
+        ('share/' + package_name + '/config', glob('config/*')),
+        ('share/' + package_name + '/rviz', glob('rviz/*.rviz')),
     ],
     install_requires=['setuptools'],
     url='',
@@ -22,13 +23,18 @@ setup(
     description='The stretch_core package',
     entry_points={
         'console_scripts': [
+            'custom_action = stretch_core.custom_action:main',
+            'custom_client = stretch_core.custom_client:main',
+            'send_traj = stretch_core.send_traj:main',
             'd435i_accel_correction = stretch_core.d435i_accel_correction:main',
             'd435i_configure = stretch_core.d435i_configure:main',
             'd435i_frustum_visualizer = stretch_core.d435i_frustum_visualizer:main',
             'detect_aruco_markers = stretch_core.detect_aruco_markers:main',
             'keyboard = stretch_core.keyboard:main',
             'keyboard_teleop = stretch_core.keyboard_teleop:main',
+            'plot_traj = stretch_core.plot_traj:main',
             'stretch_driver = stretch_core.stretch_driver:main',
+            'stop_all_trajectories = stretch_core.stop_all_trajectories:main',
         ],
     },
 )

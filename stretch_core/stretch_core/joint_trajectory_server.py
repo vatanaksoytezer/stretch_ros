@@ -1,23 +1,122 @@
 #! /usr/bin/env python
 from __future__ import print_function
 
+from control_msgs.action import FollowJointTrajectory
+
+from geometry_msgs.msg import Transform, TransformStamped
+
+import pyquaternion
+
 import rclpy
 from rclpy.action import ActionServer
-from control_msgs.action import FollowJointTrajectory
-from trajectory_msgs.msg import JointTrajectoryPoint
 
-from .command_groups import HeadPanCommandGroup, HeadTiltCommandGroup, \
-                            WristYawCommandGroup, GripperCommandGroup, \
-                            TelescopingCommandGroup, LiftCommandGroup, \
-                            MobileBaseCommandGroup
+from stretch_body.hello_utils import generate_cubic_spline_segment, generate_linear_segment
+from stretch_body.hello_utils import generate_quintic_spline_segment
+from stretch_body.trajectory_managers import Segment, Trajectory, Waypoint
+
+import tf2_py
+
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+
+from .command_groups import GripperCommandGroup, HeadPanCommandGroup, HeadTiltCommandGroup
+from .command_groups import LiftCommandGroup, MobileBaseCommandGroup, TelescopingCommandGroup, WristYawCommandGroup
+
+
+def to_sec(duration):
+    return duration.sec + duration.nanosec / 1e9
+
+def transform_to_triple(transform):
+    x = transform.translation.x
+    y = transform.translation.y
+
+    quat = transform.rotation
+    q = pyquaternion.Quaternion(x=quat.x, y=quat.y, z=quat.z, w=quat.w)
+    yaw, pitch, roll = q.yaw_pitch_roll
+    return x, y, yaw
+
+def to_transform(d):
+    t = Transform()
+    t.translation.x = d['x']
+    t.translation.y = d['y']
+    quaternion = pyquaternion.Quaternion(axis=[0, 0, 1], angle=d['theta'])
+    t.rotation.w = quaternion.w
+    t.rotation.x = quaternion.x
+    t.rotation.y = quaternion.y
+    t.rotation.z = quaternion.z
+    return t
+
+def twist_to_pair(msg):
+    return msg.linear.x, msg.angular.z
+
+def merge_arm_joints(trajectory):
+    new_trajectory = JointTrajectory()
+    arm_indexes = []
+    for index, name in enumerate(trajectory.joint_names):
+        if 'joint_arm_l' in name:
+            arm_indexes.append(index)
+        else:
+            new_trajectory.joint_names.append(name)
+
+    # If individual arm joints are not present, the original trajectory is fine
+    if not arm_indexes:
+        return trajectory
+
+    # Set up points and variables to track arm values
+    total_extension = []
+    arm_velocities = []
+    arm_accelerations = []
+    for point in trajectory.points:
+        new_point = JointTrajectoryPoint()
+        new_point.time_from_start = point.time_from_start
+        new_trajectory.points.append(new_point)
+
+        total_extension.append(0.0)
+        arm_velocities.append([])
+        arm_accelerations.append([])
+
+    for index, name in enumerate(trajectory.joint_names):
+        for point_index, point in enumerate(trajectory.points):
+            x = point.positions[index]
+            v = point.velocities[index] if index < len(point.velocities) else None
+            a = point.accelerations[index] if index < len(point.accelerations) else None
+
+            if index in arm_indexes:
+                total_extension[point_index] += x
+                if v is not None:
+                    arm_velocities[point_index].append(v)
+                if a is not None:
+                    arm_accelerations[point_index].append(a)
+            else:
+                new_point = new_trajectory.points[point_index]
+                new_point.positions.append(x)
+                if v is not None:
+                    new_point.velocities.append(v)
+                if a is not None:
+                    new_point.accelerations.append(a)
+
+    # Now add the arm values
+    new_trajectory.joint_names.append('wrist_extension')
+    for point_index, new_point in enumerate(new_trajectory.points):
+        new_point.positions.append(total_extension[point_index])
+        vels = arm_velocities[point_index]
+        accels = arm_accelerations[point_index]
+
+        if vels:
+            new_point.velocities.append(sum(vels) / len(vels))
+        if accels:
+            new_point.accelerations.append(sum(accels) / len(accels))
+
+    return new_trajectory
 
 
 class JointTrajectoryAction:
 
     def __init__(self, node):
         self.node = node
-        self.server = ActionServer(self.node, FollowJointTrajectory, '/stretch_controller/follow_joint_trajectory',
+        self.server = ActionServer(self.node, FollowJointTrajectory, '/stretch_controller/follow_joint_trajectoryx',
                                    self.execute_cb)
+        self.server2 = ActionServer(self.node, FollowJointTrajectory, '/stretch_controller/follow_joint_trajectory',
+                                    self.execute_cb2)
         self.feedback = FollowJointTrajectory.Feedback()
         self.result = FollowJointTrajectory.Result()
         self.goal_handle = None
@@ -52,9 +151,18 @@ class JointTrajectoryAction:
         self.lift_cg = LiftCommandGroup(tuple(r.lift.params['range_m']))
         self.mobile_base_cg = MobileBaseCommandGroup(virtual_range_m=(-0.5, 0.5))
 
+        self.command_groups = [self.telescoping_cg, self.lift_cg, self.mobile_base_cg, self.head_pan_cg,
+                               self.head_tilt_cg, self.wrist_yaw_cg, self.gripper_cg]
+        self.cg_map = {group.name: group for group in self.command_groups}
+
     def execute_cb(self, goal_handle):
         self.goal_handle = goal_handle
         goal = goal_handle.request
+        traj = goal.trajectory
+        for pt in traj.points:
+            pt.velocities = []
+            pt.accelerations = []
+
         with self.node.robot_stop_lock:
             # Escape stopped mode to execute trajectory
             self.node.stop_the_robot = False
@@ -96,6 +204,12 @@ class JointTrajectoryAction:
         if self.node.robot_mode == "manipulation":
             _ = [c.set_trajectory_goals(goal.trajectory.points, self.node.robot) for c in command_groups[:-1]]
             self.node.robot.start_trajectory()
+
+            active_groups = [c for c in command_groups if c.active]
+            while rclpy.ok():
+                if not any(group.get_component(self.node.robot).duration_remaining() for group in active_groups):
+                    break
+                rclpy.spin_once(self.node)
         else:
             ###################################################
             # Try to reach each of the goals in sequence until
@@ -195,7 +309,7 @@ class JointTrajectoryAction:
             error_point.positions.append(clean_named_errors_dict[commanded_joint_name])
             actual_point.positions.append(desired_point.positions[i] - clean_named_errors_dict[commanded_joint_name])
 
-        self.node.get_logger().debug("{0} joint_traj action: sending feedback".format(self.node.node_name))
+        self.node.get_logger().info("{0} joint_traj action: sending feedback".format(self.node.node_name))
         self.feedback.header.stamp = self.node.get_clock().now()
         self.feedback.joint_names = commanded_joint_names
         self.feedback.desired = desired_point
@@ -208,3 +322,146 @@ class JointTrajectoryAction:
         self.result.error_code = self.result.SUCCESSFUL
         self.result.error_string = success_str
         self.goal_handle.succeed()
+
+    def log(self, o):
+        self.node.get_logger().info(str(o))
+
+    def warn(self, o):
+        self.node.get_logger().warn(str(o))
+
+    def error(self, o):
+        self.node.get_logger().error(str(o))
+
+    def execute_cb2(self, goal_handle):
+        try:
+            goal = goal_handle.request
+            goal.trajectory = merge_arm_joints(goal.trajectory)
+            traj = goal.trajectory
+            multi_dof_traj = goal.multi_dof_trajectory
+
+            with self.node.robot_stop_lock:
+                # Escape stopped mode to execute trajectory
+                self.node.stop_the_robot = False
+            self.node.robot_mode_rwlock.acquire_read()
+
+            if traj.points:
+                dt = to_sec(traj.points[-1].time_from_start)
+                n_points = len(traj.points)
+            else:
+                dt = to_sec(multi_dof_traj.points[-1].time_from_start)
+                n_points = len(multi_dof_traj.points)
+
+            n_joints = len(traj.joint_names) + len(multi_dof_traj.joint_names)
+
+            self.log(f'New fancy trajectory action: {n_points} points, '
+                     f'{n_joints} joints, '
+                     f'{dt} seconds')
+
+            cgs = []
+            self.node.robot.pull_status()
+            robot_status = self.node.robot.status
+
+            for index, name in enumerate(traj.joint_names):
+                if name not in self.cg_map:
+                    self.result.error_code = self.result.INVALID_JOINTS
+                    self.result.error_string = f"Can't find {name}"
+                    goal_handle.abort()
+                    return self.result
+
+                cg = self.cg_map[name]
+                comp = cg.get_component(self.node.robot)
+                cgs.append(cg)
+
+                # Set Initial waypoint
+                state = cg.get_state(robot_status)
+                traj.points[0].positions[index] = state['pos']
+                if index < len(traj.points[0].velocities):
+                    traj.points[0].velocities[index] = state['vel']
+
+                comp.trajectory.clear_waypoints()
+                for waypoint in traj.points:
+                    t = to_sec(waypoint.time_from_start)
+                    x = waypoint.positions[index]
+                    v = waypoint.velocities[index] if index < len(waypoint.velocities) else None
+                    a = waypoint.accelerations[index] if index < len(waypoint.accelerations) else None
+                    self.log(f'{cg.name} {t} {x} {v} {a}')
+                    comp.trajectory.add_waypoint(t, x, v, a)
+
+            if multi_dof_traj.joint_names:
+                if len(multi_dof_traj.joint_names) != 1 or multi_dof_traj.joint_names[0] != 'position':
+                    self.result.error_code = self.result.INVALID_JOINTS
+                    self.result.error_string = 'Driver supports a single multi_dof joint named position. '
+                    self.result.error_string += f'Got {multi_dof_traj.joint_names} instead.'
+                    goal_handle.abort()
+                    return self.result
+
+                index = 0
+                cg = self.mobile_base_cg
+                comp = cg.get_component(self.node.robot)
+                cgs.append(cg)
+
+                comp.trajectory.clear_waypoints()
+                for waypoint in multi_dof_traj.points:
+                    t = to_sec(waypoint.time_from_start)
+                    x = transform_to_triple(waypoint.transforms[index])
+                    v = twist_to_pair(waypoint.velocities[index]) if index < len(waypoint.velocities) else None
+                    a = twist_to_pair(waypoint.accelerations[index]) if index < len(waypoint.accelerations) else None
+                    self.log(f'{cg.name} {t} {x} {v} {a}')
+                    comp.trajectory.add_waypoint(t, x, v, a)
+                comp.trajectory.complete_trajectory()
+
+            start_time = self.node.get_clock().now()
+            self.node.robot.start_trajectory()
+
+            self.feedback = FollowJointTrajectory.Feedback()
+            self.feedback.joint_names = traj.joint_names
+            self.feedback.multi_dof_joint_names = multi_dof_traj.joint_names
+            rate = self.node.create_rate(10)
+            while rclpy.ok() and self.node.robot.is_trajectory_executing():
+                robot_status = self.node.robot.status
+                now = self.node.get_clock().now()
+                self.feedback.header.stamp = now.to_msg()
+                self.feedback.desired.time_from_start = (now - start_time).to_msg()
+                self.feedback.actual.time_from_start = self.feedback.desired.time_from_start
+                self.feedback.desired.positions = []
+                self.feedback.actual.positions = []
+
+                dt = to_sec(self.feedback.desired.time_from_start)
+                for i, joint_name in enumerate(traj.joint_names):
+                    cg = self.cg_map[joint_name]
+                    state = cg.get_state(robot_status)
+                    self.feedback.actual.positions.append(state['pos'])
+                    comp = cg.get_component(self.node.robot)
+                    des = comp.trajectory.evaluate_at(dt)
+                    self.feedback.desired.positions.append(des.position)
+
+                if self.feedback.multi_dof_joint_names:
+                    cg = self.mobile_base_cg
+                    comp = cg.get_component(self.node.robot)
+                    self.feedback.multi_dof_actual.time_from_start = self.feedback.desired.time_from_start
+                    self.feedback.multi_dof_desired.time_from_start = self.feedback.desired.time_from_start
+                    state = cg.get_state(robot_status)
+                    self.feedback.multi_dof_actual.transforms = [to_transform(state)]
+
+                goal_handle.publish_feedback(self.feedback)
+                rate.sleep()
+
+            self.node.robot.stop_trajectory()
+
+            self.result.error_code = self.result.SUCCESSFUL
+            self.result.error_string = 'Achieved all target points.'
+            goal_handle.succeed()
+            self.log(self.result.error_string)
+            return self.result
+        except Exception as e:
+            self.node.robot.stop_trajectory()
+            self.result.error_code = -10000
+            self.result.error_string = str(e)
+            self.log(self.result.error_string)
+            self.error(type(e))
+            import traceback
+            self.error(traceback.format_exc())
+            goal_handle.abort()
+            return self.result
+        finally:
+            self.node.robot_mode_rwlock.release_read()
