@@ -93,7 +93,7 @@ def generate_launch_description():
     kinematics_yaml = load_yaml('stretch_moveit_config', 'config/kinematics.yaml')
     sensors_yaml = load_yaml('stretch_moveit_config', 'config/sensors_3d.yaml')
 
-    joint_limits_yaml = load_joint_limits_from_config()
+    joint_limits_yaml = {'robot_description_planning': load_joint_limits_from_config()}
 
     # Planning Functionality
     ompl_planning_pipeline_config = {'move_group': {
