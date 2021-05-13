@@ -35,7 +35,8 @@ CONFIGURATION_TRANSLATION = {
     'wrist_yaw': ['wrist_yaw'],
     'stretch_gripper': ['joint_gripper_finger_left', 'joint_gripper_finger_right'],
     'base': ['position/x', 'position/theta'],
-    'arm': ['joint_arm_l0', 'joint_arm_l1', 'joint_arm_l2', 'joint_arm_l3']
+    'arm': ['joint_arm_l0', 'joint_arm_l1', 'joint_arm_l2', 'joint_arm_l3'],
+    'head': ['joint_head_pan', 'joint_head_tilt']
 }
 
 def load_joint_limits_from_config(mode='default'):
@@ -95,8 +96,8 @@ def generate_launch_description():
     ompl_planning_pipeline_config['move_group'].update(ompl_planning_yaml)
 
     # Trajectory Execution Functionality
-    # controllers_yaml = load_yaml('stretch_moveit_config', 'config/moveit_simple_controllers.yaml')
-    controllers_yaml = load_yaml('stretch_moveit_config', 'config/ros_controllers.yaml')
+    controllers_yaml = load_yaml('stretch_moveit_config', 'config/moveit_simple_controllers.yaml')
+    # controllers_yaml = load_yaml('stretch_moveit_config', 'config/ros_controllers.yaml')
     moveit_controllers = { 'moveit_simple_controller_manager' : controllers_yaml,
                             'moveit_controller_manager': 'moveit_simple_controller_manager/MoveItSimpleControllerManager'}
 

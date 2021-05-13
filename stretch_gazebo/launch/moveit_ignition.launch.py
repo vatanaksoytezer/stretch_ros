@@ -33,10 +33,6 @@ def load_yaml(package_name, file_path):
 
 def generate_launch_description():
 
-    # Launch Arguments
-    # use_sim_time = DeclareLaunchArgument(
-    #     "use_sim_time", default_value="True", description="If true, use simulated clock"
-    # )
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
 
     robot_description_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "stretch_description.xacro")
@@ -93,26 +89,26 @@ def generate_launch_description():
         parameters=[{'use_sim_time': use_sim_time}],
         arguments=[
                 # Velocity commands (ROS2 -> IGN)
-                '/cmd_vel@geometry_msgs/msg/Twist@ignition.msgs.Twist',
-                # Odometry (IGN -> ROS2)
-                '/model/stretch/odometry@nav_msgs/msg/Odometry@ignition.msgs.Odometry',
-                # odom->base_link tf (IGN -> ROS2)
-                '/model/stretch/tf@tf2_msgs/msg/TFMessage@ignition.msgs.Pose_V',
-                # Clock (IGN -> ROS2)
-                '/clock@rosgraph_msgs/msg/Clock@ignition.msgs.Clock',
-                # Joint states (IGN -> ROS2)
-                '/world/empty_world/model/stretch/joint_state@sensor_msgs/msg/JointState@ignition.msgs.Model',
+                '/cmd_vel@geometry_msgs/msg/Twist]ignition.msgs.Twist',
                 # JointTrajectory bridge (ROS2 -> IGN)
-                '/joint_trajectory@trajectory_msgs/msg/JointTrajectory@ignition.msgs.JointTrajectory',
+                '/joint_trajectory@trajectory_msgs/msg/JointTrajectory]ignition.msgs.JointTrajectory',
+                # Odometry (IGN -> ROS2)
+                '/model/stretch/odometry@nav_msgs/msg/Odometry[ignition.msgs.Odometry',
+                # odom->base_link tf (IGN -> ROS2)
+                '/model/stretch/tf@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V',
+                # Clock (IGN -> ROS2)
+                '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',
+                # Joint states (IGN -> ROS2)
+                '/world/empty_world/model/stretch/joint_state@sensor_msgs/msg/JointState[ignition.msgs.Model',
                 # JointTrajectoryProgress bridge (IGN -> ROS2)
-                '/joint_trajectory_progress@std_msgs/msg/Float32@ignition.msgs.Float',
-                # Lidar bridge is broken in Ign for now
-                '/lidar@sensor_msgs/LaserScan@ignition.msgs.LaserScan',
-                '/lidar/points@sensor_msgs/PointCloud2@ignition.msgs.PointCloudPacked',
+                '/joint_trajectory_progress@std_msgs/msg/Float32[ignition.msgs.Float',
+                # Lidar bridge is broken in Ign for now (IGN -> ROS2)
+                '/lidar@sensor_msgs/LaserScan[ignition.msgs.LaserScan',
+                '/lidar/points@sensor_msgs/PointCloud2[ignition.msgs.PointCloudPacked',
                 # IMU (IGN -> ROS2)
-                '/imu@sensor_msgs/msg/Imu@ignition.msgs.IMU',
+                '/imu@sensor_msgs/msg/Imu[ignition.msgs.IMU',
                 # Magnetometer (IGN -> ROS2)
-                '/magnetometer@sensor_msgs/msg/MagneticField@ignition.msgs.Magnetometer',
+                '/magnetometer@sensor_msgs/msg/MagneticField[ignition.msgs.Magnetometer',
                 ],
         remappings=[
             ("/model/stretch/tf", "tf"),
@@ -124,28 +120,8 @@ def generate_launch_description():
         output='screen'
     )
 
-    # Controllers
-    ros2_controllers_path = load_yaml('stretch_moveit_config', 'config/ros_controllers.yaml')
-    
-    ros2_control_node = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[robot_description, ros2_controllers_path],
-        output={
-            "stdout": "screen",
-            "stderr": "screen",
-        },
-    )
-
-    load_controllers = []
-    for controller in ["stretch_controller", "joint_state_controller"]:
-        load_controllers += [
-            ExecuteProcess(
-                cmd=["ros2 run controller_manager spawner.py {}".format(controller)],
-                shell=True,
-                output="screen",
-            )
-        ]
+    # Controllers 
+    # TODO: Use ros_ign_control when it is ready
 
     return LaunchDescription(
         [
@@ -160,7 +136,6 @@ def generate_launch_description():
             bridge,
             # rviz,
             robot_state_publisher,
-            ros2_control_node,
+            # ros2_control_node,
         ]
-    
     )

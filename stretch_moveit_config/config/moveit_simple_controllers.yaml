@@ -16,3 +16,5 @@ stretch_controller:
       - joint_head_tilt
       - joint_gripper_finger_left
       - joint_gripper_finger_right
+      - joint_right_wheel
+      - joint_left_wheel

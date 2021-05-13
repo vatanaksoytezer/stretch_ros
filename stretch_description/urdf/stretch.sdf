@@ -1056,12 +1056,12 @@
         <pose>0.100529 0.012112 -0 0 -0 0</pose>
         <mass>0.051442377694504687</mass>
         <inertia>
-          <ixx>6.4903725854314749e-08</ixx>
-          <ixy>1.228830245876574e-06</ixy>
-          <ixz>7.7270246685625632e-12</ixz>
-          <iyy>2.3265594592063159e-05</iyy>
-          <iyz>-4.0812202696097118e-13</iyz>
-          <izz>2.333049831791233e-05</izz>
+          <ixx>0.001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.001</iyy>
+          <iyz>0</iyz>
+          <izz>0.001</izz>
         </inertia>
       </inertial>
       <collision name='link_gripper_finger_left_collision'>
@@ -1194,7 +1194,7 @@
     </link>
 
     <!-- Diff Drive Plugin -->
-    <plugin filename="libignition-gazebo-diff-drive-system.so" name="ignition::gazebo::systems::DiffDrive">
+    <!-- <plugin filename="libignition-gazebo-diff-drive-system.so" name="ignition::gazebo::systems::DiffDrive">
       <left_joint>joint_left_wheel</left_joint>
       <right_joint>joint_right_wheel</right_joint>
       <wheel_separation>0.315</wheel_separation>
@@ -1203,7 +1203,7 @@
       <topic>cmd_vel</topic>
       <frame_id>odom</frame_id>
       <child_frame_id>base_link</child_frame_id>
-    </plugin>
+    </plugin> -->
 
     <!-- Joint state publisher -->
     <plugin filename="libignition-gazebo-joint-state-publisher-system.so" name="ignition::gazebo::systems::JointStatePublisher">
@@ -1305,6 +1305,26 @@
       <position_cmd_max>87</position_cmd_max>
 
       <joint_name>joint_head_tilt</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_right_wheel</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_left_wheel</joint_name>
       <initial_position>0</initial_position>
       <position_p_gain>3000</position_p_gain>
       <position_d_gain>15</position_d_gain>
