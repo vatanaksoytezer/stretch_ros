@@ -80,10 +80,8 @@ def generate_launch_description():
     args, _ = parser.parse_known_args([arg for sys_arg in sys.argv[4:] for arg in ('--' + sys_arg).split(':=')])
 
     ld = LaunchDescription()
-
-    package_dir = get_package_share_directory('stretch_moveit_config')
     # planning_context
-    robot_description_config = xacro.process_file(os.path.join(package_dir,
+    robot_description_config = xacro.process_file(os.path.join(get_package_share_directory('stretch_moveit_config'),
                                                                'config',
                                                                'stretch.xacro'),
                                                   mappings={'use_fake_controller': str(args.use_fake_controller)})
@@ -136,7 +134,7 @@ def generate_launch_description():
     ld.add_action(run_move_group_node)
 
     # RViz
-    rviz_config_file = package_dir + '/launch/moveit.rviz'
+    rviz_config_file = get_package_share_directory('stretch_moveit_config') + '/launch/moveit.rviz'
     rviz_node = Node(package='rviz2',
                      executable='rviz2',
                      name='rviz2',
@@ -168,7 +166,9 @@ def generate_launch_description():
         fake_joint_driver_node = Node(
             package='controller_manager',
             executable='ros2_control_node',
-            parameters=[robot_description, os.path.join(package_dir, 'config', 'ros_controllers.yaml')],
+            parameters=[robot_description,
+                        os.path.join(get_package_share_directory('stretch_moveit_config'),
+                                     'config', 'ros_controllers.yaml')],
         )
         ld.add_action(fake_joint_driver_node)
 
