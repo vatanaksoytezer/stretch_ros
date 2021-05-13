@@ -23,8 +23,6 @@ setup(
     description='The stretch_core package',
     entry_points={
         'console_scripts': [
-            'custom_action = stretch_core.custom_action:main',
-            'custom_client = stretch_core.custom_client:main',
             'send_traj = stretch_core.send_traj:main',
             'd435i_accel_correction = stretch_core.d435i_accel_correction:main',
             'd435i_configure = stretch_core.d435i_configure:main',
