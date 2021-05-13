@@ -3,27 +3,20 @@ from __future__ import print_function
 
 from control_msgs.action import FollowJointTrajectory
 
-from geometry_msgs.msg import Transform, TransformStamped
+from geometry_msgs.msg import Transform
+
+from hello_helpers.hello_misc import to_sec
 
 import pyquaternion
 
 import rclpy
 from rclpy.action import ActionServer
 
-from stretch_body.hello_utils import generate_cubic_spline_segment, generate_linear_segment
-from stretch_body.hello_utils import generate_quintic_spline_segment
-from stretch_body.trajectory_managers import Segment, Trajectory, Waypoint
-
-import tf2_py
-
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 from .command_groups import GripperCommandGroup, HeadPanCommandGroup, HeadTiltCommandGroup
 from .command_groups import LiftCommandGroup, MobileBaseCommandGroup, TelescopingCommandGroup, WristYawCommandGroup
 
-
-def to_sec(duration):
-    return duration.sec + duration.nanosec / 1e9
 
 def transform_to_triple(transform):
     x = transform.translation.x
@@ -33,6 +26,7 @@ def transform_to_triple(transform):
     q = pyquaternion.Quaternion(x=quat.x, y=quat.y, z=quat.z, w=quat.w)
     yaw, pitch, roll = q.yaw_pitch_roll
     return x, y, yaw
+
 
 def to_transform(d):
     t = Transform()
@@ -45,8 +39,10 @@ def to_transform(d):
     t.rotation.z = quaternion.z
     return t
 
+
 def twist_to_pair(msg):
     return msg.linear.x, msg.angular.z
+
 
 def merge_arm_joints(trajectory):
     new_trajectory = JointTrajectory()

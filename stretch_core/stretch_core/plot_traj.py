@@ -2,16 +2,14 @@ import collections
 
 from control_msgs.action import FollowJointTrajectory
 
+from hello_helpers.hello_misc import to_sec
+
 from matplotlib.pyplot import ion, subplots
 
 from numpy import array_equal
 
 import rclpy
 from rclpy.node import Node
-
-
-def to_sec(duration):
-    return duration.sec + duration.nanosec / 1e9
 
 
 class PlotTrajClient(Node):
