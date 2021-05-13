@@ -102,9 +102,9 @@ def generate_launch_description():
                 '/world/empty_world/model/stretch/joint_state@sensor_msgs/msg/JointState[ignition.msgs.Model',
                 # JointTrajectoryProgress bridge (IGN -> ROS2)
                 '/joint_trajectory_progress@std_msgs/msg/Float32[ignition.msgs.Float',
-                # Lidar bridge is broken in Ign for now (IGN -> ROS2)
-                '/lidar@sensor_msgs/LaserScan[ignition.msgs.LaserScan',
-                '/lidar/points@sensor_msgs/PointCloud2[ignition.msgs.PointCloudPacked',
+                # Lidar (IGN -> ROS2)
+                '/lidar@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan',
+                '/lidar/points@sensor_msgs/msg/PointCloud2[ignition.msgs.PointCloudPacked',
                 # IMU (IGN -> ROS2)
                 '/imu@sensor_msgs/msg/Imu[ignition.msgs.IMU',
                 # Magnetometer (IGN -> ROS2)
