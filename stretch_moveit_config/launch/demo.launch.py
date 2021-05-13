@@ -110,8 +110,6 @@ def generate_launch_description():
                                          "publish_state_updates": True,
                                          "publish_transforms_updates": True}
 
-    sensors_yaml = load_yaml('stretch_moveit_config', 'config/sensors_3d.yaml')
-
     # Start the actual move_group node/action server
     run_move_group_node = Node(package='moveit_ros_move_group',
                                executable='move_group',
@@ -123,7 +121,6 @@ def generate_launch_description():
                                            joint_limits_yaml,
                                            ompl_planning_pipeline_config,
                                            trajectory_execution,
-                                           sensors_yaml,
                                            moveit_controllers,
                                            planning_scene_monitor_parameters])
     ld.add_action(run_move_group_node)
