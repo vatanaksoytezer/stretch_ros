@@ -107,6 +107,10 @@ def generate_launch_description():
                 '/imu@sensor_msgs/msg/Imu[ignition.msgs.IMU',
                 # Magnetometer (IGN -> ROS2)
                 '/magnetometer@sensor_msgs/msg/MagneticField[ignition.msgs.Magnetometer',
+                # RGBD Camera (TODO: Port realsense) (IGN -> ROS2)
+                '/rgbd_camera/image@sensor_msgs/msg/Image[ignition.msgs.Image',
+                '/rgbd_camera/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image',
+                '/rgbd_camera/points@sensor_msgs/msg/PointCloud2[ignition.msgs.PointCloudPacked',
                 ],
         remappings=[
             ("/model/stretch/tf", "tf"),
@@ -118,8 +122,31 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Sensor Static TFs (until we can give frame_id argument in ignition sensor plugins)
+    lidar_static_tf = Node(package='tf2_ros',
+                        executable='static_transform_publisher',
+                        name='lidar_static_transform_publisher',
+                        output='log',
+                        arguments=['0', '0.0', '0.1664', '0.0', '0.0', '0.0', 'base_link', 'stretch/link_laser/gpu_lidar'])
+    imu_static_tf = Node(package='tf2_ros',
+                        executable='static_transform_publisher',
+                        name='imu_static_transform_publisher',
+                        output='log',
+                        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'base_link', 'stretch/base_link/imu'])
+    mag_static_tf = Node(package='tf2_ros',
+                        executable='static_transform_publisher',
+                        name='mag_static_transform_publisher',
+                        output='log',
+                        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'base_link', 'stretch/base_link/magnetometer'])
+    # TODO (vatanaksoytezer): Port realsense and remove rgbd
+    rgbd_static_tf = Node(package='tf2_ros',
+                        executable='static_transform_publisher',
+                        name='rgbd_static_transform_publisher',
+                        output='log',
+                        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'link_head_tilt', 'stretch/link_head_tilt/rgbd_camera'])
+
     # Controllers 
-    # TODO: Use ros_ign_control when it is ready
+    # TODO (vatanaksoytezer): Use ros_ign_control when it is ready
     stretch_ignition_control_node = Node(
         package="stretch_ignition_control",
         executable="stretch_ignition_control_action_server",
@@ -140,6 +167,10 @@ def generate_launch_description():
             bridge,
             robot_state_publisher,
             stretch_ignition_control_node,
+            lidar_static_tf,
+            imu_static_tf,
+            mag_static_tf,
+            rgbd_static_tf,
             # rviz,
         ]
     )
