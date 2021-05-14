@@ -139,7 +139,7 @@ def generate_launch_description():
             spawn,
             bridge,
             robot_state_publisher,
-            stretch_ignition_control_node
+            stretch_ignition_control_node,
             # rviz,
         ]
     )
