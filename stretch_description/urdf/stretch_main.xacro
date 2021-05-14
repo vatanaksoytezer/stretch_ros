@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="stretch_main">
-  
+  <xacro:property name="M_PI" value="3.1415926535897931" /> 
+
   <link
     name="base_link">
     <inertial>
@@ -151,7 +152,58 @@
     <axis
       xyz="0 0 1" />
   </joint>
-  
+
+  <link name="link_caster">
+    <collision>
+      <geometry>
+        <sphere radius="0.032"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0</mu>
+            <mu2>0</mu2>
+            <slip1>1.0</slip1>
+            <slip2>1.0</slip2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stretch_description/meshes/omni_wheel_m.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.01" />
+      <origin xyz="0 0 0" />
+      <inertia
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
+    </inertial>
+  </link>
+
+  <joint name="joint_caster" type="fixed">
+    <parent link="base_link"/>
+    <child link="link_caster"/>
+    <origin xyz="-0.245 0.0 0.032" rpy="${-M_PI/2} 0 0"/>
+    <axis xyz="0 0 1" />
+  </joint>
+
   <link
     name="link_mast">
     <inertial>
@@ -252,7 +304,7 @@
     name="joint_lift"
     type="prismatic">
     <origin
-      xyz="-0.0369217062323472 0.165471199999996 -0.000341653286793524"
+      xyz="-0.0369217062323472 0.266771199999996 -0.000341653286793524"
       rpy="-1.57079632679552 1.5615431375292 -6.2942004366467E-13" />
     <parent
       link="link_mast" />
@@ -263,7 +315,7 @@
   <!-- for now: hand copied range_m: from lift: from ~/repos/stretch_fleet/stretch-re1-1001/stretch_re1_factory_params.yaml -->
   <!--<limit effort="100" lower="0.0" upper="1.095" velocity="1.0"/>-->
   <!-- copied value did not reach the top of mesh model with GUI sliders and RViz -->
-  <limit effort="100" lower="0.0" upper="1.1" velocity="1.0"/>
+  <limit effort="100" lower="-0.1033" upper="0.9967" velocity="1.0"/>
   </joint>
   
   <link

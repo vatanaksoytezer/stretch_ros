@@ -120,6 +120,12 @@ def generate_launch_description():
 
     # Controllers 
     # TODO: Use ros_ign_control when it is ready
+    stretch_ignition_control_node = Node(
+        package="stretch_ignition_control",
+        executable="stretch_ignition_control_action_server",
+        name="stretch_ignition_control",
+        output="screen",
+    )    
 
     return LaunchDescription(
         [
@@ -132,7 +138,8 @@ def generate_launch_description():
             gazebo,
             spawn,
             bridge,
-            rviz,
             robot_state_publisher,
+            stretch_ignition_control_node
+            # rviz,
         ]
     )

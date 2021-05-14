@@ -76,9 +76,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.717647059 0.721568627 0.725490196 1</diffuse>
-          <ambient> 0.717647059 0.721568627 0.725490196 1</ambient>
-          <specular>0.717647059 0.721568627 0.725490196 1</specular>
+          <diffuse> 0.921568627 0.925490196 0.941176471 1</diffuse>
+          <ambient> 0.921568627 0.925490196 0.941176471 1</ambient>
+          <specular>0.921568627 0.925490196 0.941176471 1</specular>
         </material>
       </visual>
       <visual name='base_link_fixed_joint_lump__link_aruco_left_base_visual_1'>
@@ -536,9 +536,9 @@
           </mesh>
         </geometry>
         <material>
-          <diffuse> 0.717647059 0.721568627 0.725490196 1</diffuse>
-          <ambient> 0.717647059 0.721568627 0.725490196 1</ambient>
-          <specular>0.717647059 0.721568627 0.725490196 1</specular>
+          <diffuse> 0.921568627 0.925490196 0.941176471 1</diffuse>
+          <ambient> 0.921568627 0.925490196 0.941176471 1</ambient>
+          <specular>0.921568627 0.925490196 0.941176471 1</specular>
         </material>
       </visual>
     </link>
@@ -1314,7 +1314,7 @@
       <position_cmd_min>-87</position_cmd_min>
       <position_cmd_max>87</position_cmd_max>
 
-      <joint_name>joint_right_wheel</joint_name>
+      <!-- <joint_name>joint_right_wheel</joint_name>
       <initial_position>0</initial_position>
       <position_p_gain>3000</position_p_gain>
       <position_d_gain>15</position_d_gain>
@@ -1332,7 +1332,7 @@
       <position_i_min>-15</position_i_min>
       <position_i_max>15</position_i_max>
       <position_cmd_min>-87</position_cmd_min>
-      <position_cmd_max>87</position_cmd_max>
+      <position_cmd_max>87</position_cmd_max> -->
 
     </plugin>
 
