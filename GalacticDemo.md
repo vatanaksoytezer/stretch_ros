@@ -15,7 +15,8 @@
  * `~/.config/autostart/hello_robot_*.desktop`
  * `~/stretch_user/`
 3. Copy the lines matching `export HELLO_FLEET` from the 18.04 `.bashrc` to the 20.04 .bashrc
-3. Install [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation/Linux-Install-Debians.html)
+3. Install [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation/Prerelease-Testing.html#debian-testing-repository)
+ * When following those instructions instead of `sudo apt install ros-galactic-my-just-released-package` do `sudo apt install ros-galactic-ros-core`
 4. Add `$USER` to `dialout input` groups
 6. Install Realsense Drivers
  * `sudo apt-key adv --keyserver keys.gnupg.net --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE`
@@ -35,9 +36,9 @@
 7. Set up the ROS2 Workspace
  * `mkdir -p ~/hello2_ws/src`
  * `cd ~/hello2_ws/src`
- * `wget https://raw.githubusercontent.com/PickNikRobotics/stretch_ros/dlu_devel2/robot.repos`
+ * `wget https://raw.githubusercontent.com/PickNikRobotics/stretch_ros/galactic-devel/robot.repos`
  * `vcs import < robot.repos`
- * `rosdep install -r --from-paths . --ignore-src --rosdistro foxy -y`
+ * `rosdep install -r --from-paths . --ignore-src --rosdistro galactic -y`
  * `cd ~/hello2_ws`
  * `colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-skip stretch_moveit_config`
  * `cp ~/stretch_user/stretch_description/urdf/stretch.urdf ~/hello2_ws/src/stretch_ros/stretch_description`
@@ -53,13 +54,13 @@
 
 
 ## Setting up your computer
-0. These instructions assume you have Ubuntu 20.04 installed with ROS 2 Foxy
+0. These instructions assume you have Ubuntu 20.04 installed with ROS 2 Galactic
 1. Set up the ROS2 Workspace
  * `mkdir -p ~/hello2_ws/src`
  * `cd ~/hello2_ws/src`
- * `wget https://raw.githubusercontent.com/PickNikRobotics/stretch_ros/dlu_devel2/stretch_ros.repos`
+ * `wget https://raw.githubusercontent.com/PickNikRobotics/stretch_ros/galactic-devel/stretch_ros.repos`
  * `vcs import < stretch_ros.repos`
- * `rosdep install -r --from-paths . --ignore-src --rosdistro foxy -y`
+ * `rosdep install -r --from-paths . --ignore-src --rosdistro galactic -y`
  * `cd ~/hello2_ws`
  * [`colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release`](https://moveit.ros.org/install-moveit2/source/)
 
@@ -71,4 +72,4 @@
 ## Notes:
 ### Variables that may change as things get merged in
  * bugfix/py3_traj_arm_zeros
- * dlu_devel2
+ * galactic-devel
