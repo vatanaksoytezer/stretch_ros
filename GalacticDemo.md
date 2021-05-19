@@ -34,15 +34,17 @@
  * `./local_install.sh`
 
 7. Set up the ROS2 Workspace
- * `mkdir -p ~/hello2_ws/src`
- * `cd ~/hello2_ws/src`
- * `wget https://raw.githubusercontent.com/PickNikRobotics/stretch_ros/galactic-devel/robot.repos`
+ * `mkdir -p ~/galactic_ws/src`
+ * `cd ~/galactic_ws/src`
+ * `wget https://raw.githubusercontent.com/PickNikRobotics/stretch_ros/galactic_devel/robot.repos`
  * `vcs import < robot.repos`
+ * `rosdep update`
  * `rosdep install -r --from-paths . --ignore-src --rosdistro galactic -y`
- * `cd ~/hello2_ws`
+ * `cd ~/galactic_ws`
  * `colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-skip stretch_moveit_config`
- * `cp ~/stretch_user/stretch_description/urdf/stretch.urdf ~/hello2_ws/src/stretch_ros/stretch_description`
- * `echo "source ~/hello2_ws/install/setup.bash" >> ~/.bashrc`
+ * `cp $HELLO_FLEET_PATH/$HELLO_FLEET_ID/exported_urdf/stretch.urdf ~/galactic_ws/src/stretch_ros/stretch_description/urdf`
+ * `cp $HELLO_FLEET_PATH/$HELLO_FLEET_ID/exported_urdf/controller_calibration_head.yaml ~/galactic_ws/src/stretch_ros/stretch_core/config`
+ * `echo "source ~/galactic_ws/install/setup.bash" >> ~/.bashrc`
 7. Install the script to stop the laser from always spinning
  * `wget https://raw.githubusercontent.com/hello-robot/stretch_install/master/factory/hello_robot_lrf_off.py`
  * `chmod +x hello_robot_lrf_off.py`
@@ -58,7 +60,7 @@
 1. Set up the ROS2 Workspace
  * `mkdir -p ~/hello2_ws/src`
  * `cd ~/hello2_ws/src`
- * `wget https://raw.githubusercontent.com/PickNikRobotics/stretch_ros/galactic-devel/stretch_ros.repos`
+ * `wget https://raw.githubusercontent.com/PickNikRobotics/stretch_ros/galactic_devel/stretch_ros.repos`
  * `vcs import < stretch_ros.repos`
  * `rosdep install -r --from-paths . --ignore-src --rosdistro galactic -y`
  * `cd ~/hello2_ws`
@@ -72,4 +74,4 @@
 ## Notes:
 ### Variables that may change as things get merged in
  * bugfix/py3_traj_arm_zeros
- * galactic-devel
+ * galactic_devel

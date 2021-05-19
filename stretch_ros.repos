@@ -2,7 +2,7 @@ repositories:
   stretch_ros:
     type: git
     url: https://github.com/PickNikRobotics/stretch_ros
-    version: dlu_devel2
+    version: galactic_devel
   stretch_moveit_plugins:
     type: git
     url: https://github.com/PickNikRobotics/stretch_moveit_plugins
@@ -25,7 +25,7 @@ repositories:
 
   rqt_robot_dashboard:  # For use with stretch_dashboard
     type: git
-    url: https://github.com/DLu/rqt_robot_dashboard
+    url: https://github.com/ros-visualization/rqt_robot_dashboard
     version: ROS2
 
   rosparam_shortcuts:  # Used by stretch_moveit_plugins
