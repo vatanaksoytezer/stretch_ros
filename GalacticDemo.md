@@ -64,7 +64,7 @@
  * `vcs import < stretch_ros.repos`
  * `rosdep install -r --from-paths . --ignore-src --rosdistro galactic -y`
  * `cd ~/hello2_ws`
- * [`colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release`](https://moveit.ros.org/install-moveit2/source/)
+ * [`colcon build --event-handlers desktop_notification- status- --packages-skip realsense_camera2 --cmake-args -DCMAKE_BUILD_TYPE=Release`](https://moveit.ros.org/install-moveit2/source/)
 
 ## Running on your computer
     source ~/hello2_ws/install/setup.bash

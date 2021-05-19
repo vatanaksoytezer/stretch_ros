@@ -13,15 +13,20 @@ repositories:
     url: https://github.com/DLu/moveit2
     version: dlu_galactic
 
-  moveit_task_constructor:  # Needed for compiling MoveIt
+  moveit_task_constructor:
     type: git
-    url: https://github.com/JafarAbdi/moveit_task_constructor
-    version: ros2
+    url: https://github.com/DLu/moveit_task_constructor
+    version: galactic
 
   control_msgs:
     type: git
     url: https://github.com/DLu/control_msgs
     version: multi_dof_action_extension
+
+  realsense-ros:  # For realsense2_description
+    type: git
+    url: https://github.com/IntelRealSense/realsense-ros
+    version: foxy
 
   rqt_robot_dashboard:  # For use with stretch_dashboard
     type: git
