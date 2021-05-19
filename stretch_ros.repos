@@ -10,8 +10,8 @@ repositories:
 
   moveit2:
     type: git
-    url: https://github.com/JafarAbdi/moveit2
-    version: pr-add_multi_dof_traj_field
+    url: https://github.com/DLu/moveit2
+    version: dlu_galactic
 
   moveit_task_constructor:  # Needed for compiling MoveIt
     type: git
