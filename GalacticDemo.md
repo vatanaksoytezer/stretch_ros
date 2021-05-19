@@ -40,7 +40,8 @@
  * `rosdep install -r --from-paths . --ignore-src --rosdistro foxy -y`
  * `cd ~/hello2_ws`
  * `colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-skip stretch_moveit_config`
- * `cp ~/stretch_user/stretch_description/urdf/stretch.urdf ~/hello2_ws/src/stretch_ros/stretch_description`
+ * `cp $HELLO_FLEET_PATH/$HELLO_FLEET_ID/exported_urdf/stretch.urdf ~/hello2_ws/src/stretch_ros/stretch_description/urdf`
+ * `cp $HELLO_FLEET_PATH/$HELLO_FLEET_ID/exported_urdf/controller_calibration_head.yaml ~/hello2_ws/src/stretch_ros/stretch_core/config`
  * `echo "source ~/hello2_ws/install/setup.bash" >> ~/.bashrc`
 7. Install the script to stop the laser from always spinning
  * `wget https://raw.githubusercontent.com/hello-robot/stretch_install/master/factory/hello_robot_lrf_off.py`
