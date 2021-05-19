@@ -13,6 +13,8 @@
   <depend>moveit_core</depend>
   <depend>moveit_ros_planning_interface</depend>
   <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>control_msgs</depend>
   <depend>rclpy</depend>
 
   <test_depend>ament_lint_auto</test_depend>

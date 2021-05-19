@@ -87,11 +87,24 @@ class TrajectoryActionClient(Node):
         if self.stopped:
             self.log('Stopped')
             self.released = True
-            goal.trajectory.joint_names = ['wrist_extension']
-            goal.trajectory.points.append(goal_point(self.base_pos - self.arm_swing, 0.0, 0.0, 0.0))
-            goal.trajectory.points.append(goal_point(self.base_pos, 0.0, 0.0, self.swing_duration / 2))
+            goal.trajectory.joint_names = ['wrist_extension', 'joint_gripper_finger_left', 'joint_gripper_finger_right']
+            p = JointTrajectoryPoint()
+            p.positions = [self.base_pos - self.arm_swing, 0.0, 0.0]
+            p.time_from_start = Duration(seconds=0.0).to_msg()
+            goal.trajectory.points.append(p)
+            p = JointTrajectoryPoint()
+            p.positions = [self.base_pos, 0.0, 0.0]
+            p.time_from_start = Duration(seconds=self.swing_duration / 2).to_msg()
+            goal.trajectory.points.append(p)
+            p = JointTrajectoryPoint()
+            p.positions = [self.base_pos, 0.1, 0.1]
+            p.time_from_start = Duration(seconds=self.swing_duration / 2 + 3.0).to_msg()
+            goal.trajectory.points.append(p)
+            p = JointTrajectoryPoint()
+            p.positions = [0.0, 0.1, 0.1]
+            p.time_from_start = Duration(seconds=self.swing_duration / 2 + 6.0).to_msg()
+            goal.trajectory.points.append(p)
         else:
-
             goal.trajectory.joint_names = ['wrist_extension']
             goal.trajectory.points.append(goal_point(self.base_pos - self.arm_swing, 0.0, 0.0, 0.0))
             goal.trajectory.points.append(goal_point(self.base_pos + self.arm_swing, 0.0, 0.0, self.swing_duration))
