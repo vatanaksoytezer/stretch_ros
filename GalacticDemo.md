@@ -57,6 +57,7 @@
 
 ## Setting up your computer
 0. These instructions assume you have Ubuntu 20.04 installed with ROS 2 Galactic
+ * One additional dependency that I'm not sure where it belongs yet is `ros-galactic-qt-gui-cpp`
 1. Set up the ROS2 Workspace
  * `mkdir -p ~/hello2_ws/src`
  * `cd ~/hello2_ws/src`
