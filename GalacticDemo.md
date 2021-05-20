@@ -27,7 +27,7 @@
 6. Install `stretch_body`
  * `mkdir ~/repos`
  * `cd ~/repos`
- * `git clone https://github.com/hello-robot/stretch_body --branch bugfix/py3_traj_arm_zeros`
+ * `git clone https://github.com/PickNikRobotics/stretch_body --branch dlu_devel3`
  * `cd stretch_body/body`
  * `./locall_install_py3.sh`
  * `cd ../tools`
@@ -75,4 +75,5 @@
 ## Notes:
 ### Variables that may change as things get merged in
  * bugfix/py3_traj_arm_zeros
+ * dlu_devel3
  * galactic_devel
