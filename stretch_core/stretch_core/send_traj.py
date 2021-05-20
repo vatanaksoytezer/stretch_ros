@@ -11,6 +11,7 @@ from rclpy.node import Node
 
 from trajectory_msgs.msg import JointTrajectoryPoint, MultiDOFJointTrajectoryPoint
 
+
 def to_transform(x=0.0, y=0.0, theta=0.0):
     tf = Transform()
     tf.translation.x = x
@@ -34,6 +35,8 @@ class TrajectoryActionClient(Node):
         self._action_client = ActionClient(self, FollowJointTrajectory,
                                            '/stretch_controller/follow_joint_trajectory')
 
+        self.send_position = False
+
     def send_goal(self):
         goal = FollowJointTrajectory.Goal()
 
@@ -56,29 +59,30 @@ class TrajectoryActionClient(Node):
         p2.time_from_start = Duration(seconds=20).to_msg()
         goal.trajectory.points.append(p2)
 
-        goal.multi_dof_trajectory.joint_names = ['position']
-        p0 = MultiDOFJointTrajectoryPoint()
-        p0.transforms = [to_transform()]
-        p0.velocities = [to_twist()]
-        goal.multi_dof_trajectory.points.append(p0)
+        if self.send_position:
+            goal.multi_dof_trajectory.joint_names = ['position']
+            p0 = MultiDOFJointTrajectoryPoint()
+            p0.transforms = [to_transform()]
+            p0.velocities = [to_twist()]
+            goal.multi_dof_trajectory.points.append(p0)
 
-        p1 = MultiDOFJointTrajectoryPoint()
-        p1.transforms = [to_transform(x=0.5)]
-        p1.time_from_start = Duration(seconds=10).to_msg()
-        p1.velocities = [to_twist()]
-        goal.multi_dof_trajectory.points.append(p1)
+            p1 = MultiDOFJointTrajectoryPoint()
+            p1.transforms = [to_transform(x=0.5)]
+            p1.time_from_start = Duration(seconds=10).to_msg()
+            p1.velocities = [to_twist()]
+            goal.multi_dof_trajectory.points.append(p1)
 
-        p2 = MultiDOFJointTrajectoryPoint()
-        p2.transforms = [to_transform()]
-        p2.time_from_start = Duration(seconds=20).to_msg()
-        p2.velocities = [to_twist()]
-        goal.multi_dof_trajectory.points.append(p2)
+            p2 = MultiDOFJointTrajectoryPoint()
+            p2.transforms = [to_transform()]
+            p2.time_from_start = Duration(seconds=20).to_msg()
+            p2.velocities = [to_twist()]
+            goal.multi_dof_trajectory.points.append(p2)
 
-        p3 = MultiDOFJointTrajectoryPoint()
-        p3.transforms = [to_transform(theta=radians(45))]
-        p3.time_from_start = Duration(seconds=25).to_msg()
-        p3.velocities = [to_twist()]
-        goal.multi_dof_trajectory.points.append(p3)
+            p3 = MultiDOFJointTrajectoryPoint()
+            p3.transforms = [to_transform(theta=radians(45))]
+            p3.time_from_start = Duration(seconds=25).to_msg()
+            p3.velocities = [to_twist()]
+            goal.multi_dof_trajectory.points.append(p3)
 
         # goal.goal_tolerance.append(JointTolerance())
         # goal.path_tolerance.append(JointTolerance())

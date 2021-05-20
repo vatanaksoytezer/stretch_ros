@@ -31,6 +31,7 @@ setup(
             'keyboard = stretch_core.keyboard:main',
             'keyboard_teleop = stretch_core.keyboard_teleop:main',
             'plot_traj = stretch_core.plot_traj:main',
+            'plot_planned = stretch_core.plot_planned:main',
             'stretch_driver = stretch_core.stretch_driver:main',
             'stop_all_trajectories = stretch_core.stop_all_trajectories:main',
         ],
