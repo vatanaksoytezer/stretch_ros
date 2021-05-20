@@ -103,7 +103,8 @@ def generate_launch_description():
     ompl_planning_pipeline_config = {'move_group': {
         'planning_plugin': 'ompl_interface/OMPLPlanner',
         'request_adapters': """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
-        'start_state_max_bounds_error': 0.1}}
+        'start_state_max_bounds_error': 0.1,
+        'resample_dt': 100.0}}
     ompl_planning_yaml = load_yaml('stretch_moveit_config', 'config/ompl_planning.yaml')
     ompl_planning_pipeline_config['move_group'].update(ompl_planning_yaml)
 

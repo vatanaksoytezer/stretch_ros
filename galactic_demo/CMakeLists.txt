@@ -18,9 +18,6 @@ find_package(control_msgs REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclpy REQUIRED)
 
-install(PROGRAMS my_sad_server.py DESTINATION lib/${PROJECT_NAME})
-
-
 # target_compile_definitions(action_client
 #   PRIVATE "ACTION_TUTORIALS_CPP_BUILDING_DLL")
 
