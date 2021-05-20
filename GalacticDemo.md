@@ -41,7 +41,7 @@
  * `rosdep update`
  * `rosdep install -r --from-paths . --ignore-src --rosdistro galactic -y`
  * `cd ~/galactic_ws`
- * `colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-skip stretch_moveit_config`
+ * `colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-skip stretch_moveit_config galactic_demo`
  * `cp $HELLO_FLEET_PATH/$HELLO_FLEET_ID/exported_urdf/stretch.urdf ~/galactic_ws/src/stretch_ros/stretch_description/urdf`
  * `cp $HELLO_FLEET_PATH/$HELLO_FLEET_ID/exported_urdf/controller_calibration_head.yaml ~/galactic_ws/src/stretch_ros/stretch_core/config`
  * `echo "source ~/galactic_ws/install/setup.bash" >> ~/.bashrc`
