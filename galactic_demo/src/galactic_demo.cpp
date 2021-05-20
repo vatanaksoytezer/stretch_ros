@@ -9,7 +9,8 @@
 #include <galactic_demo/rocking_bit.h>
 #include <rclcpp_components/register_node_macro.hpp>
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   rclcpp::init(argc, argv);
   rclcpp::NodeOptions options;
   options.automatically_declare_parameters_from_overrides(true);
