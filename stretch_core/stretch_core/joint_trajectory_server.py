@@ -340,6 +340,12 @@ class JointTrajectoryAction:
                 self.node.stop_the_robot = False
             self.node.robot_mode_rwlock.acquire_read()
 
+            # Ignore Acceleration
+            for pt in traj.points:
+                pt.accelerations = []
+            for pt in multi_dof_traj.points:
+                pt.accelerations = []
+
             if traj.points:
                 dt = to_sec(traj.points[-1].time_from_start)
                 n_points = len(traj.points)
