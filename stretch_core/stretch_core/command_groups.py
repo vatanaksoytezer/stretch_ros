@@ -372,6 +372,12 @@ class GripperCommandGroup(SimpleCommandGroup):
 
         return None
 
+    def get_component(self, robot):
+        return robot.end_of_arm.motors['stretch_gripper']
+
+    def get_state(self, robot_status):
+        return robot_status['end_of_arm']['stretch_gripper']
+
 
 class TelescopingCommandGroup(SimpleCommandGroup):
     def __init__(self, range_m, wrist_extension_calibrated_retracted_offset):
