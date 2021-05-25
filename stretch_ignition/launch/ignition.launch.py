@@ -55,6 +55,7 @@ def generate_launch_description():
     pkg_stretch_ignition = get_package_share_directory('stretch_ignition')
     # TODO: Make world argument modular with bridge
     world_dir = os.path.join(pkg_stretch_ignition, 'worlds', 'empty_world.sdf')
+    # world_dir = os.path.join(get_package_share_directory('aws_robomaker_small_house_world'), 'worlds', 'small_house.sdf')
     world_str = "-r " + world_dir
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -75,7 +76,8 @@ def generate_launch_description():
     spawn = Node(package='ros_ign_gazebo', executable='create',
                 arguments=[
                     '-name', 'stretch',
-                    '-file', stretch_sdf_path
+                    '-file', stretch_sdf_path,
+                    '-z', '0.1',
                     ],
                 output='screen',
                 )
@@ -97,27 +99,38 @@ def generate_launch_description():
                 # Clock (IGN -> ROS2)
                 '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',
                 # Joint states (IGN -> ROS2)
-                '/world/empty_world/model/stretch/joint_state@sensor_msgs/msg/JointState[ignition.msgs.Model',
+                '/world/default/model/stretch/joint_state@sensor_msgs/msg/JointState[ignition.msgs.Model',
                 # JointTrajectoryProgress bridge (IGN -> ROS2)
                 '/joint_trajectory_progress@std_msgs/msg/Float32[ignition.msgs.Float',
                 # Lidar (IGN -> ROS2)
                 '/lidar@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan',
                 '/lidar/points@sensor_msgs/msg/PointCloud2[ignition.msgs.PointCloudPacked',
-                # IMU (IGN -> ROS2)
+                # Base IMU (IGN -> ROS2)
                 '/imu@sensor_msgs/msg/Imu[ignition.msgs.IMU',
-                # Magnetometer (IGN -> ROS2)
+                # Base Magnetometer (IGN -> ROS2)
                 '/magnetometer@sensor_msgs/msg/MagneticField[ignition.msgs.Magnetometer',
+                # Wrist Accelerometer (IGN -> ROS2)
+                '/wrist_imu@sensor_msgs/msg/Imu[ignition.msgs.IMU',
                 # RGBD Camera (TODO: Port realsense) (IGN -> ROS2)
-                '/rgbd_camera/image@sensor_msgs/msg/Image[ignition.msgs.Image',
-                '/rgbd_camera/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image',
-                '/rgbd_camera/points@sensor_msgs/msg/PointCloud2[ignition.msgs.PointCloudPacked',
+                '/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/image@sensor_msgs/msg/Image[ignition.msgs.Image',
+                '/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image',
+                '/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/points@sensor_msgs/msg/PointCloud2[ignition.msgs.PointCloudPacked',
+                '/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/camera_info@sensor_msgs/msg/CameraInfo[ignition::msgs::CameraInfo',
+                # '/rgbd_camera/image@sensor_msgs/msg/Image[ignition.msgs.Image',
+                # '/rgbd_camera/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image',
+                # '/rgbd_camera/points@sensor_msgs/msg/PointCloud2[ignition.msgs.PointCloudPacked',
                 ],
         remappings=[
             ("/model/stretch/tf", "tf"),
-            ("/world/empty_world/model/stretch/joint_state", "joint_states"),
+            ("/world/default/model/stretch/joint_state", "joint_states"),
+            ("/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/image", "/realsense/color/image_raw"),
+            ("/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/camera_info", "/realsense/depth/camera_info"),
+            ("/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/points", "/realsense/depth/points"),
+            ("/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/depth_image", "/realsense/depth/image_raw"),
             ("/model/stretch/odometry", "odom"),
             ("/imu", "imu/data"),
             ("/magnetometer", "mag"),
+            ("/wrist_imu", "wrist_imu/data"),
         ],
         output='screen'
     )
@@ -138,12 +151,19 @@ def generate_launch_description():
                         name='mag_static_transform_publisher',
                         output='log',
                         arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'base_link', 'stretch/base_link/magnetometer'])
+    wrist_imu_static_tf = Node(package='tf2_ros',
+                        executable='static_transform_publisher',
+                        name='wrist_imu_static_transform_publisher',
+                        output='log',
+                        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'link_wrist_yaw', 'stretch/link_wrist_yaw/wrist_imu'])
     # TODO (vatanaksoytezer): Port realsense and remove rgbd
     rgbd_static_tf = Node(package='tf2_ros',
                         executable='static_transform_publisher',
                         name='rgbd_static_transform_publisher',
                         output='log',
-                        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'link_head_tilt', 'stretch/link_head_tilt/rgbd_camera'])
+                        # arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'camera_depth_optical_frame', 'stretch/camera_depth_optical_frame/rgbd_camera'])
+                        arguments=['0.0', '0.0', '0.0', '1.5708', '-1.5708', '0', 'camera_depth_optical_frame', 'stretch/link_realsense_optical/realsense_d435'])
+                        # arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'link_head_tilt', 'stretch/link_head_tilt/rgbd_camera'])
 
     # Controllers 
     # TODO (vatanaksoytezer): Use ros_ign_control when it is ready
@@ -170,7 +190,8 @@ def generate_launch_description():
             lidar_static_tf,
             imu_static_tf,
             mag_static_tf,
+            wrist_imu_static_tf,
             rgbd_static_tf,
-            # rviz,
+            rviz,
         ]
     )

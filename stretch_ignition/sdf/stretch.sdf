@@ -148,8 +148,51 @@
         <update_rate>100</update_rate>
         <visualize>false</visualize>
         <topic>imu</topic>
-        <frame_id>base_link</frame_id>
+        <!-- ! Check if these noises work or not -->
+        <imu>
+          <accelerometer>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.1</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.1</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.1</stddev>
+              </noise>
+            </z>
+          </accelerometer>
+          <gyro>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.1</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.1</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>0.1</stddev>
+              </noise>
+            </z>
+          </gyro>
+        </imu>
       </sensor>
+
       <!-- Magnetometer -->
       <sensor name="magnetometer" type="magnetometer">
         <always_on>1</always_on>
@@ -182,7 +225,6 @@
 
     <!-- LIDAR -->
     <joint name='joint_laser' type='fixed'>
-      <!-- <pose relative_to='base_link'>0.000503 0 0.1664 0 0 -3.14159</pose> -->
       <pose relative_to='base_link'>0.000503 0 0.1664 0 0 0</pose>
       <parent>base_link</parent>
       <child>link_laser</child>
@@ -522,27 +564,6 @@
           </mesh>
         </geometry>
       </collision>
-      <collision name='link_head_tilt_fixed_joint_lump__camera_link_collision_1'>
-        <pose frame=''>0.0406 -0.0122 0.0307 0 -0 0</pose>
-        <geometry>
-          <box>
-            <size>0.02505 0.09 0.025</size>
-          </box>
-        </geometry>
-        <max_contacts>10</max_contacts>
-        <surface>
-          <contact>
-            <ode/>
-          </contact>
-          <bounce/>
-          <friction>
-            <torsional>
-              <ode/>
-            </torsional>
-            <ode/>
-          </friction>
-        </surface>
-      </collision>
       <visual name='link_head_tilt_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
@@ -557,17 +578,8 @@
           <specular>0.921568627 0.925490196 0.941176471 1</specular>
         </material>
       </visual>
-      <visual name='link_head_tilt_fixed_joint_lump__camera_link_visual_1'>
-        <pose frame=''>0.0449 -0.0122 0.0307 1.5708 -0 1.5708</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://realsense2_description/meshes/d435.dae</uri>
-          </mesh>
-        </geometry>
-      </visual>
-      <!-- Temporary RGBD camera instead of realsense -->
-      <sensor name="rgbd_camera" type="rgbd_camera">
+      <!-- Temp RGBD Camera -->
+      <!-- <sensor name="rgbd_camera" type="rgbd_camera">
         <camera>
           <horizontal_fov>1.047</horizontal_fov>
           <image>
@@ -583,7 +595,7 @@
         <update_rate>30</update_rate>
         <visualize>true</visualize>
         <topic>rgbd_camera</topic>
-      </sensor>
+      </sensor> -->
     </link>
   
     <joint name='joint_lift' type='prismatic'>
@@ -1070,6 +1082,13 @@
           <specular>0.145098039 0.156862745 0.164705882 1</specular>
         </material>
       </visual>
+      <!-- Wrist IMU (Accel Only) -->
+      <sensor name="wrist_imu" type="imu">
+        <always_on>1</always_on>
+        <update_rate>100</update_rate>
+        <visualize>false</visualize>
+        <topic>wrist_imu</topic>
+      </sensor>
     </link>
 
     <!-- Gripper -->
@@ -1235,6 +1254,241 @@
         </material>
       </visual>
     </link>
+
+    <!-- Realsense -->
+    <joint name='joint_realsense' type='fixed'>
+      <pose relative_to='link_head_tilt'>0.0106 -0.0122 0.0297 0 0 1.5708</pose>
+      <parent>link_head_tilt</parent>
+      <child>link_realsense</child>
+    </joint>
+    <link name="link_realsense">
+      <pose relative_to='joint_realsense'>0.0 0.0 0.0 0 0 0</pose>
+      <inertial>
+        <mass>0.0615752</mass>
+        <inertia>
+          <ixx>9.108e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.51e-06</iyy>
+          <iyz>0</iyz>
+          <izz>8.931e-05</izz>
+        </inertia>
+      </inertial>
+      <!-- TODO: Add collision -->
+      <!-- <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>model://RealSense_D435/meshes/realsense.dae</uri>
+          </mesh>
+        </geometry>
+      </collision> -->
+      <visual name= "visual">
+        <geometry>
+          <mesh>
+            <uri>model://RealSense_D435/meshes/realsense.dae</uri>
+            <submesh>
+              <name>RealSense</name>
+              <center>false</center>
+            </submesh>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>1.0 1.0 1.0</diffuse>
+          <specular>1.0 1.0 1.0</specular>
+          <pbr>
+            <metal>
+              <albedo_map>model://RealSense_D435/materials/textures/RealSense_Albedo.png</albedo_map>
+              <normal_map>model://RealSense_D435/materials/textures/RealSense_Normal.png</normal_map>
+              <metalness_map>model://RealSense_D435/materials/textures/RealSense_Metalness.png</metalness_map>
+              <roughness_map>model://RealSense_D435/materials/textures/RealSense_Roughness.png</roughness_map>
+            </metal>
+          </pbr>
+          <script>
+            <uri>model://RealSense_D435/materials/scripts/</uri>
+            <uri>model://RealSense_D435/materials/textures/</uri>
+            <name>UrbanTile/RealSense_Diffuse</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <joint name='joint_realsense_optical' type='fixed'>
+      <!-- <pose relative_to='link_realsense'>0 0 0 0 0 -1.5708</pose> -->
+      <pose relative_to='link_realsense'>0 0 0 0 0 -1.5708</pose>
+      <parent>link_realsense</parent>
+      <child>link_realsense_optical</child>
+    </joint>
+    <link name='link_realsense_optical'>
+      <pose relative_to='joint_realsense_optical'>0.05 0 0 0 0 0</pose>
+      <sensor name="realsense_d435" type="rgbd_camera">
+        <update_rate>60</update_rate>
+        <camera name="camera">
+          <horizontal_fov>1.0472</horizontal_fov>
+          <lens>
+            <intrinsics>
+              <fx>554.25469</fx>
+              <fy>554.25469</fy>
+              <cx>320.5</cx>
+              <cy>240.5</cy>
+              <s>0</s>
+            </intrinsics>
+          </lens>
+          <distortion>
+            <k1>0.0</k1>
+            <k2>0.0</k2>
+            <k3>0.0</k3>
+            <p1>0.0</p1>
+            <p2>0.0</p2>
+            <center>0.5 0.5</center>
+          </distortion>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.01</near>
+            <far>300</far>
+          </clip>
+          <depth_camera>
+            <clip>
+              <near>0.1</near>
+              <far>10</far>
+            </clip>
+          </depth_camera>
+          <noise>
+            <type>gaussian</type>
+            <mean>0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+      </sensor>
+    </link>
+
+    <!-- <joint name='joint_realsense_optical_ir' type='fixed'>
+      <pose relative_to='link_realsense_optical'>0.1 0 0 0 0 0</pose>
+      <parent>link_realsense_optical</parent>
+      <child>link_realsense_optical_ir</child>
+    </joint>
+    <link name='link_realsense_optical_ir'>
+      <pose relative_to='joint_realsense_optical_ir'>0 0 0 0 0 0</pose>
+      <sensor name="realsense_d435_ir" type="camera">
+        <update_rate>60</update_rate>
+        <camera name="camera_ir">
+          <horizontal_fov>1.0472</horizontal_fov>
+          <lens>
+            <intrinsics>
+              <fx>554.25469</fx>
+              <fy>554.25469</fy>
+              <cx>320.5</cx>
+              <cy>240.5</cy>
+              <s>0</s>
+            </intrinsics>
+          </lens>
+          <distortion>
+            <k1>0.0</k1>
+            <k2>0.0</k2>
+            <k3>0.0</k3>
+            <p1>0.0</p1>
+            <p2>0.0</p2>
+            <center>0.5 0.5</center>
+          </distortion>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.01</near>
+            <far>300</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+      </sensor>
+    </link> -->
+
+    <!-- <joint name='camera_link_joint' type='fixed'>
+      <pose relative_to='link_head_tilt'>0.0406 -0.0122 0.0297 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>camera_link</child>
+    </joint>
+    <link name='camera_link'>
+      <pose relative_to='camera_link_joint'>0.0 -0.0 0 0 -0 1.5708</pose>
+      <inertial>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.001</iyy>
+          <iyz>0</iyz>
+          <izz>0.001</izz>
+        </inertia>
+      </inertial>
+      <visual name='camera_link_visual'>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://stretch_description/meshes/d435.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse> 0.145098039 0.156862745 0.164705882 1</diffuse>
+          <ambient> 0.145098039 0.156862745 0.164705882 1</ambient>
+          <specular>0.145098039 0.156862745 0.164705882 1</specular>
+        </material>
+      </visual>
+    </link>
+
+    <joint name='camera_depth_joint' type='fixed'>
+      <pose relative_to='camera_link_joint'>0.0406 -0.0122 0.0297 0 0 0</pose>
+      <parent>camera_link</parent>
+      <child>camera_depth_frame</child>
+    </joint>
+    <link name="camera_depth_frame">
+      <pose relative_to='camera_depth_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.001</iyy>
+          <iyz>0</iyz>
+          <izz>0.001</izz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <joint name='camera_depth_optical_joint' type='fixed'>
+      <pose relative_to='camera_depth_frame'>0 0 0 0 0 0</pose>
+      <parent>camera_depth_frame</parent>
+      <child>camera_depth_optical_frame</child>
+    </joint>
+    <link name="camera_depth_optical_frame">
+      <pose relative_to='camera_depth_optical_joint'>0 0 0 0 0 0</pose>
+      <sensor name="rgbd_camera" type="rgbd_camera">
+        <camera>
+          <horizontal_fov>1.047</horizontal_fov>
+          <image>
+            <width>320</width>
+            <height>240</height>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>30</update_rate>
+        <visualize>false</visualize>
+        <topic>rgbd_camera</topic>
+      </sensor>
+    </link> -->
 
     <!-- Diff Drive Plugin -->
     <plugin filename="libignition-gazebo-diff-drive-system.so" name="ignition::gazebo::systems::DiffDrive">
