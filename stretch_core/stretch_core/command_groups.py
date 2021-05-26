@@ -295,7 +295,7 @@ class WristYawCommandGroup(SimpleCommandGroup):
 
 class GripperCommandGroup(SimpleCommandGroup):
     def __init__(self, range_robotis):
-        SimpleCommandGroup.__init__(self, None, None, acceptable_joint_error=1.0)
+        SimpleCommandGroup.__init__(self, 'stretch_gripper', None, acceptable_joint_error=1.0)
         self.gripper_joint_names = ['joint_gripper_finger_left', 'joint_gripper_finger_right', 'gripper_aperture']
         self.gripper_conversion = GripperConversion()
         self.range_aperture_m = (self.gripper_conversion.robotis_to_aperture(range_robotis[0]),
