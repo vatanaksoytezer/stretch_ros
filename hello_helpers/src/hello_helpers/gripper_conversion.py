@@ -11,7 +11,8 @@ class GripperConversion:
         #
         # finger angle
         #   0.0 just barely closed
-        #   fully opened is
+        #   fully opened is 0.25
+        #   fully closed in -0.50
 
         # from stretch_gripper.xacro
         # scale_finger_length = 0.9
@@ -22,7 +23,7 @@ class GripperConversion:
         self.open_aperture_m = 0.09 #0.125
         self.closed_aperture_m = 0.0
 
-        self.open_robotis = 70.0
+        self.open_robotis = 50.0
         self.closed_robotis = 0.0
 
         self.robotis_to_aperture_slope = ((self.open_aperture_m - self.closed_aperture_m) / (self.open_robotis - self.closed_robotis))
