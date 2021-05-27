@@ -625,8 +625,7 @@ class StretchBodyNode(Node):
         self.last_twist_time = self.get_clock().now()
 
         # start action server for joint trajectories
-        self.fail_out_of_range_goal = self.get_parameter('fail_out_of_range_goal').value
-        self.joint_trajectory_action = JointTrajectoryAction(self)
+        self.joint_trajectory_action = JointTrajectoryAction(self, self.get_parameter('fail_out_of_range_goal').value)
         self.diagnostics = StretchDiagnostics(self, self.robot)
 
         if mode == "position":

@@ -2,9 +2,11 @@
 from __future__ import print_function
 
 import hello_helpers.hello_misc as hm
-from hello_helpers.gripper_conversion import GripperConversion
 
 import numpy as np
+
+from .action_exceptions import InvalidGoalException
+
 
 def get_waypoints(points, index):
     for waypoint in points:
@@ -27,8 +29,6 @@ class SimpleCommandGroup:
             acceptable joint bounds
         active: bool
             whether joint is active
-        index: int
-            index of joint's goal in point
         goal: dict
             components of the goal
         error: float
@@ -39,7 +39,6 @@ class SimpleCommandGroup:
         self.name = joint_name
         self.range = joint_range
         self.active = False
-        self.index = None
         self.goal = {"position": None}
         self.error = None
         self.acceptable_joint_error = acceptable_joint_error
@@ -57,74 +56,6 @@ class SimpleCommandGroup:
 
         return 0
 
-    def update(self, commanded_joint_names, invalid_joints_callback, **kwargs):
-        """Activates joints in the group
-
-        Checks commanded joints to activate the command
-        group and validates joints used correctly.
-
-        Parameters
-        ----------
-        commanded_joint_names: list(str)
-            list of commanded joints in the trajectory
-        invalid_joints_callback: func
-            error callback for misuse of joints in trajectory
-
-        Returns
-        -------
-        bool
-            False if commanded joints invalid, else True
-        """
-        self.active = False
-        self.index = None
-        if self.name in commanded_joint_names:
-            self.index = commanded_joint_names.index(self.name)
-            self.active = True
-
-        return True
-
-    def set_goal(self, point, invalid_goal_callback, fail_out_of_range_goal, **kwargs):
-        """Sets goal for the joint group
-
-        Sets and validates the goal point for the joints
-        in this command group.
-
-        Parameters
-        ----------
-        point: trajectory_msgs.JointTrajectoryPoint
-            the target point for all joints
-        invalid_goal_callback: func
-            error callback for invalid goal
-        fail_out_of_range_goal: bool
-            whether to bound out-of-range goals to range or fail
-
-        Returns
-        -------
-        bool
-            False if commanded goal invalid, else True
-        """
-        self.goal = {"position": None, "velocity": None, "acceleration": None, "contact_threshold": None}
-        if self.active:
-            goal_pos = point.positions[self.index] if len(point.positions) > self.index else None
-            if goal_pos is None:
-                err_str = ("Received goal point with positions array length={0}. "
-                           "This joint ({1})'s index is {2}. Length of array must cover all joints listed "
-                           "in commanded_joint_names.").format(len(point.positions), self.name, self.index)
-                invalid_goal_callback(err_str)
-                return False
-
-            self.goal['position'] = hm.bound_ros_command(self.range, goal_pos, fail_out_of_range_goal)
-            self.goal['velocity'] = point.velocities[self.index] if len(point.velocities) > self.index else None
-            self.goal['acceleration'] = point.accelerations[self.index] if len(point.accelerations) > self.index else None
-            self.goal['contact_threshold'] = point.effort[self.index] if len(point.effort) > self.index else None
-            if self.goal['position'] is None:
-                err_str = ("Received {0} goal point that is out of bounds. "
-                            "Range = {1}, but goal point = {2}.").format(self.name, self.range, goal_pos)
-                invalid_goal_callback(err_str)
-                return False
-
-        return True
-
     def init_execution(self, robot, robot_status, **kwargs):
         """Starts execution of the point
 
@@ -135,6 +66,7 @@ class SimpleCommandGroup:
         ----------
         robot: stretch_body.robot.Robot
             top-level interface to Python API
+
         robot_status: dict
             robot's current status
         """
@@ -191,17 +123,6 @@ class SimpleCommandGroup:
 
 
 class HeadPanCommandGroup(SimpleCommandGroup):
-    def __init__(self, range_rad, head_pan_calibrated_offset, head_pan_calibrated_looked_left_offset):
-        SimpleCommandGroup.__init__(self, 'joint_head_pan', range_rad, acceptable_joint_error=0.15)
-        self.head_pan_calibrated_offset = head_pan_calibrated_offset
-        self.head_pan_calibrated_looked_left_offset = head_pan_calibrated_looked_left_offset
-
-    def get_component(self, robot):
-        return robot.head.get_joint('head_pan')
-
-    def get_state(self, robot_status):
-        return robot_status['head']['head_pan']
-
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
             _, pan_error = self.update_execution(robot_status, backlash_state=kwargs['backlash_state'])
@@ -228,20 +149,6 @@ class HeadPanCommandGroup(SimpleCommandGroup):
 
 
 class HeadTiltCommandGroup(SimpleCommandGroup):
-    def __init__(self, range_rad, head_tilt_calibrated_offset,
-                 head_tilt_calibrated_looking_up_offset,
-                 head_tilt_backlash_transition_angle):
-        SimpleCommandGroup.__init__(self, 'joint_head_tilt', range_rad, acceptable_joint_error=0.52)
-        self.head_tilt_calibrated_offset = head_tilt_calibrated_offset
-        self.head_tilt_calibrated_looking_up_offset = head_tilt_calibrated_looking_up_offset
-        self.head_tilt_backlash_transition_angle = head_tilt_backlash_transition_angle
-
-    def get_component(self, robot):
-        return robot.head.get_joint('head_tilt')
-
-    def get_state(self, robot_status):
-        return robot_status['head']['head_tilt']
-
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
             _, tilt_error = self.update_execution(robot_status, backlash_state=kwargs['backlash_state'])
@@ -268,14 +175,8 @@ class HeadTiltCommandGroup(SimpleCommandGroup):
 
 
 class WristYawCommandGroup(SimpleCommandGroup):
-    def __init__(self, range_rad):
-        SimpleCommandGroup.__init__(self, 'joint_wrist_yaw', range_rad)
 
-    def get_component(self, robot):
-        return robot.end_of_arm.motors['wrist_yaw']
 
-    def get_state(self, robot_status):
-        return robot_status['end_of_arm']['wrist_yaw']
 
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
@@ -296,55 +197,23 @@ class WristYawCommandGroup(SimpleCommandGroup):
 class GripperCommandGroup(SimpleCommandGroup):
     def __init__(self, range_robotis):
         SimpleCommandGroup.__init__(self, None, None, acceptable_joint_error=1.0)
-        self.gripper_joint_names = ['joint_gripper_finger_left', 'joint_gripper_finger_right', 'gripper_aperture']
-        self.gripper_conversion = GripperConversion()
         self.range_aperture_m = (self.gripper_conversion.robotis_to_aperture(range_robotis[0]),
                                  self.gripper_conversion.robotis_to_aperture(range_robotis[1]))
         self.range_finger_rad = (self.gripper_conversion.robotis_to_finger(range_robotis[0]),
                                  self.gripper_conversion.robotis_to_finger(range_robotis[1]))
 
-    def update(self, commanded_joint_names, invalid_joints_callback, **kwargs):
-        self.active = False
-        self.index = None
-        active_gripper_joint_names = list(set(commanded_joint_names) & set(self.gripper_joint_names))
-        if len(active_gripper_joint_names) > 1:
-            err_str = ("Received a command for the gripper that includes more than one gripper joint name: {0}. "
-                       "Only one joint name is allowed to be used for a gripper command to avoid conflicts "
-                       "and confusion. The gripper only has a single degree of freedom that can be "
-                       "controlled using the following three mutually exclusive joint names: "
-                       "{1}.").format(active_gripper_joint_names, self.gripper_joint_names)
-            invalid_joints_callback(err_str)
-            return False
-        elif len(active_gripper_joint_names) == 1:
-            self.name = active_gripper_joint_names[0]
-            self.index = commanded_joint_names.index(self.name)
-            self.active = True
-
-        return True
-
-    def set_goal(self, point, invalid_goal_callback, fail_out_of_range_goal, **kwargs):
+    def set_goal(self, point, fail_out_of_range_goal, **kwargs):
         self.goal = {"position": None, "velocity": None, "acceleration": None, "contact_threshold": None}
         if self.active:
-            goal_pos = point.positions[self.index] if len(point.positions) > self.index else None
-            if goal_pos is None:
-                err_str = ("Received goal point with positions array length={0}. "
-                           "This joint ({1})'s index is {2}. Length of array must cover all joints listed "
-                           "in commanded_joint_names.").format(len(point.positions), self.name, self.index)
-                invalid_goal_callback(err_str)
-                return False
-
+            goal_pos = point.positions[self.index]
             joint_range = self.range_aperture_m if (self.name == 'gripper_aperture') else self.range_finger_rad
             self.goal['position'] = hm.bound_ros_command(joint_range, goal_pos, fail_out_of_range_goal)
             self.goal['velocity'] = point.velocities[self.index] if len(point.velocities) > self.index else None
             self.goal['acceleration'] = point.accelerations[self.index] if len(point.accelerations) > self.index else None
             self.goal['contact_threshold'] = point.effort[self.index] if len(point.effort) > self.index else None
             if self.goal['position'] is None:
-                err_str = ("Received {0} goal point that is out of bounds. "
-                            "Range = {1}, but goal point = {2}.").format(self.name, joint_range, goal_pos)
-                invalid_goal_callback(err_str)
-                return False
-
-        return True
+                raise InvalidGoalException(f'Received {self.name} goal point that is out of bounds. '
+                                           f'Range = {joint_range}, but goal point = {goal_pos}.')
 
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
@@ -389,36 +258,6 @@ class TelescopingCommandGroup(SimpleCommandGroup):
 
         return 0
 
-    def update(self, commanded_joint_names, invalid_joints_callback, **kwargs):
-        self.active = False
-        self.is_telescoping = False
-        self.index = None
-        active_telescoping_joint_names = list(set(commanded_joint_names) & set(self.telescoping_joints))
-        if self.name in commanded_joint_names:
-            if len(active_telescoping_joint_names) == 0:
-                self.index = commanded_joint_names.index(self.name)
-                self.active = True
-            else:
-                err_str = ("Received a command for the wrist_extension joint and one or more telescoping_joints. "
-                           "These are mutually exclusive options. The joint names in the received command = "
-                           "{0}").format(commanded_joint_names)
-                invalid_joints_callback(err_str)
-                return False
-        elif len(active_telescoping_joint_names) != 0:
-            if len(active_telescoping_joint_names) == len(self.telescoping_joints):
-                self.active = True
-                self.is_telescoping = True
-                self.index = [commanded_joint_names.index(i) for i in self.telescoping_joints]
-            else:
-                err_str = ("Commands with telescoping joints requires all telescoping joints to be present. "
-                           "Only received {0} of {1} telescoping joints. They are = "
-                           "{2}").format(len(active_telescoping_joint_names), len(self.telescoping_joints),
-                                         active_telescoping_joint_names)
-                invalid_joints_callback(err_str)
-                return False
-
-        return True
-
     def get_component(self, robot):
         return robot.arm
 
@@ -457,7 +296,7 @@ class TelescopingCommandGroup(SimpleCommandGroup):
                         a = None
                     robot.arm.trajectory.add_waypoint(t_s=t, x_m=x, v_m=v, a_m=a)
 
-    def set_goal(self, point, invalid_goal_callback, fail_out_of_range_goal, **kwargs):
+    def set_goal(self, point, fail_out_of_range_goal, **kwargs):
         self.goal = {"position": None, "velocity": None, "acceleration": None, "contact_threshold": None}
         if self.active:
             if self.is_telescoping:
@@ -479,21 +318,10 @@ class TelescopingCommandGroup(SimpleCommandGroup):
                 self.goal['contact_threshold'] = point.effort[self.index] \
                                                  if len(point.effort) > self.index else None
 
-            if goal_pos is None:
-                err_str = ("Received goal point with positions array length={0}. "
-                           "This joint ({1})'s index is {2}. Length of array must cover all joints listed "
-                           "in commanded_joint_names.").format(len(point.positions), self.name, self.index)
-                invalid_goal_callback(err_str)
-                return False
-
             self.goal['position'] = hm.bound_ros_command(self.range, goal_pos, fail_out_of_range_goal)
             if self.goal['position'] is None:
-                err_str = ("Received {0} goal point that is out of bounds. "
-                            "Range = {1}, but goal point = {2}.").format(self.name, self.range, goal_pos)
-                invalid_goal_callback(err_str)
-                return False
-
-        return True
+                raise InvalidGoalException(f'Received {self.name} goal point that is out of bounds. '
+                                           f'Range = {self.range}, but goal point = {goal_pos}.')
 
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
