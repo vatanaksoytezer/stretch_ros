@@ -144,8 +144,9 @@ def preprocess_gripper_trajectory(trajectory):
     # Now convert the gripper joint to the proper units
     gripper_conversion = GripperConversion()
     gripper_index = trajectory.joint_names.index(present_gripper_joints[0])
+    trajectory.joint_names[gripper_index] = 'stretch_gripper'
     for pt in trajectory.points:
-        pt.position[gripper_index] = gripper_conversion.finger_rad_to_aperture(pt.position[gripper_index])
+        pt.position[gripper_index] = gripper_conversion.finger_to_robotis(pt.position[gripper_index])
     return trajectory
 
 
@@ -194,8 +195,6 @@ class JointTrajectoryAction:
         self.command_groups = [self.telescoping_cg, self.lift_cg, self.mobile_base_cg, self.head_pan_cg,
                                self.head_tilt_cg, self.wrist_yaw_cg, self.gripper_cg]
         self.cg_map = {group.name: group for group in self.command_groups}
-        self.cg_map['joint_gripper_finger_left'] = self.gripper_cg
-        self.cg_map['joint_gripper_finger_right'] = self.gripper_cg
 
     def execute_cb(self, goal_handle):
         self.goal_handle = goal_handle
