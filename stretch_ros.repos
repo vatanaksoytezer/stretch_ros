@@ -20,18 +20,13 @@ repositories:
 
   control_msgs:
     type: git
-    url: https://github.com/DLu/control_msgs
-    version: multi_dof_action_extension
+    url: https://github.com/ros-controls/control_msgs
+    version: galactic-devel
 
   realsense-ros:  # For realsense2_description
     type: git
     url: https://github.com/IntelRealSense/realsense-ros
     version: foxy
-
-  rqt_robot_dashboard:  # For use with stretch_dashboard
-    type: git
-    url: https://github.com/ros-visualization/rqt_robot_dashboard
-    version: ROS2
 
   rosparam_shortcuts:  # Used by stretch_moveit_plugins
     type: git
@@ -60,26 +55,12 @@ repositories:
     type: git
     url: https://github.com/wg-perception/object_recognition_msgs
     version: ros2
-  octomap:
-    type: git
-    url: https://github.com/octomap/octomap
-    version: devel
-  octomap_msgs:
-    type: git
-    url: https://github.com/OctoMap/octomap_msgs
-    version: ros2
-  ompl:
-    type: git
-    url: https://github.com/ompl/ompl
-    version: 1.5.0
+
+
   random_numbers:
     type: git
     url: https://github.com/ros-planning/random_numbers
     version: ros2
-  realtime_tools:
-    type: git
-    url: https://github.com/ros-controls/realtime_tools
-    version: foxy-devel
   ros2_control:
     type: git
     url: https://github.com/ros-controls/ros2_control
