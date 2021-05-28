@@ -481,10 +481,19 @@ class JointTrajectoryAction:
                 for i, joint_name in enumerate(traj.joint_names):
                     cg = self.cg_map[joint_name]
                     state = cg.get_state(robot_status)
-                    self.feedback.actual.positions.append(state['pos'])
                     comp = cg.get_component(self.node.robot)
                     des = comp.trajectory.evaluate_at(dt)
-                    self.feedback.desired.positions.append(des.position)
+
+                    if joint_name == 'stretch_gripper':
+                        robotis = state['pos_pct']
+                        finger_rad = self.gripper_cg.gripper_conversion.robotis_to_finger(robotis)
+                        self.feedback.actual.positions.append(finger_rad)
+                        des_robotis = des.position
+                        des_finger_rad = self.gripper_cg.gripper_conversion.robotis_to_finger(des_robotis)
+                        self.feedback.desired.positions.append(des_finger_rad)
+                    else:
+                        self.feedback.actual.positions.append(state['pos'])
+                        self.feedback.desired.positions.append(des.position)
 
                 if self.feedback.multi_dof_joint_names:
                     cg = self.mobile_base_cg
