@@ -425,7 +425,10 @@ class JointTrajectoryAction:
 
                 # Set Initial waypoint
                 state = cg.get_state(robot_status)
-                traj.points[0].positions[index] = state['pos']
+                if name == 'stretch_gripper':
+                    traj.points[0].positions[index] = state['pos_pct']
+                else:
+                    traj.points[0].positions[index] = state['pos']
                 if index < len(traj.points[0].velocities):
                     traj.points[0].velocities[index] = state['vel']
 
