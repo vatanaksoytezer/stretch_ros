@@ -63,3 +63,20 @@ class GripperConversion:
         finger_effort = gripper_status['effort']
         finger_vel = (self.robotis_to_aperture_slope * gripper_status['vel'])/2.0
         return aperture_m, finger_rad, finger_effort, finger_vel
+
+from matplotlib.pyplot import show, subplots
+gc = GripperConversion()
+f, ax = subplots(2)
+x = list(range(-100, 51))
+y0 = [gc.robotis_to_aperture(x0) for x0 in x]
+y1 = [gc.robotis_to_finger(x0) for x0 in x]
+print(y0[0], y0[-1])
+print(y1[0], y1[-1])
+ax[0].title.set_text('robotis_to_aperture')
+ax[0].plot(x, y0)
+ax[1].title.set_text('robotis_to_finger')
+ax[1].plot(x, y1)
+for a in ax:
+    a.axhline(0)
+    a.axvline(0)
+show()
