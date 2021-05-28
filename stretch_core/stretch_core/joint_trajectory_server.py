@@ -146,7 +146,7 @@ def preprocess_gripper_trajectory(trajectory, gripper):
     trajectory.joint_names[gripper_index] = 'stretch_gripper'
     for pt in trajectory.points:
         finger_rad = pt.positions[gripper_index]
-        pct = finger_rad / 0.3
+        pct = 500.0 * finger_rad / 0.3
         pt.positions[gripper_index] = gripper.pct_to_world_rad(pct)
     return trajectory
 
@@ -379,7 +379,7 @@ class JointTrajectoryAction:
             goal = goal_handle.request
             goal.trajectory = merge_arm_joints(goal.trajectory)
             goal.trajectory = preprocess_gripper_trajectory(goal.trajectory,
-                                                            self.robot.end_of_arm.motors['stretch_gripper'])
+                                                            self.node.robot.end_of_arm.motors['stretch_gripper'])
             traj = goal.trajectory
             multi_dof_traj = goal.multi_dof_trajectory
 
