@@ -111,14 +111,13 @@ def generate_launch_description():
                 '/magnetometer@sensor_msgs/msg/MagneticField[ignition.msgs.Magnetometer',
                 # Wrist Accelerometer (IGN -> ROS2)
                 '/wrist_imu@sensor_msgs/msg/Imu[ignition.msgs.IMU',
+                # Realsense IMU
+                '/realsense_imu@sensor_msgs/msg/Imu[ignition.msgs.IMU',
                 # RGBD Camera (TODO: Port realsense) (IGN -> ROS2)
                 '/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/image@sensor_msgs/msg/Image[ignition.msgs.Image',
                 '/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image',
                 '/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/points@sensor_msgs/msg/PointCloud2[ignition.msgs.PointCloudPacked',
                 '/world/default/model/stretch/link/link_realsense_optical/sensor/realsense_d435/camera_info@sensor_msgs/msg/CameraInfo[ignition::msgs::CameraInfo',
-                # '/rgbd_camera/image@sensor_msgs/msg/Image[ignition.msgs.Image',
-                # '/rgbd_camera/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image',
-                # '/rgbd_camera/points@sensor_msgs/msg/PointCloud2[ignition.msgs.PointCloudPacked',
                 ],
         remappings=[
             ("/model/stretch/tf", "tf"),
@@ -131,6 +130,7 @@ def generate_launch_description():
             ("/imu", "imu/data"),
             ("/magnetometer", "mag"),
             ("/wrist_imu", "wrist_imu/data"),
+            ("/realsense_imu", "realsense/imu/data"),
         ],
         output='screen'
     )
@@ -156,6 +156,11 @@ def generate_launch_description():
                         name='wrist_imu_static_transform_publisher',
                         output='log',
                         arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'link_wrist_yaw', 'stretch/link_wrist_yaw/wrist_imu'])
+    realsense_imu_static_tf = Node(package='tf2_ros',
+                        executable='static_transform_publisher',
+                        name='realsense_imu_static_transform_publisher',
+                        output='log',
+                        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'link_head_tilt', 'stretch/link_head_tilt/realsense_imu'])
     # TODO (vatanaksoytezer): Port realsense and remove rgbd
     rgbd_static_tf = Node(package='tf2_ros',
                         executable='static_transform_publisher',
@@ -192,6 +197,7 @@ def generate_launch_description():
             mag_static_tf,
             wrist_imu_static_tf,
             rgbd_static_tf,
+            realsense_imu_static_tf,
             rviz,
         ]
     )
