@@ -2,6 +2,11 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="stretch_main">
   <xacro:property name="M_PI" value="3.1415926535897931" /> 
 
+  <xacro:property name="joint_damping" value="21.75"/>
+  <xacro:property name="joint_friction" value="3.48"/>
+  <xacro:property name="joint_spring_stiffness" value="0"/>
+  <xacro:property name="joint_spring_reference" value="0"/>
+
   <link
     name="base_link">
     <inertial>
@@ -52,12 +57,12 @@
       <mass
         value="0.00356714564938475" />
       <inertia
-        ixx="0"
+        ixx="0.001"
         ixy="0"
         ixz="0"
-        iyy="0"
+        iyy="0.001"
         iyz="0"
-        izz="0" />
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -96,6 +101,7 @@
       link="link_right_wheel" />
     <axis
       xyz="0 0 1" />
+      <dynamics damping="${joint_damping}" friction="${joint_friction}" spring_reference="${joint_spring_reference}" spring_stiffness="{joint_spring_stiffness}"/>
   </joint>
   
   <link
@@ -107,12 +113,12 @@
       <mass
         value="0.00356714564938459" />
       <inertia
-        ixx="0"
+        ixx="0.001"
         ixy="0"
         ixz="0"
-        iyy="0"
+        iyy="0.001"
         iyz="0"
-        izz="0" />
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -151,6 +157,7 @@
       link="link_left_wheel" />
     <axis
       xyz="0 0 1" />
+      <dynamics damping="${joint_damping}" friction="${joint_friction}" spring_reference="${joint_spring_reference}" spring_stiffness="{joint_spring_stiffness}"/>
   </joint>
 
   <link name="link_caster">
@@ -311,11 +318,12 @@
     <child
       link="link_lift" />
     <axis
-	xyz="0 0 1" />
-  <!-- for now: hand copied range_m: from lift: from ~/repos/stretch_fleet/stretch-re1-1001/stretch_re1_factory_params.yaml -->
-  <!--<limit effort="100" lower="0.0" upper="1.095" velocity="1.0"/>-->
-  <!-- copied value did not reach the top of mesh model with GUI sliders and RViz -->
-  <limit effort="100" lower="-0.1033" upper="0.9967" velocity="1.0"/>
+  xyz="0 0 1" />
+    <!-- for now: hand copied range_m: from lift: from ~/repos/stretch_fleet/stretch-re1-1001/stretch_re1_factory_params.yaml -->
+    <!--<limit effort="100" lower="0.0" upper="1.095" velocity="1.0"/>-->
+    <!-- copied value did not reach the top of mesh model with GUI sliders and RViz -->
+    <limit effort="100" lower="-0.1033" upper="0.9967" velocity="1.0"/>
+    <dynamics damping="${joint_damping}" friction="${joint_friction}" spring_reference="${joint_spring_reference}" spring_stiffness="{joint_spring_stiffness}"/>
   </joint>
   
   <link
@@ -327,12 +335,12 @@
       <mass
         value="0.0676525455789735" />
       <inertia
-        ixx="0.000122002023066796"
-        ixy="7.29593356230121E-13"
-        ixz="9.63170353371061E-09"
-        iyy="0.000122002023127152"
-        iyz="-9.24154949889042E-09"
-        izz="1.46043439809638E-12" />
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -382,12 +390,12 @@
       <mass
         value="0.0626921047058405" />
       <inertia
-        ixx="0.000115246639451415"
-        ixy="4.42139679831176E-14"
-        ixz="1.89711279909763E-09"
-        iyy="0.000115246639420046"
-        iyz="-2.68592949587539E-09"
-        izz="9.38270676408352E-14" />
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -425,9 +433,10 @@
     <child
       link="link_arm_l3" />
     <axis
-	xyz="0 0 1" />
+  xyz="0 0 1" />
     <!-- 0.13 = 0.52/4-->
     <limit effort="100" lower="0.0" upper="0.13" velocity="1.0"/>
+    <dynamics damping="${joint_damping}" friction="${joint_friction}" spring_reference="${joint_spring_reference}" spring_stiffness="{joint_spring_stiffness}"/>
   </joint>
   
   <link
@@ -439,12 +448,12 @@
       <mass
         value="0.0569074368576238" />
       <inertia
-        ixx="0.000105206697151872"
-        ixy="2.59896259031046E-14"
-        ixz="1.69941454517918E-09"
-        iyy="0.000105206697154717"
-        iyz="-1.60895568923743E-09"
-        izz="5.20570301686304E-14" />
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -482,9 +491,10 @@
     <child
       link="link_arm_l2" />
     <axis
-	xyz="0 0 1" />
+  xyz="0 0 1" />
     <!-- 0.13 = 0.52/4-->
     <limit effort="100" lower="0.0" upper="0.13" velocity="1.0"/>
+    <dynamics damping="${joint_damping}" friction="${joint_friction}" spring_reference="${joint_spring_reference}" spring_stiffness="{joint_spring_stiffness}"/>
   </joint>
   
   <link
@@ -496,12 +506,12 @@
       <mass
         value="0.0511763619538321" />
       <inertia
-        ixx="9.58490021274768E-05"
-        ixy="2.27446667584309E-14"
-        ixz="1.54951672295709E-09"
-        iyy="9.5849002131875E-05"
-        iyz="-1.40692486873422E-09"
-        izz="4.57014633924348E-14" />
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -539,9 +549,10 @@
     <child
       link="link_arm_l1" />
     <axis
-	xyz="0 0 1" />
+  xyz="0 0 1" />
     <!-- 0.13 = 0.52/4-->
     <limit effort="100" lower="0.0" upper="0.13" velocity="1.0"/>
+    <dynamics damping="${joint_damping}" friction="${joint_friction}" spring_reference="${joint_spring_reference}" spring_stiffness="{joint_spring_stiffness}"/>
   </joint>
   
   <link
@@ -553,12 +564,12 @@
       <mass
         value="0.101241250325294" />
       <inertia
-        ixx="0.000227156999010352"
-        ixy="8.90680620109423E-06"
-        ixz="-7.91132210985695E-05"
-        iyy="0.000300732790537324"
-        iyz="7.21771824540896E-06"
-        izz="9.35784422621597E-05" />
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -596,9 +607,10 @@
     <child
       link="link_arm_l0" />
     <axis
-	xyz="0 0 1" />
+  xyz="0 0 1" />
     <!-- 0.13 = 0.52/4-->
     <limit effort="100" lower="0.0" upper="0.13" velocity="1.0"/>
+    <dynamics damping="${joint_damping}" friction="${joint_friction}" spring_reference="${joint_spring_reference}" spring_stiffness="{joint_spring_stiffness}"/>
   </joint>
   
   <link
@@ -610,12 +622,12 @@
       <mass
         value="0.0405398981326229" />
       <inertia
-        ixx="2.20062857967227E-09"
-        ixy="1.15494401227051E-13"
-        ixz="1.02598056874346E-11"
-        iyy="2.20039759185237E-09"
-        iyz="-2.47692875363392E-11"
-        izz="3.26666802416509E-13" />
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -628,7 +640,7 @@
       <material
         name="">
         <color
-	  rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+    rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
     <collision>
@@ -655,12 +667,13 @@
     <axis
       xyz="0 0 -1" />
     <!--
-	stowed to front ~225 deg: 3.15159 x 1.25 = 3.9395
-	using 4.0
-	stowed to back ~100 deg:  100 / 180 x 3.14159 = 1.7453
-	using -1.75
+  stowed to front ~225 deg: 3.15159 x 1.25 = 3.9395
+  using 4.0
+  stowed to back ~100 deg:  100 / 180 x 3.14159 = 1.7453
+  using -1.75
     -->
     <limit effort="100" lower="-1.75" upper="4.0" velocity="1.0"/>
+    <dynamics damping="${joint_damping}" friction="${joint_friction}" spring_reference="${joint_spring_reference}" spring_stiffness="{joint_spring_stiffness}"/>
   </joint>
   
   <link
@@ -672,12 +685,12 @@
       <mass
         value="0.129454717596498" />
       <inertia
-        ixx="2.9340596231093E-05"
-        ixy="-7.89638931853666E-07"
-        ixz="-4.74678128515878E-06"
-        iyy="2.68283736177377E-05"
-        iyz="1.80251508621876E-06"
-        izz="1.4617291423745E-05" />
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -727,12 +740,12 @@
       <mass
         value="0.035858341182617" />
       <inertia
-        ixx="2.75847937559827E-05"
-        ixy="5.25762707913649E-07"
-        ixz="-9.28796751052893E-07"
-        iyy="2.08815921106858E-05"
-        iyz="1.17265055331737E-05"
-        izz="6.78612505435872E-06" />
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -770,8 +783,9 @@
     <child
       link="link_head_pan" />
     <axis
-	xyz="0 0 1" />
+  xyz="0 0 1" />
     <!-- unconstrained range for now -->
+    <dynamics damping="${joint_damping}" friction="${joint_friction}" spring_reference="${joint_spring_reference}" spring_stiffness="{joint_spring_stiffness}"/>
     <limit effort="100" lower="-3.9" upper="1.5" velocity="1.0"/>
   </joint>
   
@@ -784,12 +798,12 @@
       <mass
         value="0.0701242408063442" />
       <inertia
-        ixx="1.73265934767466E-05"
-        ixy="2.38363792824069E-07"
-        ixz="7.96430204321056E-08"
-        iyy="4.11044416077217E-05"
-        iyz="-9.41955638215997E-07"
-        izz="2.38851808140542E-05" />
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -829,6 +843,7 @@
     <axis
       xyz="0 0 1" />
     <!-- unconstrained range for now -->
+    <dynamics damping="${joint_damping}" friction="${joint_friction}" spring_reference="${joint_spring_reference}" spring_stiffness="{joint_spring_stiffness}"/>
     <limit effort="100" lower="-1.53" upper="0.79" velocity="1.0"/>
   </joint>
 

@@ -2,6 +2,10 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="stretch_gripper">
 
   <xacro:property name="scale_finger_length" value="0.9" />
+  <xacro:property name="gripper_joint_damping" value="21.75"/>
+  <xacro:property name="gripper_joint_friction" value="3.48"/>
+  <xacro:property name="gripper_joint_spring_stiffness" value="0"/>
+  <xacro:property name="gripper_joint_spring_reference" value="0"/>
 
   <link
     name="link_gripper">
@@ -12,12 +16,12 @@
       <mass
         value="0.101902711393094" />
       <inertia
-        ixx="2.79241618017607E-05"
-        ixy="-1.10819247449605E-05"
-        ixz="-1.50343284036654E-05"
-        iyy="3.67945130513069E-05"
-        iyz="-4.33280448535579E-06"
-        izz="4.14524691955231E-05" />
+        ixx="0.001"
+        ixy="0"
+        ixz="0"
+        iyy="0.001"
+        iyz="0"
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -44,8 +48,6 @@
     </collision>
   </link>
 
-  <!-- rpy="3.1416 0 1.5708" -->
-  <!-- rpy="0.0 0 1.5708" -->
   <joint
     name="joint_gripper"
     type="fixed">
@@ -69,12 +71,12 @@
       <mass
         value="0.0476207785199474" />
       <inertia
-        ixx="0"
+        ixx="0.001"
         ixy="0"
         ixz="0"
-        iyy="0"
+        iyy="0.001"
         iyz="0"
-        izz="0" />
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -114,6 +116,7 @@
     <axis
       xyz="0 0 1" />
     <limit effort="100" lower="-0.6" upper="0.6" velocity="1.0"/>
+    <dynamics damping="${gripper_joint_damping}" friction="${gripper_joint_friction}" spring_reference="${gripper_joint_spring_reference}" spring_stiffness="{gripper_joint_spring_stiffness}"/>
   </joint>
   
   <link
@@ -124,13 +127,13 @@
         rpy="0 0 0" />
       <mass
         value="0.00382159917455729" />
-      <inertia
-        ixx="0"
+        <inertia
+        ixx="0.001"
         ixy="0"
         ixz="0"
-        iyy="0"
+        iyy="0.001"
         iyz="0"
-        izz="0" />
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -179,13 +182,13 @@
         rpy="0 0 0" />
       <mass
         value="0.0476207785199481" />
-      <inertia
-        ixx="0"
+        <inertia
+        ixx="0.001"
         ixy="0"
         ixz="0"
-        iyy="0"
+        iyy="0.001"
         iyz="0"
-        izz="0" />
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -225,6 +228,7 @@
     <axis
       xyz="0 0 1" />
     <limit effort="100" lower="-0.6" upper="0.6" velocity="1.0"/>
+    <dynamics damping="${gripper_joint_damping}" friction="${gripper_joint_friction}" spring_reference="${gripper_joint_spring_reference}" spring_stiffness="{gripper_joint_spring_stiffness}"/>
   </joint>
   
   <link
@@ -236,12 +240,12 @@
       <mass
         value="0.00382160037319545" />
       <inertia
-        ixx="0"
+        ixx="0.001"
         ixy="0"
         ixz="0"
-        iyy="0"
+        iyy="0.001"
         iyz="0"
-        izz="0" />
+        izz="0.001" />
     </inertial>
     <visual>
       <origin
@@ -300,6 +304,3 @@
   </joint>
   
 </robot>
-
-  
-
