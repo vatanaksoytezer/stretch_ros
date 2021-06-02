@@ -49,35 +49,24 @@ class GripperComponent(TrajectoryComponent):
     def __init__(self, robot):
         TrajectoryComponent.__init__(self, 'stretch_gripper', robot.end_of_arm.motors['stretch_gripper'])
         self.gripper_conversion = GripperConversion()
-        self.pct_to_world_rad = self.trajectory_manager.pct_to_world_rad
-        self.world_rad_to_pct = self.trajectory_manager.world_rad_to_pct
 
-    def finger_rad_to_world_rad(self, finger_rad):
-        robotis = self.gripper_conversion.finger_to_robotis(finger_rad)
-        return self.pct_to_world_rad(robotis)
-
-    def world_rad_to_finger_rad(self, world_rad):
-        robotis = self.world_rad_to_pct(world_rad)
-        return self.gripper_conversion.robotis_to_finger(robotis)
+        # Convenient aliases
+        self.finger_rad_to_robotis = self.gripper_conversion.finger_to_robotis
+        self.robotis_to_finger_rad = self.gripper_conversion.robotis_to_finger
 
     def get_position(self):
-        # Alternate approach:
-        # return self.world_rad_to_finger_rad(self.trajectory_manager.status['pos'])
-        robotis = self.trajectory_manager.status['pos_pct']
-        finger_rad = self.gripper_conversion.robotis_to_finger(robotis)
-        return finger_rad
+        return self.robotis_to_finger_rad(self.trajectory_manager.status['pos_pct'])
 
     def get_desired_position(self, dt):
-        return self.world_rad_to_finger_rad(self.trajectory_manager.trajectory.evaluate_at(dt).position)
+        return self.robotis_to_finger_rad(self.trajectory_manager.trajectory.evaluate_at(dt).position)
 
     def add_waypoint(self, t, x, v, a):
-        x = self.finger_rad_to_world_rad(x)
+        x = self.finger_rad_to_robotis(x)
         if v:
-            v = self.finger_rad_to_world_rad(v)
+            v = self.finger_rad_to_robotis(v)
         if a:
-            a = self.finger_rad_to_world_rad(a)
+            a = self.finger_rad_to_robotis(a)
         self.trajectory_manager.trajectory.add_waypoint(t, x, v, a)
-#            pct = 500.0 * finger_rad / 0.3
 
 
 class ArmComponent(TrajectoryComponent):
@@ -95,14 +84,24 @@ class BaseComponent(TrajectoryComponent):
         TrajectoryComponent.__init__(self, 'position', robot.base)
 
     def get_position(self):
-        return to_transform(self.trajectory_manager.status['pos'])
+        return to_transform(self.trajectory_manager.status)
+
+    def get_desired_position(self, dt):
+        # TODO: Fill in actual interpolated position
+        return to_transform({'x': 0.0, 'y': 0.0, 'theta': 0.0})
 
     def add_waypoints(self, waypoints, index):
-        TrajectoryComponent.add_waypoints(self, waypoints, index)
+        self.trajectory_manager.trajectory.clear_waypoints()
+        for waypoint in waypoints:
+            t = to_sec(waypoint.time_from_start)
+            x = waypoint.transforms[index]
+            v = waypoint.velocities[index] if index < len(waypoint.velocities) else None
+            a = waypoint.accelerations[index] if index < len(waypoint.accelerations) else None
+            self.add_waypoint(t, x, v, a)
         self.trajectory_manager.trajectory.complete_trajectory()
 
     def add_waypoint(self, t, x, v, a):
-        x = transform_to_triple(t)
+        x = transform_to_triple(x)
         if v is not None:
             v = twist_to_pair(v)
         if a is not None:

@@ -36,6 +36,7 @@ class TrajectoryActionClient(Node):
                                            '/stretch_controller/follow_joint_trajectory')
 
         self.send_position = False
+        self.print_feedback = False
 
     def send_goal(self):
         goal = FollowJointTrajectory.Goal()
@@ -43,7 +44,7 @@ class TrajectoryActionClient(Node):
         goal.trajectory.joint_names = ['joint_lift', 'wrist_extension', 'joint_wrist_yaw', 'joint_head_tilt',
                                        'joint_head_pan', 'joint_gripper_finger_left']
         p0 = JointTrajectoryPoint()
-        p0.positions = [0.92, 0.5, radians(36), radians(20), radians(0), 0.0]
+        p0.positions = [0.92, 0.5, radians(36), radians(20), radians(0), -0.24]
         p0.velocities = [0.0, 0.0, 0.0, 0.0, 0.0]
         goal.trajectory.points.append(p0)
 
@@ -54,7 +55,7 @@ class TrajectoryActionClient(Node):
         goal.trajectory.points.append(p1)
 
         p2 = JointTrajectoryPoint()
-        p2.positions = [0.92, 0.5, radians(36), radians(20), radians(0), 0.0]
+        p2.positions = [0.92, 0.5, radians(36), radians(20), radians(0), -0.24]
         p2.velocities = [0.0, 0.0, 0.0, 0.0, 0.0]
         p2.time_from_start = Duration(seconds=20).to_msg()
         goal.trajectory.points.append(p2)
@@ -99,7 +100,8 @@ class TrajectoryActionClient(Node):
         self._get_result_future.add_done_callback(self.get_result_callback)
 
     def feedback_callback(self, feedback_msg):
-        self.log(feedback_msg)
+        if self.print_feedback:
+            self.log(feedback_msg)
 
     def get_result_callback(self, future):
         result = future.result().result

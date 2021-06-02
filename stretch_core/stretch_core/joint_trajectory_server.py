@@ -360,8 +360,8 @@ class JointTrajectoryAction:
                 raise InvalidJointException('Driver supports a single multi_dof joint named position. '
                                             f'Got {multi_dof_joints} instead.')
             for i, pt in enumerate(goal.multi_dof_trajectory.points):
-                if len(pt.positions) != len(goal.multi_dof_joint_names):
-                    raise InvalidGoalException(f'MultiDOF goal point with index {i} has {len(pt.positions)} positions '
+                if len(pt.transforms) != len(goal.multi_dof_trajectory.joint_names):
+                    raise InvalidGoalException(f'MultiDOF goal point with index {i} has {len(pt.transforms)} transforms '
                                                f'but should have {len(goal.joint_names)}')
 
             if self.ignore_trajectory_velocities or self.ignore_trajectory_accelerations:
@@ -434,10 +434,10 @@ class JointTrajectoryAction:
                     actual_pos = t_comp.get_position()
                     desired_pos = t_comp.get_desired_position(dt)
 
-                    feedback.multi_dof_actual.positions = [actual_pos]
-                    feedback.multi_dof_desired.positions = [desired_pos]
+                    feedback.multi_dof_actual.transforms = [actual_pos]
+                    feedback.multi_dof_desired.transforms = [desired_pos]
                     # TODO: Compute the transform between the two transform positions
-                    # feedback.multi_dof_error.positions = [actual_pos - desired_pos]
+                    # feedback.multi_dof_error.transforms = [actual_pos - desired_pos]
                     # feedback.multi_dof_error.time_from_start = feedback.desired.time_from_start
 
                 goal_handle.publish_feedback(feedback)
