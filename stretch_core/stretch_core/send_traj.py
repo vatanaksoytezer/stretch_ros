@@ -43,18 +43,18 @@ class TrajectoryActionClient(Node):
         goal.trajectory.joint_names = ['joint_lift', 'wrist_extension', 'joint_wrist_yaw', 'joint_head_tilt',
                                        'joint_head_pan', 'joint_gripper_finger_left']
         p0 = JointTrajectoryPoint()
-        p0.positions = [0.92, 0.5, radians(36), radians(90), radians(0), 0.0]
+        p0.positions = [0.92, 0.5, radians(36), radians(20), radians(0), 0.0]
         p0.velocities = [0.0, 0.0, 0.0, 0.0, 0.0]
         goal.trajectory.points.append(p0)
 
         p1 = JointTrajectoryPoint()
-        p1.positions = [0.2, 0.0, radians(90), radians(0), radians(0), 0.24]
+        p1.positions = [0.2, 0.0, radians(90), radians(-40), radians(90), 0.24]
         p1.velocities = [0.0, 0.0, 0.0, 0.0, 0.0]
         p1.time_from_start = Duration(seconds=10).to_msg()
         goal.trajectory.points.append(p1)
 
         p2 = JointTrajectoryPoint()
-        p2.positions = [0.92, 0.5, radians(36), radians(90), radians(0), 0.0]
+        p2.positions = [0.92, 0.5, radians(36), radians(20), radians(0), 0.0]
         p2.velocities = [0.0, 0.0, 0.0, 0.0, 0.0]
         p2.time_from_start = Duration(seconds=20).to_msg()
         goal.trajectory.points.append(p2)
