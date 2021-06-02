@@ -418,7 +418,7 @@ class JointTrajectoryAction:
 
                 dt = to_sec(feedback.desired.time_from_start)
                 for joint_name in feedback.joint_names:
-                    t_comp = self.trajectory_components[name]
+                    t_comp = self.trajectory_components[joint_name]
                     actual_pos = t_comp.get_position()
                     desired_pos = t_comp.get_desired_position(dt)
 
@@ -469,3 +469,55 @@ class JointTrajectoryAction:
             return FollowJointTrajectory.Result(error_code=-10000, error_string=str(e))
         finally:
             self.node.robot_mode_rwlock.release_read()
+
+    def check_tolerances(self, dt, tolerance_dict, component_tolerances, is_path=False):
+        errors = []
+        tolerance_type = 'path' if is_path else 'goal'
+
+        # Check single DOF first
+        for name, tolerance in tolerance_dict.items():
+            t_comp = self.trajectory_components[name]
+            # TODO: This code just uses the specified tolerances and ignores the "default". See
+            # https://github.com/ros-controls/control_msgs/blob/galactic-devel/control_msgs/msg/JointTolerance.msg#L1
+            # for more info
+
+            actual = t_comp.get_position()
+            desired = t_comp.get_desired_position(dt)
+
+            diff = actual - desired
+            if abs(diff) > tolerance.position:
+                errors.append(f'Joint {name} exceeded {tolerance_type} tolerance: Actual: {actual:.3f} '
+                              f'Desired: {desired:.3f} Tolerance: {tolerance.position:.3f}')
+
+        # Check the multi_dof
+        for component_tolerance in component_tolerances:
+            t_comp = self.trajectory_components[component_tolerance.joint_name]
+            actual = t_comp.get_position()
+            desired = t_comp.get_desired_position(dt)
+            if component_tolerance.component == JointComponentTolerance.TRANSLATION:
+                # TODO: Compute euclidean
+                diff = 0.0
+                component = 'translation'
+            elif component_tolerance.component == JointComponentTolerance.ROTATION:
+                # TODO: Compute quaternion difference
+                diff = 0.0
+                component = 'translation'
+            else:
+                # X_AXIS=1, Y_AXIS=2, Z_AXIS=3
+                component = ['', 'x', 'y', 'z'][component_tolerance.component]
+                actual_component = getattr(actual.translation, component)
+                desired_component = getattr(desired.translation, component)
+                diff = desired_component - actual_component
+
+            if diff > component_tolerance.position:
+                errors.append(f'Joint {component_tolerance.joint_name} exceeded {tolerance_type} tolerance with '
+                              f'the {component} component: Actual: {actual_component:.3f} '
+                              f'Desired: {desired_component:.3f} Tolerance: {component_tolerance.position:.3f}')
+
+        if not errors:
+            return
+        err_str = '/'.join(errors)
+        if is_path:
+            raise PathToleranceException(err_str)
+        else:
+            raise GoalToleranceException(err_str)
