@@ -48,7 +48,7 @@ class TrajectoryActionClient(Node):
         goal.trajectory.points.append(p0)
 
         p1 = JointTrajectoryPoint()
-        p1.positions = [0.2, 0.0, radians(90), radians(0), radians(0), 0.1]
+        p1.positions = [0.2, 0.0, radians(90), radians(0), radians(0), 0.24]
         p1.velocities = [0.0, 0.0, 0.0, 0.0, 0.0]
         p1.time_from_start = Duration(seconds=10).to_msg()
         goal.trajectory.points.append(p1)
