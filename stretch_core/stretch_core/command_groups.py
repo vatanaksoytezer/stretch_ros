@@ -1,10 +1,9 @@
 #! /usr/bin/env python
 from __future__ import print_function
 
+import numpy as np
 import hello_helpers.hello_misc as hm
 from hello_helpers.gripper_conversion import GripperConversion
-
-import numpy as np
 
 def get_waypoints(points, index):
     for waypoint in points:
@@ -173,34 +172,12 @@ class SimpleCommandGroup:
 
         return True
 
-    def get_component(self, robot):
-        raise NotImplementedError
-
-    def get_state(self, robot_status):
-        raise NotImplementedError
-
-    def is_active(self, robot):
-        return self.get_component(robot).status.get('trajectory_active', False)
-
-    def set_trajectory_goals(self, points, robot):
-        if self.active:
-            trajectory = self.get_component(robot).trajectory
-            trajectory.clear_waypoints()
-            for t, x, v, a in get_waypoints(points, self.index):
-                trajectory.add_waypoint(t, x, v, a)
-
 
 class HeadPanCommandGroup(SimpleCommandGroup):
     def __init__(self, range_rad, head_pan_calibrated_offset, head_pan_calibrated_looked_left_offset):
         SimpleCommandGroup.__init__(self, 'joint_head_pan', range_rad, acceptable_joint_error=0.15)
         self.head_pan_calibrated_offset = head_pan_calibrated_offset
         self.head_pan_calibrated_looked_left_offset = head_pan_calibrated_looked_left_offset
-
-    def get_component(self, robot):
-        return robot.head.get_joint('head_pan')
-
-    def get_state(self, robot_status):
-        return robot_status['head']['head_pan']
 
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
@@ -236,12 +213,6 @@ class HeadTiltCommandGroup(SimpleCommandGroup):
         self.head_tilt_calibrated_looking_up_offset = head_tilt_calibrated_looking_up_offset
         self.head_tilt_backlash_transition_angle = head_tilt_backlash_transition_angle
 
-    def get_component(self, robot):
-        return robot.head.get_joint('head_tilt')
-
-    def get_state(self, robot_status):
-        return robot_status['head']['head_tilt']
-
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
             _, tilt_error = self.update_execution(robot_status, backlash_state=kwargs['backlash_state'])
@@ -271,12 +242,6 @@ class WristYawCommandGroup(SimpleCommandGroup):
     def __init__(self, range_rad):
         SimpleCommandGroup.__init__(self, 'joint_wrist_yaw', range_rad)
 
-    def get_component(self, robot):
-        return robot.end_of_arm.motors['wrist_yaw']
-
-    def get_state(self, robot_status):
-        return robot_status['end_of_arm']['wrist_yaw']
-
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
             robot.end_of_arm.move_by('wrist_yaw',
@@ -295,7 +260,7 @@ class WristYawCommandGroup(SimpleCommandGroup):
 
 class GripperCommandGroup(SimpleCommandGroup):
     def __init__(self, range_robotis):
-        SimpleCommandGroup.__init__(self, 'stretch_gripper', None, acceptable_joint_error=1.0)
+        SimpleCommandGroup.__init__(self, None, None, acceptable_joint_error=1.0)
         self.gripper_joint_names = ['joint_gripper_finger_left', 'joint_gripper_finger_right', 'gripper_aperture']
         self.gripper_conversion = GripperConversion()
         self.range_aperture_m = (self.gripper_conversion.robotis_to_aperture(range_robotis[0]),
@@ -372,12 +337,6 @@ class GripperCommandGroup(SimpleCommandGroup):
 
         return None
 
-    def get_component(self, robot):
-        return robot.end_of_arm.motors['stretch_gripper']
-
-    def get_state(self, robot_status):
-        return robot_status['end_of_arm']['stretch_gripper']
-
 
 class TelescopingCommandGroup(SimpleCommandGroup):
     def __init__(self, range_m, wrist_extension_calibrated_retracted_offset):
@@ -424,44 +383,6 @@ class TelescopingCommandGroup(SimpleCommandGroup):
                 return False
 
         return True
-
-    def get_component(self, robot):
-        return robot.arm
-
-    def get_state(self, robot_status):
-        return robot_status['arm']
-
-    def is_active(self, robot):
-        return self.get_component(robot).motor.status.get('trajectory_active', False)
-
-    def set_trajectory_goals(self, points, robot):
-        if self.active:
-            if isinstance(self.index, int):
-                for t, x, v, a in get_waypoints(points, self.index):
-                    robot.arm.trajectory.add_waypoint(t_s=t, x_r=x, v_r=v, a_r=a)
-            else:
-                for waypoint in points:
-                    t = waypoint.time_from_start.sec + waypoint.time_from_start.nanosec / 1e9
-                    x = 0.0
-                    vels = []
-                    accels = []
-                    for index in self.index:
-                        if len(waypoint.positions) > index:
-                            x += waypoint.positions[index]
-
-                        if len(waypoint.velocities) > index:
-                            vels.append(waypoint.velocities[index])
-                        if len(waypoint.accelerations) > index:
-                            accels.append(waypoint.accelerations[index])
-                    if vels:
-                        v = sum(vels) / len(vels)
-                    else:
-                        v = None
-                    if accels:
-                        a = sum(accels) / len(accels)
-                    else:
-                        a = None
-                    robot.arm.trajectory.add_waypoint(t_s=t, x_m=x, v_m=v, a_m=a)
 
     def set_goal(self, point, invalid_goal_callback, fail_out_of_range_goal, **kwargs):
         self.goal = {"position": None, "velocity": None, "acceleration": None, "contact_threshold": None}
@@ -537,15 +458,6 @@ class TelescopingCommandGroup(SimpleCommandGroup):
 class LiftCommandGroup(SimpleCommandGroup):
     def __init__(self, range_m):
         SimpleCommandGroup.__init__(self, 'joint_lift', range_m)
-
-    def get_component(self, robot):
-        return robot.lift
-
-    def get_state(self, robot_status):
-        return robot_status['lift']
-
-    def is_active(self, robot):
-        return self.get_component(robot).motor.status.get('trajectory_active', False)
 
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
@@ -644,16 +556,6 @@ class MobileBaseCommandGroup(SimpleCommandGroup):
                 return False
 
         return True
-
-    def get_component(self, robot):
-        return robot.base
-
-    def get_state(self, robot_status):
-        return robot_status['base']
-
-    def is_active(self, robot):
-        return robot.base.left_wheel.status.get('trajectory_active', False) or \
-            robot.base.right_wheel.status.get('trajectory_active', False)
 
     def set_trajectory_goals(self, points, robot):
         if self.active_translate_mobile_base:
