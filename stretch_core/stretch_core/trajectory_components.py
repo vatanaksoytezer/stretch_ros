@@ -49,19 +49,35 @@ class GripperComponent(TrajectoryComponent):
     def __init__(self, robot):
         TrajectoryComponent.__init__(self, 'stretch_gripper', robot.end_of_arm.motors['stretch_gripper'])
         self.gripper_conversion = GripperConversion()
+        self.pct_to_world_rad = self.trajectory_manager.pct_to_world_rad
+        self.world_rad_to_pct = self.trajectory_manager.world_rad_to_pct
+
+    def finger_rad_to_world_rad(self, finger_rad):
+        robotis = self.gripper_conversion.finger_to_robotis(finger_rad)
+        return self.pct_to_world_rad(robotis)
+
+    def world_rad_to_finger_rad(self, world_rad):
+        robotis = self.world_rad_to_pct(world_rad)
+        return self.gripper_conversion.robotis_to_finger(robotis)
 
     def get_position(self):
+        # Alternate approach:
+        # return self.world_rad_to_finger_rad(self.trajectory_manager.status['pos'])
         robotis = self.trajectory_manager.status['pos_pct']
         finger_rad = self.gripper_conversion.robotis_to_finger(robotis)
         return finger_rad
 
     def get_desired_position(self, dt):
-        return self.trajectory_manager.trajectory.evaluate_at(dt).position
+        return self.world_rad_to_finger_rad(self.trajectory_manager.trajectory.evaluate_at(dt).position)
 
-#        for pt in trajectory.points:
- #           finger_rad = pt.positions[gripper_index]
-  #          pct = 500.0 * finger_rad / 0.3
-   #         pt.positions[gripper_index] = gripper.pct_to_world_rad(pct)
+    def add_waypoint(self, t, x, v, a):
+        x = self.finger_rad_to_world_rad(x)
+        if v:
+            v = self.finger_rad_to_world_rad(v)
+        if a:
+            a = self.finger_rad_to_world_rad(a)
+        self.trajectory_manager.trajectory.add_waypoint(t, x, v, a)
+#            pct = 500.0 * finger_rad / 0.3
 
 
 class ArmComponent(TrajectoryComponent):
