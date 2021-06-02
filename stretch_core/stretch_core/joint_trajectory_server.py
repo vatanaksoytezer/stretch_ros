@@ -318,7 +318,7 @@ class JointTrajectoryAction:
             error_point.positions.append(clean_named_errors_dict[commanded_joint_name])
             actual_point.positions.append(desired_point.positions[i] - clean_named_errors_dict[commanded_joint_name])
 
-        self.node.get_logger().info("{0} joint_traj action: sending feedback".format(self.node.node_name))
+        self.node.get_logger().debug("{0} joint_traj action: sending feedback".format(self.node.node_name))
         self.feedback.header.stamp = self.node.get_clock().now()
         self.feedback.joint_names = commanded_joint_names
         self.feedback.desired = desired_point

@@ -5,14 +5,6 @@ import numpy as np
 import hello_helpers.hello_misc as hm
 from hello_helpers.gripper_conversion import GripperConversion
 
-def get_waypoints(points, index):
-    for waypoint in points:
-        t = waypoint.time_from_start.sec + waypoint.time_from_start.nanosec / 1e9
-        x = waypoint.positions[index] if index < len(waypoint.positions) else None
-        v = waypoint.velocities[index] if index < len(waypoint.velocities) else None
-        a = waypoint.accelerations[index] if index < len(waypoint.accelerations) else None
-        yield t, x, v, a
-
 
 class SimpleCommandGroup:
     def __init__(self, joint_name, joint_range, acceptable_joint_error=0.015):
@@ -556,14 +548,6 @@ class MobileBaseCommandGroup(SimpleCommandGroup):
                 return False
 
         return True
-
-    def set_trajectory_goals(self, points, robot):
-        if self.active_translate_mobile_base:
-            for t, x, v, a in get_waypoints(points, self.index_translate_mobile_base):
-                robot.base.trajectory.add_translate_waypoint(t_s=t, x_m=x, v_m=v, a_m=a)
-        elif self.active_rotate_mobile_base:
-            for t, x, v, a in get_waypoints(points, self.index_rotate_mobile_base):
-                robot.base.trajectory.add_rotate_waypoint(t_s=t, x_r=x, v_r=v, a_r=a)
 
     def set_goal(self, point, invalid_goal_callback, fail_out_of_range_goal, **kwargs):
         self.goal = {"position": None, "velocity": None, "acceleration": None, "contact_threshold": None}

@@ -9,10 +9,10 @@ class GripperConversion:
         #
         # aperture is 12.5 cm wide when open (0.125 m, 125 mm)
         #
-        # finger angle
+        # finger angle (radians)
         #   0.0 just barely closed
-        #   fully opened is 0.25
-        #   fully closed in -0.50
+        #   fully opened is 0.263 (~15 degrees)
+        #   fully closed in -0.526 (~-30 degrees)
 
         # from stretch_gripper.xacro
         # scale_finger_length = 0.9
