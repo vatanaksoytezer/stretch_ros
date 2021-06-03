@@ -5,14 +5,6 @@ import numpy as np
 import hello_helpers.hello_misc as hm
 from hello_helpers.gripper_conversion import GripperConversion
 
-def get_waypoints(points, index):
-    for waypoint in points:
-        t = waypoint.time_from_start.sec + waypoint.time_from_start.nanosec / 1e9
-        x = waypoint.positions[index] if index < len(waypoint.positions) else None
-        v = waypoint.velocities[index] if index < len(waypoint.velocities) else None
-        a = waypoint.accelerations[index] if index < len(waypoint.accelerations) else None
-        yield t, x, v, a
-
 
 class SimpleCommandGroup:
     def __init__(self, joint_name, joint_range, acceptable_joint_error=0.015):
@@ -179,11 +171,6 @@ class HeadPanCommandGroup(SimpleCommandGroup):
         self.head_pan_calibrated_offset = head_pan_calibrated_offset
         self.head_pan_calibrated_looked_left_offset = head_pan_calibrated_looked_left_offset
 
-    def set_trajectory_goals(self, points, robot):
-        if self.active:
-            for t, x, v, a in get_waypoints(points, self.index):
-                robot.head.get_joint('head_pan').trajectory.add_waypoint(t_s=t, x_r=x, v_r=v, a_r=a)
-
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
             _, pan_error = self.update_execution(robot_status, backlash_state=kwargs['backlash_state'])
@@ -218,11 +205,6 @@ class HeadTiltCommandGroup(SimpleCommandGroup):
         self.head_tilt_calibrated_looking_up_offset = head_tilt_calibrated_looking_up_offset
         self.head_tilt_backlash_transition_angle = head_tilt_backlash_transition_angle
 
-    def set_trajectory_goals(self, points, robot):
-        if self.active:
-            for t, x, v, a in get_waypoints(points, self.index):
-                robot.head.get_joint('head_tilt').trajectory.add_waypoint(t_s=t, x_r=x, v_r=v, a_r=a)
-
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
             _, tilt_error = self.update_execution(robot_status, backlash_state=kwargs['backlash_state'])
@@ -251,11 +233,6 @@ class HeadTiltCommandGroup(SimpleCommandGroup):
 class WristYawCommandGroup(SimpleCommandGroup):
     def __init__(self, range_rad):
         SimpleCommandGroup.__init__(self, 'joint_wrist_yaw', range_rad)
-
-    def set_trajectory_goals(self, points, robot):
-        if self.active:
-            for t, x, v, a in get_waypoints(points, self.index):
-                robot.end_of_arm.motors['wrist_yaw'].trajectory.add_waypoint(t_s=t, x_r=x, v_r=v, a_r=a)
 
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
@@ -399,35 +376,6 @@ class TelescopingCommandGroup(SimpleCommandGroup):
 
         return True
 
-    def set_trajectory_goals(self, points, robot):
-        if self.active:
-            if isinstance(self.index, int):
-                for t, x, v, a in get_waypoints(points, self.index):
-                    robot.arm.trajectory.add_waypoint(t_s=t, x_r=x, v_r=v, a_r=a)
-            else:
-                for waypoint in points:
-                    t = waypoint.time_from_start.sec + waypoint.time_from_start.nanosec / 1e9
-                    x = 0.0
-                    vels = []
-                    accels = []
-                    for index in self.index:
-                        if len(waypoint.positions) > index:
-                            x += waypoint.positions[index]
-
-                        if len(waypoint.velocities) > index:
-                            vels.append(waypoint.velocities[index])
-                        if len(waypoint.accelerations) > index:
-                            accels.append(waypoint.accelerations[index])
-                    if vels:
-                        v = sum(vels) / len(vels)
-                    else:
-                        v = None
-                    if accels:
-                        a = sum(accels) / len(accels)
-                    else:
-                        a = None
-                    robot.arm.trajectory.add_waypoint(t_s=t, x_m=x, v_m=v, a_m=a)
-
     def set_goal(self, point, invalid_goal_callback, fail_out_of_range_goal, **kwargs):
         self.goal = {"position": None, "velocity": None, "acceleration": None, "contact_threshold": None}
         if self.active:
@@ -502,11 +450,6 @@ class TelescopingCommandGroup(SimpleCommandGroup):
 class LiftCommandGroup(SimpleCommandGroup):
     def __init__(self, range_m):
         SimpleCommandGroup.__init__(self, 'joint_lift', range_m)
-
-    def set_trajectory_goals(self, points, robot):
-        if self.active:
-            for t, x, v, a in get_waypoints(points, self.index):
-                robot.lift.trajectory.add_waypoint(t_s=t, x_m=x, v_m=v, a_m=a)
 
     def init_execution(self, robot, robot_status, **kwargs):
         if self.active:
@@ -594,14 +537,6 @@ class MobileBaseCommandGroup(SimpleCommandGroup):
                 return False
 
         return True
-
-    def set_trajectory_goals(self, points, robot):
-        if self.active_translate_mobile_base:
-            for t, x, v, a in get_waypoints(points, self.index_translate_mobile_base):
-                robot.base.trajectory.add_translate_waypoint(t_s=t, x_m=x, v_m=v, a_m=a)
-        elif self.active_rotate_mobile_base:
-            for t, x, v, a in get_waypoints(points, self.index_rotate_mobile_base):
-                robot.base.trajectory.add_rotate_waypoint(t_s=t, x_r=x, v_r=v, a_r=a)
 
     def set_goal(self, point, invalid_goal_callback, fail_out_of_range_goal, **kwargs):
         self.goal = {"position": None, "velocity": None, "acceleration": None, "contact_threshold": None}
