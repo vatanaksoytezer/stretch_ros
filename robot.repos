@@ -6,8 +6,8 @@ repositories:
 
   control_msgs:
     type: git
-    url: https://github.com/DLu/control_msgs
-    version: multi_dof_action_extension
+    url: https://github.com/ros-controls/control_msgs
+    version: galactic-devel
 
   realsense-ros:
     type: git
