@@ -67,3 +67,7 @@ repositories:
     type: git
     url: https://github.com/vatanaksoytezer/ros_ign
     version: feature/add_system_clock
+  aws-robomaker-small-house-world:
+    type: git
+    url: https://github.com/vatanaksoytezer/aws-robomaker-small-house-world
+    version: ignition-port

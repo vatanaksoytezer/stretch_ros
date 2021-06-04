@@ -4,7 +4,7 @@
   <name>stretch_ignition</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="vatanaksoytezer@gmail.com">root</maintainer>
+  <maintainer email="vatan@picknik.ai">root</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
