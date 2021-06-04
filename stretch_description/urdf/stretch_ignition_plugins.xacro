@@ -400,8 +400,8 @@
           <center>0.5 0.5</center>
         </distortion>
         <image>
-          <width>640</width>
-          <height>480</height>
+          <width>1920</width>
+          <height>1080</height>
           <format>R8G8B8</format>
         </image>
         <clip>
@@ -426,7 +426,6 @@
     <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>
 
-  <!-- ! Realsense Depth Camera Does not work from xacro's now -->
   <gazebo reference="camera_depth_optical_frame">
     <sensor name="realsense_d435" type="rgbd_camera">
       <update_rate>30</update_rate>
@@ -450,8 +449,8 @@
           <center>0.5 0.5</center>
         </distortion>
         <image>
-          <width>640</width>
-          <height>480</height>
+          <width>1920</width>
+          <height>1080</height>
           <format>R8G8B8</format>
         </image>
         <clip>
@@ -505,8 +504,8 @@
           <center>0.5 0.5</center>
         </distortion>
         <image>
-          <width>640</width>
-          <height>480</height>
+          <width>1920</width>
+          <height>1080</height>
           <format>R8G8B8</format>
         </image>
         <clip>
@@ -554,8 +553,8 @@
           <center>0.5 0.5</center>
         </distortion>
         <image>
-          <width>640</width>
-          <height>480</height>
+          <width>1920</width>
+          <height>1080</height>
           <format>R8G8B8</format>
         </image>
         <clip>
