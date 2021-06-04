@@ -17,6 +17,113 @@
       <child_frame_id>base_link</child_frame_id>
     </plugin>
 
+    <!-- Joint Trajectories -->
+    <plugin filename="libignition-gazebo-joint-trajectory-controller-system.so" name="ignition::gazebo::systems::JointTrajectoryController">
+      
+      <topic>joint_trajectory</topic>
+
+      <joint_name>joint_arm_l0</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_arm_l1</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_arm_l2</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_arm_l3</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_lift</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_wrist_yaw</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_gripper_finger_left</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_gripper_finger_right</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>3000</position_p_gain>
+      <position_d_gain>15</position_d_gain>
+      <position_i_gain>1650</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-87</position_cmd_min>
+      <position_cmd_max>87</position_cmd_max>
+
+      <joint_name>joint_head_pan</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>300</position_p_gain>
+      <position_d_gain>2.9</position_d_gain>
+      <position_i_gain>10</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-50</position_cmd_min>
+      <position_cmd_max>50</position_cmd_max>
+
+      <joint_name>joint_head_tilt</joint_name>
+      <initial_position>0</initial_position>
+      <position_p_gain>300</position_p_gain>
+      <position_d_gain>2.9</position_d_gain>
+      <position_i_gain>10</position_i_gain>
+      <position_i_min>-15</position_i_min>
+      <position_i_max>15</position_i_max>
+      <position_cmd_min>-50</position_cmd_min>
+      <position_cmd_max>50</position_cmd_max>
+
+    </plugin>
+
   </gazebo>
 
   <!-- LIDAR -->
@@ -49,50 +156,99 @@
           <max>12.0</max>
           <resolution>0.01</resolution>
         </range>
+        <noise type="gaussian">
+          <mean>0.0</mean>
+          <stddev>0.001</stddev>
+        </noise>
       </lidar>
       <alwaysOn>1</alwaysOn>
       <visualize>false</visualize>
     </sensor>
   </gazebo>
 
-  <!-- TODO: Tune Sensors -->
   <gazebo reference="base_link">
     <!-- Base IMU (Accel + Gyro) -->
     <sensor name="imu" type="imu">
       <always_on>1</always_on>
-      <update_rate>100</update_rate>
+      <update_rate>25</update_rate>
       <visualize>false</visualize>
       <topic>imu</topic>
+      <imu>
+        <!-- 0.0625/2000 -->
+        <angular_velocity>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.00003125</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.00003125</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.00003125</stddev>
+            </noise>
+          </z>
+        </angular_velocity>
+        <!-- 20/2000 noise -->
+        <linear_acceleration>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.01</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.01</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.01</stddev>
+            </noise>
+          </z>
+        </linear_acceleration>
+      </imu>
     </sensor>
     <!-- Base Mag -->
+    <!-- 10/1200 noise -->
     <sensor name="magnetometer" type="magnetometer">
       <always_on>1</always_on>
-      <update_rate>100</update_rate>
+      <update_rate>25</update_rate>
       <visualize>false</visualize>
       <topic>magnetometer</topic>
       <magnetometer>
         <x>
           <noise type="gaussian">
             <mean>0.0</mean>
-            <stddev>0.1</stddev>
+            <stddev>0.0083</stddev>
           </noise>
         </x>
         <y>
           <noise type="gaussian">
             <mean>0.0</mean>
-            <stddev>0.1</stddev>
+            <stddev>0.0083</stddev>
           </noise>
         </y>
         <z>
           <noise type="gaussian">
             <mean>0.0</mean>
-            <stddev>0.1</stddev>
+            <stddev>0.0083</stddev>
           </noise>
         </z>
       </magnetometer>
     </sensor>
   </gazebo>
 
+  <!-- TODO: Make this accelerometer only -->
   <!-- Wrist IMU (Accel Only) -->
   <gazebo reference="link_wrist_yaw">
     <sensor name="wrist_imu" type="imu">
@@ -100,10 +256,54 @@
       <update_rate>100</update_rate>
       <visualize>false</visualize>
       <topic>wrist_imu</topic>
+      <imu>
+        <angular_velocity>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.0</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.0</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.0</stddev>
+            </noise>
+          </z>
+        </angular_velocity>
+        <!-- 1.1/2000 Noise -->
+        <linear_acceleration>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.00055</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.00055</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.00055</stddev>
+            </noise>
+          </z>
+        </linear_acceleration>
+      </imu>
     </sensor>
   </gazebo>
 
   <!-- Realsense IMU -->
+  <xacro:if value="$(arg realsense)">
   <gazebo reference="camera_joint">
     <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>
@@ -117,11 +317,54 @@
   </gazebo>
 
   <gazebo reference="camera_gyro_frame">
+    <!-- Arbitrary noise -->
     <sensor name="realsense_imu" type="imu">
       <always_on>1</always_on>
       <update_rate>100</update_rate>
       <visualize>false</visualize>
       <topic>realsense_imu</topic>
+      <imu>
+        <angular_velocity>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.001</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.001</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.001</stddev>
+            </noise>
+          </z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.001</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.001</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.001</stddev>
+            </noise>
+          </z>
+        </linear_acceleration>
+      </imu>
     </sensor>
   </gazebo>
 
@@ -136,9 +379,9 @@
 
   <gazebo reference="camera_color_optical_frame">
     <sensor name="realsense_d435_color" type="camera">
-      <update_rate>60</update_rate>
+      <update_rate>30</update_rate>
       <camera name="camera">
-        <horizontal_fov>1.0472</horizontal_fov>
+        <horizontal_fov>1.13446</horizontal_fov>
         <lens>
           <intrinsics>
             <fx>554.25469</fx>
@@ -186,9 +429,9 @@
   <!-- ! Realsense Depth Camera Does not work from xacro's now -->
   <gazebo reference="camera_depth_optical_frame">
     <sensor name="realsense_d435" type="rgbd_camera">
-      <update_rate>60</update_rate>
+      <update_rate>30</update_rate>
       <camera name="camera">
-        <horizontal_fov>1.0472</horizontal_fov>
+        <horizontal_fov>1.13446</horizontal_fov>
         <lens>
           <intrinsics>
             <fx>554.25469</fx>
@@ -241,9 +484,9 @@
 
   <gazebo reference="camera_infra1_optical_frame">
     <sensor name="realsense_d435_ir" type="camera">
-      <update_rate>60</update_rate>
+      <update_rate>30</update_rate>
       <camera name="camera">
-        <horizontal_fov>1.0472</horizontal_fov>
+        <horizontal_fov>1.13446</horizontal_fov>
         <lens>
           <intrinsics>
             <fx>554.25469</fx>
@@ -290,9 +533,9 @@
 
   <gazebo reference="camera_infra2_optical_frame">
     <sensor name="realsense_d435_ir2" type="camera">
-      <update_rate>60</update_rate>
+      <update_rate>30</update_rate>
       <camera name="camera">
-        <horizontal_fov>1.0472</horizontal_fov>
+        <horizontal_fov>1.13446</horizontal_fov>
         <lens>
           <intrinsics>
             <fx>554.25469</fx>
@@ -327,5 +570,6 @@
       </camera>
     </sensor>
   </gazebo>
+</xacro:if>
 
 </robot>

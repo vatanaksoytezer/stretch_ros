@@ -231,6 +231,6 @@ def generate_launch_description():
             realsense_depth_static_tf,
             realsense_ir_static_tf,
             realsense_ir2_static_tf,
-            # rviz,
+            rviz,
         ]
     )

@@ -2,8 +2,8 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="stretch_main">
   <xacro:property name="M_PI" value="3.1415926535897931" /> 
 
-  <xacro:property name="joint_damping" value="0.75"/>
-  <xacro:property name="joint_friction" value="2.48"/>
+  <xacro:property name="joint_damping" value="21.75"/>
+  <xacro:property name="joint_friction" value="10.48"/>
   <xacro:property name="joint_spring_stiffness" value="0"/>
   <xacro:property name="joint_spring_reference" value="0"/>
   <xacro:property name="caster_damping" value="0.005"/>
@@ -147,7 +147,6 @@
     <axis
       xyz="0 0 1" />
       <dynamics damping="${joint_damping}" friction="${joint_friction}" spring_reference="${joint_spring_reference}" spring_stiffness="{joint_spring_stiffness}"/>
-      <!-- <dynamics damping="21.75" friction="3.48" spring_reference="0.0" spring_stiffness="0.0"/> -->
   </joint>
 
   <!-- Representing a ball joint -->
