@@ -3,6 +3,6 @@ project(stretch_ignition)
 
 find_package(ament_cmake REQUIRED)
 
-install(DIRECTORY worlds rviz launch sdf models DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY worlds rviz launch DESTINATION share/${PROJECT_NAME})
 
 ament_package()
