@@ -13,7 +13,7 @@ class TrajectoryComponent:
     def get_velocity(self):
         return self.trajectory_manager.status['vel']
 
-    def get_desired_position(self, dt):
+    def get_desired_position_at(self, dt):
         return self.trajectory_manager.trajectory.evaluate_at(dt).position
 
     def add_waypoints(self, waypoints, index):
@@ -57,7 +57,7 @@ class GripperComponent(TrajectoryComponent):
     def get_position(self):
         return self.robotis_to_finger_rad(self.trajectory_manager.status['pos_pct'])
 
-    def get_desired_position(self, dt):
+    def get_desired_position_at(self, dt):
         return self.robotis_to_finger_rad(self.trajectory_manager.trajectory.evaluate_at(dt).position)
 
     def add_waypoint(self, t, x, v, a):
@@ -86,7 +86,7 @@ class BaseComponent(TrajectoryComponent):
     def get_position(self):
         return to_transform(self.trajectory_manager.status)
 
-    def get_desired_position(self, dt):
+    def get_desired_position_at(self, dt):
         # TODO: Fill in actual interpolated position
         return to_transform({'x': 0.0, 'y': 0.0, 'theta': 0.0})
 
