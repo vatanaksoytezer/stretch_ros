@@ -43,7 +43,7 @@ def generate_launch_description():
         condition=UnlessCondition(aws_arg)
     )
 
-    aws_world_str = "-r " + os.path.join(get_package_share_directory('aws_robomaker_small_house_world'), 'worlds', 'small_house.sdf')
+    aws_world_str = "-r " + os.path.join(pkg_stretch_ignition, 'worlds', 'aws_small_house.sdf')
     aws_gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_ign_gazebo, 'launch', 'ign_gazebo.launch.py')),
