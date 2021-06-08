@@ -3,37 +3,18 @@ import yaml
 import xacro
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, ExecuteProcess
+from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
-
-
-def load_file(package_name, file_path):
-    package_path = get_package_share_directory(package_name)
-    absolute_file_path = os.path.join(package_path, file_path)
-
-    try:
-        with open(absolute_file_path, "r") as file:
-            return file.read()
-    except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
-        return None
-
-
-def load_yaml(package_name, file_path):
-    package_path = get_package_share_directory(package_name)
-    absolute_file_path = os.path.join(package_path, file_path)
-
-    try:
-        with open(absolute_file_path, "r") as file:
-            return yaml.safe_load(file)
-    except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
-        return None
+from launch.conditions import IfCondition, UnlessCondition
 
 def generate_launch_description():
 
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
+    rviz_arg = LaunchConfiguration('rviz', default=False)
+    aws_arg = LaunchConfiguration('aws', default=False)
 
     robot_description_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "stretch_ignition.xacro")
     robot_description_config = xacro.process_file(
@@ -54,13 +35,20 @@ def generate_launch_description():
     pkg_ros_ign_gazebo = get_package_share_directory('ros_ign_gazebo')
     pkg_stretch_ignition = get_package_share_directory('stretch_ignition')
     # TODO: Make world argument modular with bridge
-    # world_dir = os.path.join(pkg_stretch_ignition, 'worlds', 'empty_world.sdf')
-    world_dir = os.path.join(get_package_share_directory('aws_robomaker_small_house_world'), 'worlds', 'small_house.sdf')
-    world_str = "-r " + world_dir
-    gazebo = IncludeLaunchDescription(
+    empty_world_str = "-r " + os.path.join(pkg_stretch_ignition, 'worlds', 'empty_world.sdf')
+    empty_gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_ign_gazebo, 'launch', 'ign_gazebo.launch.py')),
-        launch_arguments={'ign_args': world_str}.items(),
+        launch_arguments={'ign_args': empty_world_str}.items(),
+        condition=UnlessCondition(aws_arg)
+    )
+
+    aws_world_str = "-r " + os.path.join(get_package_share_directory('aws_robomaker_small_house_world'), 'worlds', 'small_house.sdf')
+    aws_gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(pkg_ros_ign_gazebo, 'launch', 'ign_gazebo.launch.py')),
+        launch_arguments={'ign_args': aws_world_str}.items(),
+        condition=IfCondition(aws_arg)
     )
 
     # RViz
@@ -68,7 +56,7 @@ def generate_launch_description():
         package='rviz2',
         executable='rviz2',
         arguments=['-d', os.path.join(pkg_stretch_ignition, 'rviz', 'stretch_ignition.rviz')],
-        parameters=[]
+        condition=IfCondition(rviz_arg)
     )
 
     # Spawn
@@ -120,6 +108,7 @@ def generate_launch_description():
                 '/world/default/model/stretch/link/camera_depth_optical_frame/sensor/realsense_d435/depth_image@sensor_msgs/msg/Image[ignition.msgs.Image',
                 '/world/default/model/stretch/link/camera_depth_optical_frame/sensor/realsense_d435/points@sensor_msgs/msg/PointCloud2[ignition.msgs.PointCloudPacked',
                 '/world/default/model/stretch/link/camera_depth_optical_frame/sensor/realsense_d435/camera_info@sensor_msgs/msg/CameraInfo[ignition::msgs::CameraInfo',
+                '/world/default/model/stretch/link/camera_depth_optical_frame/sensor/realsense_d435/image@sensor_msgs/msg/Image[ignition.msgs.Image'
                 # Realsense IR 1
                 '/world/default/model/stretch/link/camera_infra1_optical_frame/sensor/realsense_d435_ir/image@sensor_msgs/msg/Image[ignition.msgs.Image',
                 '/world/default/model/stretch/link/camera_infra1_optical_frame/sensor/realsense_d435_ir/camera_info@sensor_msgs/msg/CameraInfo[ignition::msgs::CameraInfo',                
@@ -141,8 +130,9 @@ def generate_launch_description():
             ("/world/default/model/stretch/link/camera_color_optical_frame/sensor/realsense_d435_color/camera_info", "/realsense/color/camera_info"),
             # Realsense Depth
             ("/world/default/model/stretch/link/camera_depth_optical_frame/sensor/realsense_d435/camera_info", "/realsense/depth/camera_info"),
-            ("/world/default/model/stretch/link/camera_depth_optical_frame/sensor/realsense_d435/points", "/realsense/depth/points"),
+            ("/world/default/model/stretch/link/camera_depth_optical_frame/sensor/realsense_d435/points", "/realsense/depth/color/points"),
             ("/world/default/model/stretch/link/camera_depth_optical_frame/sensor/realsense_d435/depth_image", "/realsense/depth/image_raw"),
+            ("/world/default/model/stretch/link/camera_depth_optical_frame/sensor/realsense_d435/image", "realsense/depth/color/image_raw"),
             # Realsense IR 1
             ("/world/default/model/stretch/link/camera_infra1_optical_frame/sensor/realsense_d435_ir/image", "realsense/infrared/image_raw"),
             ("/world/default/model/stretch/link/camera_infra1_optical_frame/sensor/realsense_d435_ir/camera_info", "realsense/infrared/camera_info"),
@@ -216,8 +206,17 @@ def generate_launch_description():
                 'use_sim_time',
                 default_value=use_sim_time,
                 description="If true, use simulated clock"),
+            DeclareLaunchArgument(
+                'rviz',
+                default_value=rviz_arg,
+                description="If true, pop up an rviz instance"),
+            DeclareLaunchArgument(
+                'aws',
+                default_value=aws_arg,
+                description="If true, opens up an aws_robomaker world instead of an empty world"),
             # Nodes and Launches
-            gazebo,
+            empty_gazebo,
+            aws_gazebo,
             spawn,
             bridge,
             robot_state_publisher,
@@ -231,6 +230,6 @@ def generate_launch_description():
             realsense_depth_static_tf,
             realsense_ir_static_tf,
             realsense_ir2_static_tf,
-            # rviz,
+            rviz,
         ]
     )
