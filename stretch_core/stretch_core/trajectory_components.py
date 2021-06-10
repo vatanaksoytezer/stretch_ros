@@ -17,7 +17,6 @@ class TrajectoryComponent:
         return self.trajectory_manager.trajectory.evaluate_at(dt).position
 
     def add_waypoints(self, waypoints, index):
-        # Set Initial waypoint
         self.trajectory_manager.trajectory.clear_waypoints()
         for waypoint in waypoints:
             t = to_sec(waypoint.time_from_start)
@@ -116,4 +115,5 @@ def get_trajectory_components(robot):
                                                         GripperComponent(robot),
                                                         ArmComponent(robot),
                                                         LiftComponent(robot),
-                                                        BaseComponent(robot)]}
+                                                        BaseComponent(robot),
+                                                        ]}

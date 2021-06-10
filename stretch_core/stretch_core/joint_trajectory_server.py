@@ -354,7 +354,7 @@ class JointTrajectoryAction:
             goal.trajectory = preprocess_gripper_trajectory(goal.trajectory)
 
             # Check for invalid names
-            for index, name in enumerate(goal.trajectory.joint_names):
+            for name in goal.trajectory.joint_names:
                 if name not in self.trajectory_components:
                     raise InvalidJointException(f'Cannot find joint "{name}"')
             multi_dof_joints = goal.multi_dof_trajectory.joint_names
