@@ -352,7 +352,7 @@ class JointTrajectoryAction:
             goal.trajectory = preprocess_gripper_trajectory(goal.trajectory)
 
             # Check for invalid names
-            for index, name in enumerate(goal.trajectory.joint_names):
+            for name in goal.trajectory.joint_names:
                 if name not in self.trajectory_components:
                     raise InvalidJointException(f'Cannot find joint "{name}"')
             multi_dof_joints = goal.multi_dof_trajectory.joint_names
@@ -420,7 +420,7 @@ class JointTrajectoryAction:
                 for joint_name in feedback.joint_names:
                     t_comp = self.trajectory_components[joint_name]
                     actual_pos = t_comp.get_position()
-                    desired_pos = t_comp.get_desired_position(dt)
+                    desired_pos = t_comp.get_desired_position_at(dt)
 
                     feedback.actual.positions.append(actual_pos)
                     feedback.desired.positions.append(desired_pos)
@@ -432,7 +432,7 @@ class JointTrajectoryAction:
 
                     t_comp = self.trajectory_components['position']
                     actual_pos = t_comp.get_position()
-                    desired_pos = t_comp.get_desired_position(dt)
+                    desired_pos = t_comp.get_desired_position_at(dt)
 
                     feedback.multi_dof_actual.transforms = [actual_pos]
                     feedback.multi_dof_desired.transforms = [desired_pos]
@@ -466,7 +466,9 @@ class JointTrajectoryAction:
             self.node.robot.stop_trajectory()
             self.node.get_logger().error(str(traceback.format_exc()))
             goal_handle.abort()
-            return FollowJointTrajectory.Result(error_code=-10000, error_string=str(e))
+
+            # There is no error code for "unknown error" so we just use -100.
+            return FollowJointTrajectory.Result(error_code=-100, error_string=str(e))
         finally:
             self.node.robot_mode_rwlock.release_read()
 
@@ -482,7 +484,7 @@ class JointTrajectoryAction:
             # for more info
 
             actual = t_comp.get_position()
-            desired = t_comp.get_desired_position(dt)
+            desired = t_comp.get_desired_position_at(dt)
 
             diff = actual - desired
             if abs(diff) > tolerance.position:
@@ -493,7 +495,7 @@ class JointTrajectoryAction:
         for component_tolerance in component_tolerances:
             t_comp = self.trajectory_components[component_tolerance.joint_name]
             actual = t_comp.get_position()
-            desired = t_comp.get_desired_position(dt)
+            desired = t_comp.get_desired_position_at(dt)
             if component_tolerance.component == JointComponentTolerance.TRANSLATION:
                 # TODO: Compute euclidean
                 diff = 0.0
