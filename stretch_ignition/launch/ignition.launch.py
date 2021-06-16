@@ -34,7 +34,6 @@ def generate_launch_description():
     # Ignition gazebo
     pkg_ros_ign_gazebo = get_package_share_directory('ros_ign_gazebo')
     pkg_stretch_ignition = get_package_share_directory('stretch_ignition')
-    # TODO: Make world argument modular with bridge
     empty_world_str = "-r " + os.path.join(pkg_stretch_ignition, 'worlds', 'empty_world.sdf')
     empty_gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
