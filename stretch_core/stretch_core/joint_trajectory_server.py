@@ -23,6 +23,16 @@ from .trajectory_components import get_trajectory_components
 
 
 def merge_arm_joints(trajectory):
+    """Consolidate the arm joints into a single joint.
+
+    There are two ways to specify the state of the telescoping arm.
+    One is with a single joint, named wrist_extension, the other is with multiple joints named
+    joint_arm_l0, joint_arm_l1, joint_arm_l2, and joint_arm_l3.
+
+    Since the arm joints are not independently actuatable, we consolidate the multiple joints into one.
+    For each trajectory point, the resulting single joint has a position equal to the sum of all the individual
+    joint positions, and a velocity and acceleration equal to the average over all the individual values (if specified).
+    """
     new_trajectory = JointTrajectory()
     arm_indexes = []
     for index, name in enumerate(trajectory.joint_names):
@@ -42,7 +52,7 @@ def merge_arm_joints(trajectory):
 
     if len(arm_indexes) != 4:
         raise InvalidJointException('Commands with telescoping joints requires all telescoping joints to be present. '
-                                    f'Only received len(arm_indexes) of 4 telescoping joints.')
+                                    f'Only received {len(arm_indexes)} of 4 telescoping joints.')
 
     # Set up points and variables to track arm values
     total_extension = []
@@ -57,6 +67,7 @@ def merge_arm_joints(trajectory):
         arm_velocities.append([])
         arm_accelerations.append([])
 
+    # Calculate the sum / gather values for averages
     for index, name in enumerate(trajectory.joint_names):
         for point_index, point in enumerate(trajectory.points):
             x = point.positions[index]
@@ -69,6 +80,7 @@ def merge_arm_joints(trajectory):
                     arm_velocities[point_index].append(v)
                 if a is not None:
                     arm_accelerations[point_index].append(a)
+            # If this is a non-arm joint, then just copy the values to the new trajectory
             else:
                 new_point = new_trajectory.points[point_index]
                 new_point.positions.append(x)
