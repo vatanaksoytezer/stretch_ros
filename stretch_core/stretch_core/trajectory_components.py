@@ -54,12 +54,15 @@ class GripperComponent(TrajectoryComponent):
         self.robotis_to_finger_rad = self.gripper_conversion.robotis_to_finger
 
     def get_position(self):
+        # Override base method to get robotis value and convert to finger_rad
         return self.robotis_to_finger_rad(self.trajectory_manager.status['pos_pct'])
 
     def get_desired_position_at(self, dt):
+        # Override base method to convert position to finger_rad
         return self.robotis_to_finger_rad(self.trajectory_manager.trajectory.evaluate_at(dt).position)
 
     def add_waypoint(self, t, x, v, a):
+        # Override base method to convert position, velocity and acceleration to robotis
         x = self.finger_rad_to_robotis(x)
         if v:
             v = self.finger_rad_to_robotis(v)
