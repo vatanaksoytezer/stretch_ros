@@ -32,3 +32,7 @@ repositories:
     type: git
     url: https://github.com/PickNikRobotics/rosparam_shortcuts
     version: ros2
+  realtime_tools:
+    type: git
+    url: https://github.com/ros-controls/realtime_tools
+    version: foxy-devel
