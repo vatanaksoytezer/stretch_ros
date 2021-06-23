@@ -2,7 +2,7 @@ repositories:
   stretch_ros:
     type: git
     url: https://github.com/PickNikRobotics/stretch_ros
-    version: dlu_devel2
+    version: galactic_devel
   stretch_moveit_plugins:
     type: git
     url: https://github.com/PickNikRobotics/stretch_moveit_plugins
@@ -10,29 +10,34 @@ repositories:
 
   moveit2:
     type: git
-    url: https://github.com/JafarAbdi/moveit2
-    version: pr-add_multi_dof_traj_field
+    url: https://github.com/DLu/moveit2
+    version: dlu_galactic
 
-  moveit_task_constructor:  # Needed for compiling MoveIt
+  moveit_task_constructor:
     type: git
-    url: https://github.com/JafarAbdi/moveit_task_constructor
-    version: ros2
+    url: https://github.com/DLu/moveit_task_constructor
+    version: galactic
 
-  control_msgs:
+  realsense-ros:  # For realsense2_description
     type: git
-    url: https://github.com/DLu/control_msgs
-    version: multi_dof_action_extension
-
-  rqt_robot_dashboard:  # For use with stretch_dashboard
-    type: git
-    url: https://github.com/ros-visualization/rqt_robot_dashboard
-    version: ROS2
+    url: https://github.com/IntelRealSense/realsense-ros
+    version: foxy
 
   rosparam_shortcuts:  # Used by stretch_moveit_plugins
     type: git
     url: https://github.com/PickNikRobotics/rosparam_shortcuts
     version: ros2
-  realtime_tools:
+
+# Moveit Dependencies not yet released on Galactic
+  geometric_shapes:
     type: git
-    url: https://github.com/ros-controls/realtime_tools
-    version: foxy-devel
+    url: https://github.com/ros-planning/geometric_shapes
+    version: ros2
+  ros2_control:
+    type: git
+    url: https://github.com/ros-controls/ros2_control
+    version: master
+  ros2_controllers:
+    type: git
+    url: https://github.com/ros-controls/ros2_controllers
+    version: master
