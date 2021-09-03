@@ -9,7 +9,7 @@ WORKDIR /root/ws_stretch/src
 # Download moveit source so that we can get necessary dependencies
 RUN git config --global user.email "custom@example.com" && \
     git config --global user.name "Custom Name" && \
-    git clone https://github.com/vatnaksoytezer/stretch_ros.git -b pr-docker && \
+    git clone https://github.com/vatanksoytezer/stretch_ros.git -b pr-docker && \
     vcs import < stretch_ros/stretch_ros.repos && \
     # Update apt package list as cache is cleared in previous container
     # Usually upgrading involves a few packages only (if container builds became out-of-sync)
