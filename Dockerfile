@@ -7,7 +7,9 @@ WORKDIR /root/ws_stretch/src
 # Commands are combined in single RUN statement with "apt/lists" folder removal to reduce image size
 # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#minimize-the-number-of-layers
 # Download moveit source so that we can get necessary dependencies
-RUN git clone https://github.com/vatnaksoytezer/stretch_ros.git -b pr-docker && \
+RUN git config --global user.email "custom@example.com" && \
+    git config --global user.name "Custom Name" && \
+    git clone https://github.com/vatnaksoytezer/stretch_ros.git -b pr-docker && \
     vcs import < stretch_ros/stretch_ros.repos && \
     # Update apt package list as cache is cleared in previous container
     # Usually upgrading involves a few packages only (if container builds became out-of-sync)
