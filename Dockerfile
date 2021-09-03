@@ -7,9 +7,7 @@ WORKDIR /root/ws_stretch/src
 # Commands are combined in single RUN statement with "apt/lists" folder removal to reduce image size
 # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#minimize-the-number-of-layers
 # Download stretch source so that we can get necessary dependencies
-RUN git config --global user.email "custom@example.com" && \
-    git config --global user.name "Custom Name" && \
-    git clone https://github.com/vatanaksoytezer/stretch_ros.git -b pr-docker && \
+RUN git clone https://github.com/vatanaksoytezer/stretch_ros.git -b pr-docker && \
     vcs import < stretch_ros/stretch_ros.repos
 
 # Update and install dependencies
@@ -30,6 +28,6 @@ RUN cd /root/ws_stretch/ && . /opt/ros/${ROS_DISTRO}/setup.sh && \
 
 # Add some bashrc shortcuts
 
-# Install latest VS Code and some utilities (nano, vim)
+# Install latest VS Code and some utilities (nano, vim, emacs)
 
 # Potentially setup VS Code setting and install some extensions

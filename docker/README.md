@@ -12,11 +12,11 @@ Install docker, following the [official installation steps](https://docs.docker.
 
 #### Docker post-install steps
 
-Following the [official post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user) for Linux allow non-root users to manage dockers and verify your post installation.
+Follow the [official post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user) for Linux allow non-root users to manage dockers and verify your post installation.
 
 #### Install nvidia-docker2 (Skip if you don't have an nvidia gpu)
 
-Following the [official instructions](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#installing-on-ubuntu-and-debian) install nvidia-docker2 and verify your installation.
+Follow the [official instructions](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#installing-on-ubuntu-and-debian) install nvidia-docker2 and verify your installation.
 
 ### Getting Started with Stretch Docker
 
