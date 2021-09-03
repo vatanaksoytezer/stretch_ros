@@ -1,12 +1,8 @@
 repositories:
-  stretch_ros:
-    type: git
-    url: https://github.com/PickNikRobotics/stretch_ros
-    version: ros2
   moveit2:
     type: git
-    url: https://github.com/JafarAbdi/moveit2
-    version: pr-add_multi_dof_traj_field
+    url: https://github.com/ros-planning/moveit2
+    version: ros2
   moveit_msgs:
     type: git
     url: https://github.com/ros-planning/moveit_msgs
@@ -17,8 +13,8 @@ repositories:
     version: ros2
   moveit_task_constructor:
     type: git
-    url: https://github.com/JafarAbdi/moveit_task_constructor
-    version: ros2
+    url: https://github.com/vatanaksoytezer/moveit_task_constructor
+    version: fix-galactic
   geometric_shapes:
     type: git
     url: https://github.com/ros-planning/geometric_shapes
@@ -29,8 +25,8 @@ repositories:
     version: ros2
   control_msgs:
     type: git
-    url: https://github.com/JafarAbdi/control_msgs
-    version: pr-add_multi_dof_traj_field
+    url: https://github.com/ros-planning/control_msgs
+    version: galactic-devel
   ros2_control:
     type: git
     url: https://github.com/ros-controls/ros2_control
