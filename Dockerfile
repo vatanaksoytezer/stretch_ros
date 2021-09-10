@@ -12,7 +12,7 @@ RUN git clone https://github.com/vatanaksoytezer/stretch_ros.git -b pr-docker &&
 
 # Update and install dependencies
 RUN apt-get -qq update && \
-    apt-get -qq dist-upgrade && \
+    apt-get -qq dist-upgrade && apt-get install -y wget && \
     rosdep update && \
     rosdep install -y --from-paths . --ignore-src --rosdistro ${ROS_DISTRO} --as-root=apt:false && \
     rm -rf /var/lib/apt/lists/*
@@ -33,8 +33,8 @@ RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor 
     install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/ && \
     sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list' && \
     rm -f packages.microsoft.gpg && \
-    apt-get update && \
-    apt-get install apt-transport-https nano vim emacs code
+    apt-get -qq update && \
+    apt-get install apt-transport-https nano vim emacs code -y
 
 
 # Potentially setup VS Code setting and install some extensions
