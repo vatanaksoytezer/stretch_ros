@@ -30,9 +30,18 @@ We provide a pre-built docker image and a set of scripts to easily get you up an
 
 2) Start your container from our pre-built image
 
+with an nvidia-gpu:
+
     ```bash
     chmod +x start_docker.sh && \
-    ./start_docker.sh stretch_roscon hello-robot/stretch:roscon
+    ./start_docker.sh stretch_roscon ghcr.io/vatanaksoytezer/stretch:roscon
+    ```
+
+without an nvidia-gpu:
+
+    ```bash
+    chmod +x start_docker.sh && \
+    ./start_docker.sh stretch_roscon ghcr.io/vatanaksoytezer/stretch:roscon nogpu
     ```
 
 3) At this point you should be seeing a terminal window with all the necessary source code pre-built for you. 
@@ -49,6 +58,10 @@ TODO: Add image
 ### Building the docker image from scratch
 
 ## Installation (Windows)
+
+### Prerequisites
+
+#### Install WSL2 and Docker
 
 ## Installation (MacOS)
 
