@@ -22,40 +22,44 @@ Follow the [official instructions](https://docs.nvidia.com/datacenter/cloud-nati
 
 We provide a pre-built docker image and a set of scripts to easily get you up and running with Strectch on dockers! To get your docker running with UI and networking enabled:
 
-1) Fetch our start_docker script
+1\. Fetch our start_docker script
 
-    ```bash
-    wget https://raw.githubusercontent.com/vatanaksoytezer/stretch_ros/pr-docker/docker/scripts/start_docker.sh
-    ```
+```bash
+wget https://raw.githubusercontent.com/vatanaksoytezer/stretch_ros/pr-docker/docker/scripts/start_docker.sh
+```
 
-2) Start your container from our pre-built image
+2\. Start your container from our pre-built image
 
 with an nvidia-gpu:
 
-    ```bash
-    chmod +x start_docker.sh && \
-    ./start_docker.sh stretch_roscon ghcr.io/vatanaksoytezer/stretch:roscon
-    ```
+```bash
+chmod +x start_docker.sh && \
+./start_docker.sh stretch_roscon ghcr.io/vatanaksoytezer/stretch:roscon
+```
 
 without an nvidia-gpu:
 
-    ```bash
-    chmod +x start_docker.sh && \
-    ./start_docker.sh stretch_roscon ghcr.io/vatanaksoytezer/stretch:roscon nogpu
-    ```
+```bash
+chmod +x start_docker.sh && \
+./start_docker.sh stretch_roscon ghcr.io/vatanaksoytezer/stretch:roscon nogpu
+```
 
-3) At this point you should be seeing a terminal window with all the necessary source code pre-built for you. 
-TODO: Add image
+To open multiple terminals, you can just `./start_docker.sh stretch_roscon` from now on since the docker container is already constructed from the image with the command above.
 
-    Now you can test your Stretch docker by bringing up Stretch in Ignition Gazebo by issuing the following set of commands inside your container:
+3\. At this point you should be seeing a terminal window with all the necessary source code pre-built for you. 
 
-    ```bash
-    source /opt/ros/galactic/setup.bash && \
-    source /root/ws_stretch/install/setup.bash && \
-    export IGN_GAZEBO_RESOURCE_PATH="/root/ws_stretch/src/stretch_ros:/root/ws_stretch/src/realsense-ros:/root/ws_stretch/src/aws-robomaker-small-house-world/models" && \
-    ros2 launch stretch_ignition ignition.launch.py
-    ```
+Now you can test your Stretch docker by bringing up Stretch in Ignition Gazebo by issuing the following set of commands inside your container:
 
+```bash
+source /opt/ros/galactic/setup.bash && \
+source /root/ws_stretch/install/setup.bash && \
+export IGN_GAZEBO_RESOURCE_PATH="/root/ws_stretch/src/stretch_ros:/root/ws_stretch/src/realsense-ros:/root/ws_stretch/src/aws-robomaker-small-house-world/models" && \
+ros2 launch stretch_ignition ignition.launch.py
+```
+
+Congragulations! You brought up Stretch in Ignition Gazebo! Now you should be seeing Stretch in Ignition Gazebo with an empty world around it:
+
+![Stretch with Ignition Gazebo](media/stretch_empty_world.png)
 ### Building the docker image from scratch
 
 ## Installation (Windows)
