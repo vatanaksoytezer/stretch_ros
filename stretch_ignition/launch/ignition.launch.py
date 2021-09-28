@@ -59,10 +59,21 @@ def generate_launch_description():
     )
 
     # Spawn
+    # spawn = Node(package='ros_ign_gazebo', executable='create',
+    #             arguments=[
+    #                 '-name', 'stretch',
+    #                 '-topic', 'robot_description',
+    #                 '-z', '0.1',
+    #                 ],
+    #             output='screen',
+    #             )
+
+    # Spawn SDF
+    stretch_sdf_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "stretch_ignition.sdf")
     spawn = Node(package='ros_ign_gazebo', executable='create',
                 arguments=[
                     '-name', 'stretch',
-                    '-topic', 'robot_description',
+                    '-file', stretch_sdf_path,
                     '-z', '0.1',
                     ],
                 output='screen',
@@ -79,7 +90,8 @@ def generate_launch_description():
                 # JointTrajectory bridge (ROS2 -> IGN)
                 '/joint_trajectory@trajectory_msgs/msg/JointTrajectory]ignition.msgs.JointTrajectory',
                 # Odometry (IGN -> ROS2)
-                '/model/stretch/odometry@nav_msgs/msg/Odometry[ignition.msgs.Odometry',
+                # '/model/stretch/odometry@nav_msgs/msg/Odometry[ignition.msgs.Odometry',
+                '/odom@nav_msgs/msg/Odometry[ignition.msgs.Odometry',
                 # odom->base_link tf (IGN -> ROS2)
                 '/model/stretch/tf@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V',
                 # Clock (IGN -> ROS2)
@@ -118,7 +130,7 @@ def generate_launch_description():
         remappings=[
             ("/model/stretch/tf", "tf"),
             ("/world/default/model/stretch/joint_state", "joint_states"),
-            ("/model/stretch/odometry", "odom"),
+            # ("/model/stretch/odometry", "odom"),
             ("/imu", "imu/data"),
             ("/magnetometer", "mag"),
             ("/wrist_imu", "wrist_imu/data"),
@@ -196,7 +208,14 @@ def generate_launch_description():
         executable="stretch_ignition_control_action_server",
         name="stretch_ignition_control",
         output="screen",
-    )    
+    )
+
+    odom2tf = Node(
+        package="stretch_ignition",
+        executable="odom2tf",
+        name="odom2tf",
+        output="screen",
+    )
 
     return LaunchDescription(
         [
@@ -229,6 +248,7 @@ def generate_launch_description():
             realsense_depth_static_tf,
             realsense_ir_static_tf,
             realsense_ir2_static_tf,
+            odom2tf,
             rviz,
         ]
     )

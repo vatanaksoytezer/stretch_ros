@@ -1,0 +1,41 @@
+cmake_minimum_required(VERSION 3.10.2)
+project(stretch_roscon_demos)
+
+# Default to C++17
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(ros2_controllers REQUIRED)
+find_package(moveit_ros_planning REQUIRED)
+find_package(geometry_msgs REQUIRED)
+
+add_executable(moveit_cpp_demo
+    src/moveit_cpp_demo.cpp
+)
+
+set(THIS_PACKAGE_INCLUDE_DEPENDS
+  rclcpp
+  moveit_ros_planning
+  geometry_msgs
+)
+
+target_include_directories(moveit_cpp_demo PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(moveit_cpp_demo ${THIS_PACKAGE_INCLUDE_DEPENDS})
+
+# Install executable
+install(TARGETS moveit_cpp_demo DESTINATION lib/${PROJECT_NAME})
+
+# Install packages
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+
+ament_package()

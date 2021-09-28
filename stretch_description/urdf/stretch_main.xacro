@@ -150,7 +150,7 @@
   </joint>
 
   <!-- Representing a ball joint -->
-  <joint name="caster_joint_theta" type="continuous">
+  <!-- <joint name="caster_joint_theta" type="continuous">
     <origin xyz="-0.245 0.0 0.032" rpy="${-M_PI/2} 0 0"/>
     <parent link="base_link"/>
     <child link="caster_link_theta"/>
@@ -194,7 +194,7 @@
       <inertia ixx="5.8083e-4" ixy="0" ixz="0" iyy="3.0833e-5" iyz="0" izz="5.9083e-4" />
       <limit lower="${-pi/2}" upper="${-pi/2}" velocity="${caster_velocity_limit}" effort="${caster_effort_limit}" />
     </inertial>  
-  </link>
+  </link> -->
 
   <link name="link_caster">
     <collision>
@@ -245,10 +245,10 @@
   </link>
 
   <joint name="joint_caster" type="fixed">
-    <parent link="caster_link_phi"/>
-    <!-- <parent link="base_link"/> -->
+    <!-- <parent link="caster_link_phi"/> -->
+    <parent link="base_link"/>
     <child link="link_caster"/>
-    <!-- <origin xyz="-0.245 0.0 0.032" rpy="${-M_PI/2} 0 0"/> -->
+    <origin xyz="-0.245 0.0 0.032" rpy="${-M_PI/2} 0 0"/>
   </joint>
 
 
