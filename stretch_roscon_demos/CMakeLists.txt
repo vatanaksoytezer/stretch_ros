@@ -20,27 +20,8 @@ find_package(rclcpp REQUIRED)
 find_package(ros2_controllers REQUIRED)
 find_package(rviz_visual_tools REQUIRED)
 
-add_executable(moveit_cpp_demo
-    src/moveit_cpp_demo.cpp
-)
-
 add_executable(move_group_interface_demo
     src/move_group_interface_demo.cpp
-)
-
-set(THIS_PACKAGE_INCLUDE_DEPENDS
-  rclcpp
-  moveit_ros_planning
-  geometry_msgs
-)
-
-target_include_directories(moveit_cpp_demo PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-ament_target_dependencies(moveit_cpp_demo
-  rclcpp
-  moveit_ros_planning
-  geometry_msgs
 )
 
 target_include_directories(move_group_interface_demo PUBLIC
@@ -55,7 +36,7 @@ ament_target_dependencies(move_group_interface_demo
 )
 
 # Install executable
-install(TARGETS moveit_cpp_demo move_group_interface_demo
+install(TARGETS move_group_interface_demo
   DESTINATION lib/${PROJECT_NAME}
 )
 

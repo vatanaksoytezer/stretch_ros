@@ -34,7 +34,8 @@ def generate_launch_description():
     # Ignition gazebo
     pkg_ros_ign_gazebo = get_package_share_directory('ros_ign_gazebo')
     pkg_stretch_ignition = get_package_share_directory('stretch_ignition')
-    empty_world_str = "-r " + os.path.join(pkg_stretch_ignition, 'worlds', 'empty_world.sdf')
+    # empty_world_str = "-r " + os.path.join(pkg_stretch_ignition, 'worlds', 'empty_world.sdf')
+    empty_world_str = "-r " + os.path.join(pkg_stretch_ignition, 'worlds', 'pick_place_world.sdf')
     empty_gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_ign_gazebo, 'launch', 'ign_gazebo.launch.py')),
@@ -130,7 +131,7 @@ def generate_launch_description():
         remappings=[
             ("/model/stretch/tf", "tf"),
             ("/world/default/model/stretch/joint_state", "joint_states"),
-            # ("/model/stretch/odometry", "odom"),
+            # ("/odom", "position"),
             ("/imu", "imu/data"),
             ("/magnetometer", "mag"),
             ("/wrist_imu", "wrist_imu/data"),
@@ -201,6 +202,12 @@ def generate_launch_description():
                         output='log',
                         arguments=['0.0', '0.0', '0.0', '0', '0', '0', 'camera_infra2_optical_frame', 'stretch/camera_infra2_optical_frame/realsense_d435_ir2'])
 
+    position_static_tf = Node(package='tf2_ros',
+                     executable='static_transform_publisher',
+                     name='static_transform_publisher',
+                     output='log',
+                     arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'position', 'odom'])
+
     # Controllers 
     # TODO (vatanaksoytezer): Use ros_ign_control when it is ready
     stretch_ignition_control_node = Node(
@@ -249,6 +256,7 @@ def generate_launch_description():
             realsense_ir_static_tf,
             realsense_ir2_static_tf,
             odom2tf,
+            position_static_tf,
             rviz,
         ]
     )

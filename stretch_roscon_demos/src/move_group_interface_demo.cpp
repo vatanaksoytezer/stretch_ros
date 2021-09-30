@@ -103,7 +103,8 @@ int main(int argc, char** argv)
   // ^^^^^
   // The :planning_interface:`MoveGroupInterface` class can be easily
   // setup using just the name of the planning group you would like to control and plan for.
-  moveit::planning_interface::MoveGroupInterface move_group(move_group_node, "mobile_base_arm");
+  moveit::planning_interface::MoveGroupInterface move_group_gripper(move_group_node, "gripper");
+  moveit::planning_interface::MoveGroupInterface move_group_base_arm(move_group_node, "mobile_base_arm");
 
   // We will use the :planning_interface:`PlanningSceneInterface`
   // class to add and remove collision objects in our "virtual world" scene
@@ -113,20 +114,21 @@ int main(int argc, char** argv)
   // ^^^^^^^^^^^^^^^^^^^^^^^^^
   //
   // We can print the name of the reference frame for this robot.
-  RCLCPP_INFO(LOGGER, "Planning frame: %s", move_group.getPlanningFrame().c_str());
+  RCLCPP_INFO(LOGGER, "Planning frame: %s", move_group_base_arm.getPlanningFrame().c_str());
 
   // We can also print the name of the end-effector link for this group.
-  RCLCPP_INFO(LOGGER, "End effector link: %s", move_group.getEndEffectorLink().c_str());
+  RCLCPP_INFO(LOGGER, "End effector link: %s", move_group_base_arm.getEndEffectorLink().c_str());
 
   // We can get a list of all the groups in the robot:
   RCLCPP_INFO(LOGGER, "Available Planning Groups:");
-  std::copy(move_group.getJointModelGroupNames().begin(), move_group.getJointModelGroupNames().end(),
+  std::copy(move_group_base_arm.getJointModelGroupNames().begin(), move_group_base_arm.getJointModelGroupNames().end(),
             std::ostream_iterator<std::string>(std::cout, ", "));
 
 
   // Setting Initial Planning Parameters
   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  initializeMoveGroup(move_group);
+  initializeMoveGroup(move_group_base_arm);
+  initializeMoveGroup(move_group_gripper);
   // Start the demo
   // ^^^^^^^^^^^^^^^^^^^^^^^^^
   prompt("Press 'Enter' to start the demo");
@@ -135,44 +137,84 @@ int main(int argc, char** argv)
   // ^^^^^^^^^^^^^^^^^^^^^^^
   // We can plan a motion for this group to a desired pose for the
   // end-effector.
-  move_group.setStartStateToCurrentState();
+
+  // Part 1: Move Lift to height
+  move_group_base_arm.setStartStateToCurrentState();
   
-  geometry_msgs::msg::Pose target_pose1;
-  target_pose1.position.x = -0.058876442274373234;
-  target_pose1.position.y = -0.6686726215135715;
-  target_pose1.position.z = 0.9947614781407926;
-  target_pose1.orientation.x = 2.3418130500298247e-06;
-  target_pose1.orientation.y = -1.9460595924624177e-07;
-  target_pose1.orientation.z = 0.007628164292894081;
-  target_pose1.orientation.w = 0.9999709051287435;
+  geometry_msgs::msg::Pose target_pose;
+  target_pose.position.x = 0.0;
+  target_pose.position.y = -0.2;
+  target_pose.position.z = 1.18;
+  target_pose.orientation.x = 0.0;
+  target_pose.orientation.y = 0.0;
+  target_pose.orientation.z = 0.7071067810149885;
+  target_pose.orientation.w = 0.7071067810149885;
   Eigen::Isometry3d approx_target = Eigen::Isometry3d::Identity();
-  poseMsgToEigen(target_pose1, approx_target);
-  
-  move_group.setApproximateJointValueTarget(approx_target, move_group.getEndEffectorLink());
+  poseMsgToEigen(target_pose, approx_target);
+
+  move_group_base_arm.setApproximateJointValueTarget(approx_target, move_group_base_arm.getEndEffectorLink());
 
   // Now, we call the planner to compute the plan and visualize it.
   // Note that we are planning and asking move_group
   // to actually move the robot. 
   // If we wanted to plan only we would use move.group.plan(plan) instead
-  bool success = (move_group.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  bool success = (move_group_base_arm.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  RCLCPP_INFO(LOGGER, "Moving arm to height execution %s", success ? "" : "FAILED");
 
-  RCLCPP_INFO(LOGGER, "Plan (pose goal) %s", success ? "" : "FAILED");
 
+  // Part 2: Open Gripper
+  prompt("Press 'Enter' to continue the demo");
+  move_group_gripper.setStartStateToCurrentState();
+  move_group_gripper.setNamedTarget("open");
+  success = (move_group_gripper.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  RCLCPP_INFO(LOGGER, "Opening gripper execution %s", success ? "" : "FAILED");
+  
+  // Part 3: Move to grabbing pose
+  prompt("Press 'Enter' to continue the demo");
+  move_group_base_arm.setStartStateToCurrentState();
+  target_pose.position.y = -0.45;
+  poseMsgToEigen(target_pose, approx_target);
+  
+  move_group_base_arm.setApproximateJointValueTarget(approx_target, move_group_base_arm.getEndEffectorLink());
+  success = (move_group_base_arm.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  RCLCPP_INFO(LOGGER, "Move to grabbing pose execution %s", success ? "" : "FAILED");
+
+  // Part 4: Close Gripper and grab the object
+  prompt("Press 'Enter' to continue the demo");
+  move_group_gripper.setStartStateToCurrentState();
+  move_group_gripper.setNamedTarget("closed");
+  success = (move_group_gripper.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  RCLCPP_INFO(LOGGER, "Closing gripper execution %s", success ? "" : "FAILED");
+
+  // Part 5: Lift the object slightly
+  prompt("Press 'Enter' to continue the demo");
+  move_group_base_arm.setStartStateToCurrentState();
+  target_pose.position.z += 0.1;
+  poseMsgToEigen(target_pose, approx_target);
+  
+  move_group_base_arm.setApproximateJointValueTarget(approx_target, move_group_base_arm.getEndEffectorLink());
+  success = (move_group_base_arm.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  RCLCPP_INFO(LOGGER, "Lift the object execution %s", success ? "" : "FAILED");
+
+  // Part 6: Move the robot towards the other table and make a turn
+  prompt("Press 'Enter' to continue the demo");
+  move_group_base_arm.setStartStateToCurrentState();
+  move_group_base_arm.setJointValueTarget("position", {1, 0, 0});
+  success = (move_group_base_arm.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  RCLCPP_INFO(LOGGER, "Move the robot execution %s", success ? "" : "FAILED");
 
   prompt("Press 'Enter' to continue the demo");
+  move_group_base_arm.setStartStateToCurrentState();
+  move_group_base_arm.setJointValueTarget("position", {1, 0, 3});
+  success = (move_group_base_arm.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  RCLCPP_INFO(LOGGER, "Turn the robot execution %s", success ? "" : "FAILED");
 
-  move_group.setStartStateToCurrentState();
-  
-  target_pose1.position.x = -0.358876442274373234;
-  target_pose1.position.y = -0.6686726215135715;
-  target_pose1.position.z = 0.7947614781407926;
-  target_pose1.orientation.x = 2.3418130500298247e-06;
-  target_pose1.orientation.y = -1.9460595924624177e-07;
-  target_pose1.orientation.z = 0.007628164292894081;
-  target_pose1.orientation.w = 0.9999709051287435;
-  poseMsgToEigen(target_pose1, approx_target);
-  
-  move_group.setApproximateJointValueTarget(approx_target, move_group.getEndEffectorLink());
+  // Part 7: Open gripper and drop the object
+  prompt("Press 'Enter' to continue the demo");
+  move_group_gripper.setStartStateToCurrentState();
+  move_group_gripper.setNamedTarget("open");
+  success = (move_group_gripper.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  RCLCPP_INFO(LOGGER, "Opening gripper execution %s", success ? "" : "FAILED");
 
   prompt("Press 'Enter' to end the demo");
   rclcpp::shutdown();
