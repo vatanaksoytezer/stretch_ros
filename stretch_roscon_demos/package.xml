@@ -12,7 +12,10 @@
   <depend>rclcpp</depend>
   <depend>ros2_controllers</depend>
   <depend>moveit_ros_planning</depend>
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>moveit_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>rviz_visual_tools</depend>
   <depend>stretch_ignition</depend>
   <depend>stretch_ignition_control</depend>
 
