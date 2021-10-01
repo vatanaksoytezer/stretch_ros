@@ -110,6 +110,15 @@ int main(int argc, char** argv)
   // class to add and remove collision objects in our "virtual world" scene
   moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
+  namespace rvt = rviz_visual_tools;
+  rviz_visual_tools::RvizVisualTools visual_tools("panda_link0", "move_group_tutorial", move_group_node);
+  /* moveit_visual_tools::MoveItVisualTools visual_tools("panda_link0"); */
+  visual_tools.deleteAllMarkers();
+
+  /* Remote control is an introspection tool that allows users to step through a high level script */
+  /* via buttons and keyboard shortcuts in RViz */
+  visual_tools.loadRemoteControl();
+
   // Getting Basic Information
   // ^^^^^^^^^^^^^^^^^^^^^^^^^
   //
@@ -131,7 +140,7 @@ int main(int argc, char** argv)
   initializeMoveGroup(move_group_gripper);
   // Start the demo
   // ^^^^^^^^^^^^^^^^^^^^^^^^^
-  prompt("Press 'Enter' to start the demo");
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 
   // Planning to a Pose goal
   // ^^^^^^^^^^^^^^^^^^^^^^^
@@ -163,16 +172,16 @@ int main(int argc, char** argv)
 
 
   // Part 2: Open Gripper
-  prompt("Press 'Enter' to continue the demo");
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
   move_group_gripper.setStartStateToCurrentState();
   move_group_gripper.setNamedTarget("open");
   success = (move_group_gripper.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   RCLCPP_INFO(LOGGER, "Opening gripper execution %s", success ? "" : "FAILED");
   
   // Part 3: Move to grabbing pose
-  prompt("Press 'Enter' to continue the demo");
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
   move_group_base_arm.setStartStateToCurrentState();
-  target_pose.position.y = -0.45;
+  target_pose.position.y = -0.39;
   poseMsgToEigen(target_pose, approx_target);
   
   move_group_base_arm.setApproximateJointValueTarget(approx_target, move_group_base_arm.getEndEffectorLink());
@@ -180,14 +189,14 @@ int main(int argc, char** argv)
   RCLCPP_INFO(LOGGER, "Move to grabbing pose execution %s", success ? "" : "FAILED");
 
   // Part 4: Close Gripper and grab the object
-  prompt("Press 'Enter' to continue the demo");
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
   move_group_gripper.setStartStateToCurrentState();
   move_group_gripper.setNamedTarget("closed");
   success = (move_group_gripper.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   RCLCPP_INFO(LOGGER, "Closing gripper execution %s", success ? "" : "FAILED");
 
   // Part 5: Lift the object slightly
-  prompt("Press 'Enter' to continue the demo");
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
   move_group_base_arm.setStartStateToCurrentState();
   target_pose.position.z += 0.1;
   poseMsgToEigen(target_pose, approx_target);
@@ -197,26 +206,26 @@ int main(int argc, char** argv)
   RCLCPP_INFO(LOGGER, "Lift the object execution %s", success ? "" : "FAILED");
 
   // Part 6: Move the robot towards the other table and make a turn
-  prompt("Press 'Enter' to continue the demo");
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
   move_group_base_arm.setStartStateToCurrentState();
   move_group_base_arm.setJointValueTarget("position", {1, 0, 0});
   success = (move_group_base_arm.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   RCLCPP_INFO(LOGGER, "Move the robot execution %s", success ? "" : "FAILED");
 
-  prompt("Press 'Enter' to continue the demo");
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
   move_group_base_arm.setStartStateToCurrentState();
   move_group_base_arm.setJointValueTarget("position", {1, 0, 3});
   success = (move_group_base_arm.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   RCLCPP_INFO(LOGGER, "Turn the robot execution %s", success ? "" : "FAILED");
 
   // Part 7: Open gripper and drop the object
-  prompt("Press 'Enter' to continue the demo");
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
   move_group_gripper.setStartStateToCurrentState();
   move_group_gripper.setNamedTarget("open");
   success = (move_group_gripper.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   RCLCPP_INFO(LOGGER, "Opening gripper execution %s", success ? "" : "FAILED");
 
-  prompt("Press 'Enter' to end the demo");
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to end the demo");
   rclcpp::shutdown();
   return 0;
 }
