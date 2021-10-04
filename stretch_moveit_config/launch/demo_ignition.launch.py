@@ -85,6 +85,8 @@ def generate_launch_description():
 
     kinematics_yaml = load_yaml('stretch_moveit_config', 'config/kinematics.yaml')
 
+    sensors_3d_yaml = load_yaml('stretch_moveit_config', 'config/sensors_3d.yaml')
+
     joint_limits_yaml = {'robot_description_planning': load_joint_limits_from_config()}
     # joint_limits_yaml = load_joint_limits_from_config()
 
@@ -124,7 +126,9 @@ def generate_launch_description():
                                         ompl_planning_pipeline_config,
                                         trajectory_execution,
                                         moveit_controllers,
-                                        planning_scene_monitor_parameters])
+                                        planning_scene_monitor_parameters,
+                                        # sensors_3d_yaml
+                                        ])
     ld.add_action(run_move_group_node)
 
     # RViz

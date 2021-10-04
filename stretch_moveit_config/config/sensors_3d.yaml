@@ -2,12 +2,13 @@
 sensors:
   - head_cloud
 head_cloud:
-    filtered_cloud_topic: /camera/depth/color/filtered_points
-    max_range: 5.0
-    max_update_rate: 1.0
+    filtered_cloud_topic: /realsense/depth/color/points/filtered
+    max_range: 1.2
+    max_update_rate: 0.1
     padding_offset: 0.1
     padding_scale: 1.0
-    point_cloud_topic: /camera/depth/color/points
+    point_cloud_topic: /realsense/depth/color/points # this is pointed to a empty topic to disable it
     point_subsample: 1
     sensor_plugin: occupancy_map_monitor/PointCloudOctomapUpdater
-octomap_resolution: 0.1
+octomap_resolution: 0.03
+# robot_description_planning/shape_transform_cache_lookup_wait_time: 0
