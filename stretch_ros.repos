@@ -67,3 +67,7 @@ repositories:
     type: git
     url: https://github.com/vatanaksoytezer/aws-robomaker-small-house-world
     version: ignition-port
+  rviz_visual_tools:
+    type: git
+    url: https://github.com/vatanaksoytezer/rviz_visual_tools
+    version: pr-ros2_remote_control
