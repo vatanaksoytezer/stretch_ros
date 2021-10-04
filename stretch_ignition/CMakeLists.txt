@@ -20,6 +20,11 @@ find_package(tf2_ros REQUIRED)
 add_executable(odom2tf
     src/odom2tf.cpp
 )
+
+add_executable(stretch_sticky_static_tf_publisher
+    src/stretch_sticky_static_tf_publisher.cpp
+)
+
 target_include_directories(odom2tf PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
@@ -31,8 +36,21 @@ ament_target_dependencies(
     tf2
     tf2_ros
 )
+
+target_include_directories(stretch_sticky_static_tf_publisher PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(
+    stretch_sticky_static_tf_publisher
+    rclcpp
+    tf2
+    tf2_ros
+)
+
+# TODO: Export dependencies
+
 # Install executable
-install(TARGETS odom2tf DESTINATION lib/${PROJECT_NAME})
+install(TARGETS odom2tf stretch_sticky_static_tf_publisher DESTINATION lib/${PROJECT_NAME})
 
 # Install packages
 install(DIRECTORY worlds rviz launch DESTINATION share/${PROJECT_NAME})

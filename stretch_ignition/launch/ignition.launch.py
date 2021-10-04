@@ -225,6 +225,14 @@ def generate_launch_description():
         output="screen",
     )
 
+    # Publish static tfs
+    stretch_sticky_static_tf_publisher = Node(
+        package="stretch_ignition",
+        executable="stretch_sticky_static_tf_publisher",
+        name="stretch_sticky_static_tf_publisher",
+        output="screen",
+    )
+
     # Rotate Colored Images
     image_rotate = Node(
         package="image_rotate",
@@ -260,17 +268,18 @@ def generate_launch_description():
             bridge,
             robot_state_publisher,
             stretch_ignition_control_node,
-            lidar_static_tf,
-            imu_static_tf,
-            mag_static_tf,
-            wrist_imu_static_tf,
-            realsense_imu_static_tf,
-            realsense_color_static_tf,
-            realsense_depth_static_tf,
-            realsense_ir_static_tf,
-            realsense_ir2_static_tf,
+            # lidar_static_tf,
+            # imu_static_tf,
+            # mag_static_tf,
+            # wrist_imu_static_tf,
+            # realsense_imu_static_tf,
+            # realsense_color_static_tf,
+            # realsense_depth_static_tf,
+            # realsense_ir_static_tf,
+            # realsense_ir2_static_tf,
+            # position_static_tf,
             odom2tf,
-            position_static_tf,
+            stretch_sticky_static_tf_publisher,
             # image_rotate,
             rviz,
         ]

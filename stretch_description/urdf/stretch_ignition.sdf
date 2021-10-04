@@ -50,7 +50,7 @@
           </mesh>
         </geometry>
       </collision>
-      <collision name='base_link_fixed_joint_lump__link_head_collision_3'>
+      <!-- <collision name='base_link_fixed_joint_lump__link_head_collision_3'>
         <pose>-0.07 0.135 1.3584 1.1e-05 0 -1.57084</pose>
         <geometry>
           <mesh>
@@ -58,7 +58,7 @@
             <uri>model://stretch_description/meshes/link_head.STL</uri>
           </mesh>
         </geometry>
-      </collision>
+      </collision> -->
       <collision name='base_link_fixed_joint_lump__respeaker_base_collision_7'>
         <pose>-0.069961 0.131965 1.39832 0 -0 -3.13234</pose>
         <geometry>
@@ -473,13 +473,13 @@
         <limit>
           <lower>-3.8999999999999999</lower>
           <upper>1.5</upper>
-          <effort>100</effort>
+          <effort>10</effort>
           <velocity>1</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
           <spring_stiffness>0</spring_stiffness>
-          <damping>21.75</damping>
+          <damping>5.75</damping>
           <friction>3.48</friction>
         </dynamics>
       </axis>
@@ -498,7 +498,7 @@
           <izz>0.001</izz>
         </inertia>
       </inertial>
-      <collision name='link_head_pan_collision'>
+      <!-- <collision name='link_head_pan_collision'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -506,7 +506,7 @@
             <uri>model://stretch_description/meshes/link_head_pan.STL</uri>
           </mesh>
         </geometry>
-      </collision>
+      </collision> -->
       <visual name='link_head_pan_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
@@ -531,13 +531,13 @@
         <limit>
           <lower>-1.53</lower>
           <upper>0.79000000000000004</upper>
-          <effort>100</effort>
+          <effort>10</effort>
           <velocity>1</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
           <spring_stiffness>0</spring_stiffness>
-          <damping>21.75</damping>
+          <damping>5.75</damping>
           <friction>3.48</friction>
         </dynamics>
       </axis>
@@ -556,7 +556,7 @@
           <izz>0.001</izz>
         </inertia>
       </inertial>
-      <collision name='link_head_tilt_collision'>
+      <!-- <collision name='link_head_tilt_collision'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -564,7 +564,7 @@
             <uri>model://stretch_description/meshes/link_head_tilt.STL</uri>
           </mesh>
         </geometry>
-      </collision>
+      </collision> -->
       <visual name='link_head_tilt_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
@@ -1626,30 +1626,30 @@
       <position_p_gain>3000</position_p_gain>
       <position_d_gain>15</position_d_gain>
       <position_i_gain>1650</position_i_gain>
-      <position_i_min>-15</position_i_min>
-      <position_i_max>15</position_i_max>
+      <position_i_min>-5</position_i_min>
+      <position_i_max>5</position_i_max>
       <position_cmd_min>-87</position_cmd_min>
       <position_cmd_max>87</position_cmd_max>
 
       <joint_name>joint_head_pan</joint_name>
       <initial_position>0</initial_position>
-      <position_p_gain>3000</position_p_gain>
-      <position_d_gain>15</position_d_gain>
-      <position_i_gain>1650</position_i_gain>
-      <position_i_min>-15</position_i_min>
-      <position_i_max>15</position_i_max>
-      <position_cmd_min>-87</position_cmd_min>
-      <position_cmd_max>87</position_cmd_max>
+      <position_p_gain>30</position_p_gain>
+      <position_d_gain>0</position_d_gain>
+      <position_i_gain>0</position_i_gain>
+      <position_i_min>-5</position_i_min>
+      <position_i_max>5</position_i_max>
+      <position_cmd_min>-15</position_cmd_min>
+      <position_cmd_max>15</position_cmd_max>
 
       <joint_name>joint_head_tilt</joint_name>
       <initial_position>0</initial_position>
-      <position_p_gain>3000</position_p_gain>
-      <position_d_gain>15</position_d_gain>
-      <position_i_gain>1650</position_i_gain>
-      <position_i_min>-15</position_i_min>
-      <position_i_max>15</position_i_max>
-      <position_cmd_min>-87</position_cmd_min>
-      <position_cmd_max>87</position_cmd_max>
+      <position_p_gain>30</position_p_gain>
+      <position_d_gain>0</position_d_gain>
+      <position_i_gain>0</position_i_gain>
+      <position_i_min>-5</position_i_min>
+      <position_i_max>5</position_i_max>
+      <position_cmd_min>-15</position_cmd_min>
+      <position_cmd_max>15</position_cmd_max>
 
     </plugin>
 
