@@ -105,6 +105,7 @@ int main(int argc, char** argv)
   // setup using just the name of the planning group you would like to control and plan for.
   moveit::planning_interface::MoveGroupInterface move_group_gripper(move_group_node, "gripper");
   moveit::planning_interface::MoveGroupInterface move_group_base_arm(move_group_node, "mobile_base_arm");
+  moveit::planning_interface::MoveGroupInterface move_group_head(move_group_node, "stretch_head");
 
   // We will use the :planning_interface:`PlanningSceneInterface`
   // class to add and remove collision objects in our "virtual world" scene
@@ -138,6 +139,9 @@ int main(int argc, char** argv)
   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   initializeMoveGroup(move_group_base_arm);
   initializeMoveGroup(move_group_gripper);
+  move_group_head.setMaxVelocityScalingFactor(0.1);
+  move_group_head.setMaxAccelerationScalingFactor(0.1);
+
   // Start the demo
   // ^^^^^^^^^^^^^^^^^^^^^^^^^
   visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
@@ -147,10 +151,38 @@ int main(int argc, char** argv)
   // We can plan a motion for this group to a desired pose for the
   // end-effector.
 
-  // Part 1: Move Lift to height
-  move_group_base_arm.setStartStateToCurrentState();
-  
+  // Part 0: Turn your head to the target
   geometry_msgs::msg::Pose target_pose;
+  /*
+  position:
+    x: -0.0019189747981727123
+    y: -0.03920292109251022
+    z: 1.297531008720398
+  orientation:
+    x: -0.5433773994445801
+    y: 0.45249122381210327
+    z: 0.5637422800064087
+    w: -0.42683398723602295
+  */
+  move_group_head.setStartStateToCurrentState();
+  target_pose.position.x = -0.0019189747981727123;
+  target_pose.position.y = -0.03920292109251022;
+  target_pose.position.z = 1.297531008720398;
+  target_pose.orientation.x = -0.5433773994445801;
+  target_pose.orientation.y = 0.45249122381210327;
+  target_pose.orientation.z = 0.5637422800064087;
+  target_pose.orientation.w = -0.42683398723602295;
+  Eigen::Isometry3d approx_target = Eigen::Isometry3d::Identity();
+  poseMsgToEigen(target_pose, approx_target);
+
+  move_group_head.setApproximateJointValueTarget(approx_target, move_group_head.getEndEffectorLink());
+
+  bool success = (move_group_head.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  RCLCPP_INFO(LOGGER, "Moving head to target %s", success ? "" : "FAILED");
+
+  // Part 1: Move Lift to height
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
+  move_group_base_arm.setStartStateToCurrentState();  
   target_pose.position.x = 0.0;
   target_pose.position.y = -0.2;
   target_pose.position.z = 1.18;
@@ -158,7 +190,6 @@ int main(int argc, char** argv)
   target_pose.orientation.y = 0.0;
   target_pose.orientation.z = 0.7071067810149885;
   target_pose.orientation.w = 0.7071067810149885;
-  Eigen::Isometry3d approx_target = Eigen::Isometry3d::Identity();
   poseMsgToEigen(target_pose, approx_target);
 
   move_group_base_arm.setApproximateJointValueTarget(approx_target, move_group_base_arm.getEndEffectorLink());
@@ -167,7 +198,7 @@ int main(int argc, char** argv)
   // Note that we are planning and asking move_group
   // to actually move the robot. 
   // If we wanted to plan only we would use move.group.plan(plan) instead
-  bool success = (move_group_base_arm.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  success = (move_group_base_arm.move() == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   RCLCPP_INFO(LOGGER, "Moving arm to height execution %s", success ? "" : "FAILED");
 
 

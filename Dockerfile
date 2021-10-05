@@ -4,8 +4,7 @@ MAINTAINER Vatan Aksoy Tezer vatan@picknik.ai
 
 # Update and install some common depenccies
 RUN apt-get -qq update && \
-    apt-get -qq dist-upgrade && apt-get install -y wget python3-pip lsb-release gnupg curl python3-vcstool python3-colcon-common-extensions git && \
-    rosdep update
+    apt-get -qq dist-upgrade && apt-get install -y wget python3-pip lsb-release gnupg curl python3-vcstool python3-colcon-common-extensions git
 
 WORKDIR /root/ws_ignition/src
 
@@ -31,6 +30,7 @@ RUN git clone https://github.com/vatanaksoytezer/stretch_ros.git -b pr-docker &&
 RUN . /opt/ros/galactic/setup.sh && \
     . /root/ws_ignition/install/setup.sh && \
     export IGNITION_VERSION=edifice && \
+    rosdep update && \
     rosdep install -y --from-paths . --ignore-src --rosdistro galactic --as-root=apt:false
 
 # Build the workspace

@@ -1,4 +1,3 @@
-
 #include <memory>
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
