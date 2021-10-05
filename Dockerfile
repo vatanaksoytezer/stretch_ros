@@ -19,7 +19,7 @@ RUN vcs import < ignition.repos && \
     apt-get -qq update  && \
     cd /root/ws_ignition/ && \
     apt-get install -y $(sort -u $(find . -iname 'packages-'`lsb_release -cs`'.apt' -o -iname 'packages.apt' | grep -v '/\.git/') | sed '/ignition\|sdf/d' | tr '\n' ' ') && \
-    colcon build --merge-install --cmake-args -DBUILD_TESTING=OFF && \
+    colcon build --merge-install --cmake-args -DBUILD_TESTING=OFF
 
 WORKDIR /root/ws_stretch/src
 
