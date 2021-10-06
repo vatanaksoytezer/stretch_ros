@@ -153,17 +153,6 @@ int main(int argc, char** argv)
 
   // Part 0: Turn your head to the target
   geometry_msgs::msg::Pose target_pose;
-  /*
-  position:
-    x: -0.0019189747981727123
-    y: -0.03920292109251022
-    z: 1.297531008720398
-  orientation:
-    x: -0.5433773994445801
-    y: 0.45249122381210327
-    z: 0.5637422800064087
-    w: -0.42683398723602295
-  */
   move_group_head.setStartStateToCurrentState();
   target_pose.position.x = -0.0019189747981727123;
   target_pose.position.y = -0.03920292109251022;
