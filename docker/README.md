@@ -51,9 +51,6 @@ To open multiple terminals, you can just `./start_docker.sh stretch_roscon` from
 Now you can test your Stretch docker by bringing up Stretch in Ignition Gazebo by issuing the following set of commands inside your container:
 
 ```bash
-source /opt/ros/galactic/setup.bash && \
-source /root/ws_stretch/install/setup.bash && \
-export IGN_GAZEBO_RESOURCE_PATH="/root/ws_stretch/src/stretch_ros:/root/ws_stretch/src/realsense-ros:/root/ws_stretch/src/aws-robomaker-small-house-world/models" && \
 ros2 launch stretch_ignition ignition.launch.py
 ```
 
