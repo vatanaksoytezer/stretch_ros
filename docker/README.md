@@ -67,6 +67,28 @@ Congragulations! You brought up Stretch in Ignition Gazebo! Now you should be se
 
 ## Installation (MacOS)
 
+## ROS World - Guided exploration: stretch_moveit_config demo
+```bash
+# Terminal 1
+ros2 launch stretch_moveit_config demo.launch.py
+```
+
+## ROS World - Guided exploration: Ignition Demo World
+```bash
+# Terminal 1
+ros2 launch stretch_ignition ignition.launch.py
+# Terminal 2
+ros2 launch stretch_moveit_config demo_ignition.launch.py
+# Terminal 3
+ros2 launch stretch_roscon_demos move_group_interface_demo.launch.py
+```
+
+## ROS World - Guided exploration: Pick and place with whole body planning
+```bash
+# Terminal 1
+ros2 launch stretch_ignition ignition.launch.py aws:=true
+```
+
 ## Editing the source code during the Workshop
 
 Our docker image comes with a pre-built installation of VS Code, vim and nano. You can also install your editor of choice via apt-get.
