@@ -75,7 +75,7 @@ def generate_launch_description():
                 arguments=[
                     '-name', 'stretch',
                     '-file', stretch_sdf_path,
-                    '-z', '0.1',
+                    '-z', '0.01',
                     ],
                 output='screen',
                 )

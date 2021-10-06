@@ -90,72 +90,69 @@
     <!-- Kitchen table location-->
     <!-- 6.55269 0.951173 -0.000006 0 -0 -1.564130 -->
 
+    <!-- Kitchen cabinet -->
+    <!-- 8.002009 -3.836509 0.012068 0 -0 -3.140001 -->
+
     <!-- Coffee table location -->
     <!-- 1.512301 -1.733438 0.041983 0.000000 0.000000 0.01000 -->
 
-    <model name="cylinder">
-      <pose>1.212301 -1.533438 0.381983 1.57 0.0 0.0</pose>
-      <link name="link">
-        <inertial>
-          <mass>0.1</mass>
-          <inertia>
-            <ixx>0.00389124</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.000518939</iyy>
-            <iyz>0</iyz>
-            <izz>0.00389926</izz>
-          </inertia>
-        </inertial>
-        <collision name="collision">
-          <geometry>
-            <cylinder>
-              <radius>0.02</radius>
-              <length>0.15</length>
-            </cylinder>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <cylinder>
-              <radius>0.02</radius>
-              <length>0.05</length>
-            </cylinder>
-          </geometry>
-        </visual>
-      </link>
-    </model> 
+    <include>
+      <static>false</static>
+      <uri>model://can</uri>
+      <pose>8.802009 -4.336509 1.012068 0 -0 0</pose>
+    </include>
 
-    <model name="box">
-      <pose>1.312301 -1.533438 0.381983 0.000000 0.000000 0.0</pose>
-      <link name="link">
-        <inertial>
-          <mass>0.1</mass>
-          <inertia>
-            <ixx>0.00389124</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.000518939</iyy>
-            <iyz>0</iyz>
-            <izz>0.00389926</izz>
-          </inertia>
-        </inertial>
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>0.05 0.05 0.05</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>0.05 0.05 0.05</size>
-            </box>
-          </geometry>
-        </visual>
-      </link>
-    </model> 
+    <actor name="actor_talking">
+      <skin>
+        <filename>https://fuel.ignitionrobotics.org/1.0/Mingfei/models/actor/tip/files/meshes/talk_b.dae</filename>
+        <scale>1.0</scale>
+      </skin>
+      <animation name="talk_b">
+        <filename>https://fuel.ignitionrobotics.org/1.0/Mingfei/models/actor/tip/files/meshes/talk_b.dae</filename>
+        <scale>0.055</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <loop>true</loop>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="talk_b">
+          <waypoint>
+            <time>0</time>
+            <pose>0.4 -2 1.05 0 0 3.1415</pose>
+          </waypoint>
+          <waypoint>
+            <time>30</time>
+            <pose>0.4 -2 1.05 0 0 3.1415</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
+    <actor name="actor_sitting">
+      <skin>
+        <filename>https://fuel.ignitionrobotics.org/1.0/Mingfei/models/actor/tip/files/meshes/sitting.dae</filename>
+        <scale>1.0</scale>
+      </skin>
+      <animation name="sitting">
+        <filename>https://fuel.ignitionrobotics.org/1.0/Mingfei/models/actor/tip/files/meshes/sitting.dae</filename>
+        <scale>1.0</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <loop>true</loop>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="sitting">
+          <waypoint>
+            <time>0</time>
+            <pose>-0.2 -1.2 0.6 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>30</time>
+            <pose>-0.2 -1.2 0.6 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
 
     <!-- AWS -->
     <model name='AirconditionerA_01_001'>
@@ -525,12 +522,6 @@
           </include>
           <pose frame=''>7.15317 0.982767 0.817812 -0.001238 -0.000976 1.02476</pose>
     </model>
-
-    <include>
-        <uri>model://aws_robomaker_residential_Trash_01</uri>
-        <name>Trash_01_001</name>
-        <pose>2.360151 -0.796238 0.011 0 -0 0</pose>
-    </include>
 
     <include>
       <uri>model://aws_robomaker_residential_Trash_01</uri>
