@@ -20,7 +20,7 @@ Follow the [official instructions](https://docs.nvidia.com/datacenter/cloud-nati
 
 ### Getting Started with Stretch Docker
 
-We provide a pre-built docker image and a set of scripts to easily get you up and running with Strectch on dockers! To get your docker running with UI and networking enabled:
+We provide a pre-built docker image and a set of scripts to easily get you up and running with Stretch on docker! To get your docker running with UI and networking enabled:
 
 1\. Fetch our start_docker script
 
@@ -54,7 +54,7 @@ Now you can test your Stretch docker by bringing up Stretch in Ignition Gazebo b
 ros2 launch stretch_ignition ignition.launch.py
 ```
 
-Congragulations! You brought up Stretch in Ignition Gazebo! Now you should be seeing Stretch in Ignition Gazebo with an empty world around it:
+Congratulations! You brought up Stretch in Ignition Gazebo! Now you should be seeing Stretch in Ignition Gazebo with an empty world around it:
 
 ![Stretch with Ignition Gazebo](media/stretch_empty_world.png)
 ### Building the docker image from scratch
@@ -67,27 +67,61 @@ Congragulations! You brought up Stretch in Ignition Gazebo! Now you should be se
 
 ## Installation (MacOS)
 
-## ROS World - Guided exploration: stretch_moveit_config demo
-```bash
-# Terminal 1
-ros2 launch stretch_moveit_config demo.launch.py
-```
+## Guided exploration: stretch_moveit_config demo
 
-## ROS World - Guided exploration: Ignition Demo World
-```bash
-# Terminal 1
-ros2 launch stretch_ignition ignition.launch.py
-# Terminal 2
-ros2 launch stretch_moveit_config demo_ignition.launch.py
-# Terminal 3
-ros2 launch stretch_roscon_demos move_group_interface_demo.launch.py
-```
+* Run the following command:
 
-## ROS World - Guided exploration: Pick and place with whole body planning
-```bash
-# Terminal 1
-ros2 launch stretch_ignition ignition.launch.py aws:=true
-```
+  ```bash
+  # Terminal 1
+  ros2 launch stretch_moveit_config demo.launch.py
+  ```
+
+* Change velocity and acceleration scaling to 1 (esp. on slow machines).
+* Show how to plan from current state to (1) random valid goal state or (2) a specific state by moving the interactive marker. The latter may not always work, because some planning groups are kinematically very constrained.
+* Repeat the previous step for the `stretch_arm` and `mobile_base_arm` groups.
+* Turn on "Query Start State" by checking the checkbox in the Displays panel under "Motion Planning > Planning Request".
+* Turn on "Loop animation" by checking the checkbox in the Displays panel under "Trajectory."
+* Explain structure of `stretch_moveit_config`; show contents of some configuration files and maybe SRDF/URDF .
+  
+## Guided exploration: Ignition Demo World
+
+* Run the following commands in three different terminal windows:
+
+  ```bash
+  # Terminal 1
+  ros2 launch stretch_ignition ignition.launch.py
+  # Terminal 2
+  ros2 launch stretch_moveit_config demo_ignition.launch.py
+  # Terminal 3
+  ros2 launch stretch_roscon_demos move_group_interface_demo.launch.py
+  ```
+
+## Guided exploration: Pick and place with whole body planning
+
+* Run the following commands in three different terminal windows:
+
+  ```bash
+  # Terminal 1
+  ros2 launch stretch_ignition ignition.launch.py aws:=true
+  # Terminal 2
+  ros2 launch stretch_moveit_config demo_ignition.launch.py
+  # Terminal 3
+  ros2 launch stretch_roscon_demos move_group_interface_demo.launch.py
+  ```
+
+## Guided exploration: Pick and place with MoveIt Task Constructor
+
+* Run the following commands in two different terminal windows:
+
+  ```bash
+  # Terminal 1
+  ros2 launch pick_place_task demo.launch.py
+  # Terminal 2
+  ros2 launch pick_place_task pick_place_demo.launch.py 
+  ```
+
+* Explain MTC panel. Show different solutions.
+* Explain structure of the code.
 
 ## Editing the source code during the Workshop
 
