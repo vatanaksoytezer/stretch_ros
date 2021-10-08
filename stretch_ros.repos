@@ -69,5 +69,5 @@ repositories:
     version: ignition-port
   rviz_visual_tools:
     type: git
-    url: https://github.com/vatanaksoytezer/rviz_visual_tools
-    version: pr-ros2_remote_control
+    url: https://github.com/PickNikRobotics/rviz_visual_tools
+    version: ros2

@@ -32,6 +32,10 @@ RUN cd /root/ws_stretch/ && . /opt/ros/galactic/setup.sh && \
             --ament-cmake-args -DCMAKE_BUILD_TYPE=Release \
             --event-handlers desktop_notification- status-
 
+# GUI Config
+RUN mkdir -p /root/.ignition/gazebo/6 && \
+    cp /usr/share/ignition/ignition-gazebo6/gui/gui.config /root/.ignition/gazebo/6
+
 # Remove docker clean and apt update
 
 # Add some bashrc shortcuts

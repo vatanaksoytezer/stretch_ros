@@ -202,11 +202,11 @@ def generate_launch_description():
                         output='log',
                         arguments=['0.0', '0.0', '0.0', '0', '0', '0', 'camera_infra2_optical_frame', 'stretch/camera_infra2_optical_frame/realsense_d435_ir2'])
 
-    position_static_tf = Node(package='tf2_ros',
+    map_static_tf = Node(package='tf2_ros',
                         executable='static_transform_publisher',
                         name='static_transform_publisher',
                         output='log',
-                        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'position', 'odom'])
+                        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'odom', 'map'])
 
     # Controllers 
     # TODO (vatanaksoytezer): Use ros_ign_control when it is ready
@@ -277,7 +277,7 @@ def generate_launch_description():
             # realsense_depth_static_tf,
             # realsense_ir_static_tf,
             # realsense_ir2_static_tf,
-            # position_static_tf,
+            map_static_tf,
             odom2tf,
             stretch_sticky_static_tf_publisher,
             # image_rotate,
