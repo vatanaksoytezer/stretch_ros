@@ -144,11 +144,11 @@
         <trajectory id="0" type="sitting">
           <waypoint>
             <time>0</time>
-            <pose>-0.2 -1.2 0.6 0 0 0</pose>
+            <pose>-1.5 4.1 0.6 0 0 0</pose>
           </waypoint>
           <waypoint>
             <time>30</time>
-            <pose>-0.2 -1.2 0.6 0 0 0</pose>
+            <pose>-1.5 4.1 0.6 0 0 0</pose>
           </waypoint>
         </trajectory>
       </script>

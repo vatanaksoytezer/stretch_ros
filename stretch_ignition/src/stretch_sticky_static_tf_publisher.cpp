@@ -4,7 +4,6 @@
 #include "tf2_ros/transform_broadcaster.h"
 #include <rclcpp/rclcpp.hpp>
 
-using std::placeholders::_1;
 using namespace std::chrono_literals;
 
 /**
@@ -17,7 +16,6 @@ public:
   StretchStaticTfPublisher() : Node("tf_broadcaster")
   {
     // Publish every 10ms -> 100 Hz
-    // tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(shared_from_this());
     timer_ = this->create_wall_timer(
       10ms, std::bind(&StretchStaticTfPublisher::timer_callback, this));
   }

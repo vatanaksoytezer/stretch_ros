@@ -232,7 +232,7 @@
     </joint>
 
     <link name='link_laser'>
-      <pose relative_to='joint_laser'>0 0 0 0 -0 0</pose>
+      <pose relative_to='joint_laser'>0 0 0 0 -0 -3.1415</pose>
       <inertial>
         <mass>0.01</mass>
         <inertia>
