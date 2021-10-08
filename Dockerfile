@@ -22,7 +22,7 @@ RUN git clone https://github.com/vatanaksoytezer/stretch_ros.git -b pr-docker &&
 RUN . /opt/ros/galactic/setup.sh && \
     export IGNITION_VERSION=fortress && \
     rosdep update && \
-    rosdep install -y --from-paths . --ignore-src --rosdistro galactic --as-root=apt:false
+    rosdep install -y --from-paths . --ignore-src --rosdistro galactic --as-root=apt:false --skip-keys="ignition-transport11 ignition-gazebo6 ignition-msgs8" 
 
 # Build the workspace
 RUN cd /root/ws_stretch/ && . /opt/ros/galactic/setup.sh && \
@@ -36,7 +36,6 @@ RUN cd /root/ws_stretch/ && . /opt/ros/galactic/setup.sh && \
 
 # Add some bashrc shortcuts
 RUN echo "source /opt/ros/galactic/setup.bash" >> ~/.bashrc && \
-    echo "source /root/ws_ignition/install/setup.bash" >> ~/.bashrc && \
     echo "source /root/ws_stretch/install/setup.bash" >> ~/.bashrc && \
     echo "export IGNITION_VERSION=fortress" >> ~/.bashrc && \
     echo "export IGN_GAZEBO_RESOURCE_PATH=/root/ws_stretch/src/stretch_ros:/root/ws_stretch/src/realsense-ros:/root/ws_stretch/src/aws-robomaker-small-house-world/models" >> ~/.bashrc
