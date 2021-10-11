@@ -3,25 +3,13 @@ repositories:
     type: git
     url: https://github.com/ros-planning/moveit2
     version: main
-  moveit_msgs:
-    type: git
-    url: https://github.com/ros-planning/moveit_msgs
-    version: ros2
   moveit_resources:
     type: git
     url: https://github.com/ros-planning/moveit_resources
     version: ros2
   moveit_task_constructor:
     type: git
-    url: https://github.com/vatanaksoytezer/moveit_task_constructor
-    version: galactic-fix
-  geometric_shapes:
-    type: git
-    url: https://github.com/ros-planning/geometric_shapes
-    version: ros2
-  srdfdom:
-    type: git
-    url: https://github.com/ros-planning/srdfdom
+    url: https://github.com/JafarAbdi/moveit_task_constructor
     version: ros2
   control_msgs:
     type: git
