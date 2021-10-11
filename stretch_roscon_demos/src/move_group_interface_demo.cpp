@@ -46,10 +46,14 @@
 #include <rviz_visual_tools/rviz_visual_tools.hpp>
 #include <moveit/macros/console_colors.h>
 
+#include <rclcpp_action/rclcpp_action.hpp>
+#include <nav2_msgs/action/navigate_to_pose.hpp>
+
 // All source files that use ROS logging should define a file-specific
 // static const rclcpp::Logger named LOGGER, located at the top of the file
 // and inside the namespace with the narrowest scope (if there is one)
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_group_interface_demo");
+
 
 void poseMsgToEigen(const geometry_msgs::msg::Pose& msg, Eigen::Isometry3d& out)
 {
@@ -132,6 +136,28 @@ int main(int argc, char** argv)
   initializeMoveGroup(move_group_gripper);
   move_group_head.setMaxVelocityScalingFactor(0.1);
   move_group_head.setMaxAccelerationScalingFactor(0.1);
+
+  // Start navigation action
+  RCLCPP_INFO(LOGGER, "Creating navigation client");
+  auto nav2_client = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(move_group_node, "/navigate_to_pose");
+  // RCLCPP_INFO(LOGGER, "Checking navigation server status");
+  // if (!nav2_client->wait_for_action_server()) {
+  //   RCLCPP_ERROR(LOGGER, "Navigation server not available after waiting");
+  //   rclcpp::shutdown();
+  // }
+  // RCLCPP_INFO(LOGGER, "Navigation client started");
+  auto goal_msg = nav2_msgs::action::NavigateToPose::Goal();
+  goal_msg.pose.header.frame_id = "odom";
+  goal_msg.pose.header.stamp = move_group_node->now();
+  goal_msg.pose.pose.position.x = 1.0;
+  goal_msg.pose.pose.position.y = 0.0;
+  goal_msg.pose.pose.position.z = 0.0;
+  goal_msg.pose.pose.orientation.x = 0.0;
+  goal_msg.pose.pose.orientation.y = 0.0;
+  goal_msg.pose.pose.orientation.z = 0.0;
+  goal_msg.pose.pose.orientation.w = 1.0;
+  auto send_goal_options = rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();
+  // nav2_client->async_send_goal(goal_msg, send_goal_options);
 
   // Start the demo
   // ^^^^^^^^^^^^^^^^^^^^^^^^^

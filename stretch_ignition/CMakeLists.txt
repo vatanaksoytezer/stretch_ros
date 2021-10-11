@@ -53,6 +53,6 @@ ament_target_dependencies(
 install(TARGETS odom2tf stretch_sticky_static_tf_publisher DESTINATION lib/${PROJECT_NAME})
 
 # Install packages
-install(DIRECTORY worlds rviz launch DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY worlds config rviz launch DESTINATION share/${PROJECT_NAME})
 
 ament_package()

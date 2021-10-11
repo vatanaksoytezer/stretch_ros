@@ -13,6 +13,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav2_msgs REQUIRED)
 find_package(moveit_msgs REQUIRED)
 find_package(moveit_ros_planning REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
@@ -29,6 +30,9 @@ target_include_directories(move_group_interface_demo PUBLIC
   $<INSTALL_INTERFACE:include>)
 ament_target_dependencies(move_group_interface_demo
   rclcpp
+  rclcpp_action
+  rclcpp_components
+  nav2_msgs
   moveit_ros_planning_interface
   moveit_msgs
   geometry_msgs
