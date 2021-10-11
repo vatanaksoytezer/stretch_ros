@@ -30,15 +30,12 @@ class FollowJointTrajectoryActionServer(Node):
         self.odom = msg
 
     def execute_callback(self, goal_handle: server.ServerGoalHandle):
-        print(type(goal_handle))
         self.get_logger().info('Executing goal...')
         result = FollowJointTrajectory.Result()
         trajectory = goal_handle.request.trajectory # type: JointTrajectory
         multidof_trajectory = goal_handle.request.multi_dof_trajectory # type: MultiDOFJointTrajectory
-        # print(multidof_trajectory)
         previous_time_from_start = 0.0
         self._joint_trajectory_publisher.publish(trajectory)
-        print("Target pose:", multidof_trajectory.points[-1].transforms[0].translation, multidof_trajectory.points[-1].transforms[0].rotation)
         for point in multidof_trajectory.points:
             cmd_vel = Twist()
             current_time_from_start = point.time_from_start.sec + point.time_from_start.nanosec * 1e-9
@@ -46,9 +43,6 @@ class FollowJointTrajectoryActionServer(Node):
             cmd_vel.angular.z = float(point.velocities[0].angular.z)
             if(point.velocities[0].linear.x < 0):
                 cmd_vel.linear.x = -cmd_vel.linear.x
-            # cmd_vel = point.velocities[0]
-            print(point)
-            # print(cmd_vel)
             self._cmd_vel_publisher.publish(cmd_vel)
             execution_time = current_time_from_start - previous_time_from_start
             time.sleep(execution_time)
