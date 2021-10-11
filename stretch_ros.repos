@@ -1,35 +1,7 @@
 repositories:
-  moveit2:
-    type: git
-    url: https://github.com/ros-planning/moveit2
-    version: main
-  moveit_resources:
-    type: git
-    url: https://github.com/ros-planning/moveit_resources
-    version: ros2
   moveit_task_constructor:
     type: git
     url: https://github.com/JafarAbdi/moveit_task_constructor
-    version: ros2
-  control_msgs:
-    type: git
-    url: https://github.com/ros-planning/control_msgs
-    version: galactic-devel
-  ros2_control:
-    type: git
-    url: https://github.com/ros-controls/ros2_control
-    version: master
-  ros2_controllers:
-    type: git
-    url: https://github.com/ros-controls/ros2_controllers
-    version: master
-  warehouse_ros:
-    type: git
-    url: https://github.com/ros-planning/warehouse_ros
-    version: ros2
-  warehouse_ros_mongo:
-    type: git
-    url: https://github.com/ros-planning/warehouse_ros_mongo
     version: ros2
   stretch_moveit_plugins:
     type: git
@@ -39,10 +11,6 @@ repositories:
     type: git
     url: https://github.com/PickNikRobotics/rosparam_shortcuts
     version: ros2
-  realtime_tools:
-    type: git
-    url: https://github.com/ros-controls/realtime_tools
-    version: foxy-devel
   realsense-ros:
     type: git
     url: https://github.com/vatanaksoytezer/realsense-ros

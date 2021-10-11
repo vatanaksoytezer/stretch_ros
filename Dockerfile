@@ -1,4 +1,4 @@
-FROM osrf/ros:galactic-desktop
+FROM ghcr.io/ros-planning/moveit2:galactic-source
 
 MAINTAINER Vatan Aksoy Tezer vatan@picknik.ai
 
@@ -19,13 +19,13 @@ RUN git clone https://github.com/vatanaksoytezer/stretch_ros.git -b pr-docker &&
     vcs import < stretch_ros/stretch_ros.repos
 
 # Update and install dependencies
-RUN . /opt/ros/galactic/setup.sh && \
+RUN . /opt/ros/galactic/setup.sh && . /root/ws_moveit/install/setup.sh \
     export IGNITION_VERSION=fortress && \
     rosdep update && \
     rosdep install -y --from-paths . --ignore-src --rosdistro galactic --as-root=apt:false --skip-keys="ignition-transport11 ignition-gazebo6 ignition-msgs8" 
 
 # Build the workspace
-RUN cd /root/ws_stretch/ && . /opt/ros/galactic/setup.sh && \
+RUN cd /root/ws_stretch/ && . /opt/ros/galactic/setup.sh && . /root/ws_moveit/install/setup.sh \
     export IGNITION_VERSION=fortress && \
     colcon build \
             --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
@@ -40,6 +40,7 @@ RUN mkdir -p /root/.ignition/gazebo/6 && \
 
 # Add some bashrc shortcuts
 RUN echo "source /opt/ros/galactic/setup.bash" >> ~/.bashrc && \
+    echo "source /root/ws_moveit/install/setup.bash" >> ~/.bashrc && \
     echo "source /root/ws_stretch/install/setup.bash" >> ~/.bashrc && \
     echo "export IGNITION_VERSION=fortress" >> ~/.bashrc && \
     echo "export IGN_GAZEBO_RESOURCE_PATH=/root/ws_stretch/src/stretch_ros:/root/ws_stretch/src/realsense-ros:/root/ws_stretch/src/aws-robomaker-small-house-world/models" >> ~/.bashrc
