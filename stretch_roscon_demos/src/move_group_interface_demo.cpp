@@ -46,9 +46,6 @@
 #include <rviz_visual_tools/rviz_visual_tools.hpp>
 #include <moveit/macros/console_colors.h>
 
-#include <rclcpp_action/rclcpp_action.hpp>
-#include <nav2_msgs/action/navigate_to_pose.hpp>
-
 // All source files that use ROS logging should define a file-specific
 // static const rclcpp::Logger named LOGGER, located at the top of the file
 // and inside the namespace with the narrowest scope (if there is one)

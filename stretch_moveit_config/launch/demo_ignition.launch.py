@@ -132,7 +132,7 @@ def generate_launch_description():
     ld.add_action(run_move_group_node)
 
     # RViz
-    rviz_config_file = get_package_share_directory('stretch_moveit_config') + "/launch/moveit_ignition.rviz"
+    rviz_config_file = get_package_share_directory('stretch_moveit_config') + "/launch/moveit_with_nav_ignition_grouped.rviz"
     rviz_node = Node(package='rviz2',
                     executable='rviz2',
                     name='rviz2',
