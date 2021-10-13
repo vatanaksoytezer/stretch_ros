@@ -1,13 +1,14 @@
 from control_msgs.action import FollowJointTrajectory
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import MultiDOFJointTrajectory
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, PoseStamped
 from nav_msgs.msg import Odometry
 import rclpy
 from rclpy.action import ActionServer, server
 from rclpy.node import Node
 import time
 from math import sqrt
+from nav2_simple_commander.robot_navigator import BasicNavigator
 
 
 class FollowJointTrajectoryActionServer(Node):
@@ -25,6 +26,12 @@ class FollowJointTrajectoryActionServer(Node):
             self.execute_callback)
         self.odom_subscriber = self.create_subscription(
             Odometry, 'odom', self.odom_callback, 10)
+        print("Initializing nav2 client")
+        self.nav = BasicNavigator()
+        initial_pose = PoseStamped()
+        initial_pose.header.frame_id = "odom"
+        initial_pose.header.stamp = self.get_clock().now().to_msg()
+        self.nav.setInitialPose(initial_pose)
 
     def odom_callback(self, msg: Odometry):
         self.odom = msg
@@ -33,23 +40,20 @@ class FollowJointTrajectoryActionServer(Node):
         self.get_logger().info('Executing goal...')
         result = FollowJointTrajectory.Result()
         trajectory = goal_handle.request.trajectory # type: JointTrajectory
-        multidof_trajectory = goal_handle.request.multi_dof_trajectory # type: MultiDOFJointTrajectory
-        previous_time_from_start = 0.0
         self._joint_trajectory_publisher.publish(trajectory)
-        for point in multidof_trajectory.points:
-            cmd_vel = Twist()
-            current_time_from_start = point.time_from_start.sec + point.time_from_start.nanosec * 1e-9
-            cmd_vel.linear.x = float(sqrt(point.velocities[0].linear.x * point.velocities[0].linear.x + point.velocities[0].linear.y * point.velocities[0].linear.y))
-            cmd_vel.angular.z = float(point.velocities[0].angular.z)
-            if(point.velocities[0].linear.x < 0):
-                cmd_vel.linear.x = -cmd_vel.linear.x
-            self._cmd_vel_publisher.publish(cmd_vel)
-            execution_time = current_time_from_start - previous_time_from_start
-            time.sleep(execution_time)
-            previous_time_from_start = current_time_from_start
-        
-        cmd_vel = Twist()
-        self._cmd_vel_publisher.publish(cmd_vel)
+        multidof_trajectory = goal_handle.request.multi_dof_trajectory # type: MultiDOFJointTrajectory
+        goal_pose = PoseStamped()
+        goal_pose.header.frame_id = "odom"
+        goal_pose.header.stamp = self.get_clock().now().to_msg()
+        goal_pose.pose.position.x = multidof_trajectory.points[-1].transforms[0].translation.x
+        goal_pose.pose.position.y = multidof_trajectory.points[-1].transforms[0].translation.y
+        goal_pose.pose.position.z = multidof_trajectory.points[-1].transforms[0].translation.z
+        goal_pose.pose.orientation.x = multidof_trajectory.points[-1].transforms[0].rotation.x
+        goal_pose.pose.orientation.y = multidof_trajectory.points[-1].transforms[0].rotation.y
+        goal_pose.pose.orientation.z = multidof_trajectory.points[-1].transforms[0].rotation.z
+        goal_pose.pose.orientation.w = multidof_trajectory.points[-1].transforms[0].rotation.w
+        print("Target pose:", goal_pose.pose)
+        self.nav.goToPose(goal_pose)
         goal_handle.succeed()
         return result
 

@@ -15,6 +15,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
     rviz_arg = LaunchConfiguration('rviz', default=False)
     aws_arg = LaunchConfiguration('aws', default=False)
+    nav_arg = LaunchConfiguration('nav', default=True)
 
     robot_description_path =  os.path.join(get_package_share_directory("stretch_description"), "urdf", "stretch_ignition.xacro")
     robot_description_config = xacro.process_file(
@@ -246,6 +247,13 @@ def generate_launch_description():
         ]
     )
 
+    # Navigation
+    navigation = IncludeLaunchDescription(
+    PythonLaunchDescriptionSource(
+        os.path.join(pkg_stretch_ignition, 'launch', 'navigation.launch.py')),
+        condition=IfCondition(nav_arg),
+    )
+
     return LaunchDescription(
         [
             # Launch Arguments
@@ -261,6 +269,10 @@ def generate_launch_description():
                 'aws',
                 default_value=aws_arg,
                 description="If true, opens up an aws_robomaker world instead of an empty world"),
+            DeclareLaunchArgument(
+                'nav',
+                default_value=nav_arg,
+                description="If true, starts up navigation"),
             # Nodes and Launches
             empty_gazebo,
             aws_gazebo,
@@ -268,19 +280,10 @@ def generate_launch_description():
             bridge,
             robot_state_publisher,
             stretch_ignition_control_node,
-            # lidar_static_tf,
-            # imu_static_tf,
-            # mag_static_tf,
-            # wrist_imu_static_tf,
-            # realsense_imu_static_tf,
-            # realsense_color_static_tf,
-            # realsense_depth_static_tf,
-            # realsense_ir_static_tf,
-            # realsense_ir2_static_tf,
             map_static_tf,
             odom2tf,
             stretch_sticky_static_tf_publisher,
-            # image_rotate,
             rviz,
+            navigation
         ]
     )

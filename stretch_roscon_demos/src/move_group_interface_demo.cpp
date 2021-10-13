@@ -51,6 +51,7 @@
 // and inside the namespace with the narrowest scope (if there is one)
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_group_interface_demo");
 
+
 void poseMsgToEigen(const geometry_msgs::msg::Pose& msg, Eigen::Isometry3d& out)
 {
   Eigen::Translation3d translation(msg.position.x, msg.position.y, msg.position.z);

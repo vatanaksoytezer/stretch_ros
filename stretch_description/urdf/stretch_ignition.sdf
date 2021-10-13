@@ -1305,14 +1305,6 @@
           <izz>8.931e-05</izz>
         </inertia>
       </inertial>
-      <!-- TODO: Add collision -->
-      <!-- <collision name="collision">
-        <geometry>
-          <mesh>
-            <uri>model://RealSense_D435/meshes/realsense.dae</uri>
-          </mesh>
-        </geometry>
-      </collision> -->
       <visual name= "visual">
         <geometry>
           <mesh>
@@ -1539,8 +1531,8 @@
       <wheel_radius>0.05</wheel_radius>
       <odom_publish_frequency>0</odom_publish_frequency>
       <topic>cmd_vel</topic>
-      <frame_id>odom</frame_id>
-      <child_frame_id>base_link</child_frame_id>
+      <frame_id>odom_diff</frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
     </plugin>
 
     <!-- Joint state publisher -->
