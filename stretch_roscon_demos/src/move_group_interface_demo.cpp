@@ -193,7 +193,7 @@ int main(int argc, char** argv)
   // Part 3: Move to grabbing pose
   visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
   move_group_base_arm.setStartStateToCurrentState();
-  target_pose.position.y = -0.39;
+  target_pose.position.y = -0.405;
   poseMsgToEigen(target_pose, approx_target);
   
   move_group_base_arm.setApproximateJointValueTarget(approx_target, move_group_base_arm.getEndEffectorLink());
@@ -210,7 +210,7 @@ int main(int argc, char** argv)
   // Part 5: Lift the object slightly
   visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
   move_group_base_arm.setStartStateToCurrentState();
-  target_pose.position.z += 0.1;
+  target_pose.position.z += 0.15;
   poseMsgToEigen(target_pose, approx_target);
   
   move_group_base_arm.setApproximateJointValueTarget(approx_target, move_group_base_arm.getEndEffectorLink());
